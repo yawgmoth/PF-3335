@@ -1,0 +1,718 @@
+---
+permalink: /slides/lecture3.html
+---
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lecture 3: Planning</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .medium li {  font-size: 1.1em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .left-column {
+        color: #777;
+        width: 25%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 70%;
+        float: right;
+        padding-top: 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# AI in Digital Entertainment
+
+### Planning
+
+---
+
+class: center, middle
+
+# The Planning Problem
+
+---
+
+# Intelligent Agents 
+
+  * We said intelligent agents can solve problems without requiring exact instructions how to
+  
+  * This allows them to solve problems in "arbitrary" situations
+  
+  * So how do we solve problems?
+  
+  * Let's formalize "solving problems" as: The agent has to figure out by itself how to achieve a goal it is given 
+  
+---
+
+# The Planning Problem 
+
+A planning problem consists of three parts:
+
+  * A definition of the current state of the world 
+  
+  * A definition of a desired state of the world 
+  
+  * A definition of the actions the agent can take 
+  
+All of these definitions are done in "some" formal language.
+
+--
+
+Logic is a good choice for a formal language!
+
+---
+
+# An Example Planning Problem: Blocks World 
+
+  * We have three blocks, A, B, and C
+  
+  * Blocks A and B are on the table, block C is on top of block B
+  
+  * Blocks can be stacked 
+  
+  * At the moment, all blocks are on the table next to each other 
+  
+  * We want the blocks to be stacked, with C on top of B, and B on top of A
+  
+---
+
+# An Example Planning Problem: Blocks World 
+
+<img src="/PF-3341/assets/img/problemstatement.png" width="100%"/>
+  
+---
+
+# Formalizing the Problem 
+
+Current state:
+$$
+\text{on}(A, \mathit{table}) \wedge\\\\
+\text{on}(B, \mathit{table}) \wedge \\\\
+\text{on}(C, B)\\\\
+$$
+
+Goal:
+$$
+\text{on}(A, \mathit{table}) \wedge \\\\
+\text{on}(B, A) \wedge\\\\
+\text{on}(C, B)\\\\
+$$
+  
+---
+
+# Actions?
+
+What can the agent do?
+
+  * Let's say our agent is a simple robot
+  
+  * It has a gripper
+  
+  * It can pick up a block, and also put it down (on the table, or on top of another block)
+  
+---
+
+# Formalizing Actions?
+
+  * First, we need to represent that the robot is holding some block X somehow: `\(\text{holds}(X)\)`
+  
+  * Picking up a block then has a **precondition** and an **effect**
+  
+  * The precondition defines *when* an action can even be taken 
+  
+  * The effect defines what the action *changes* in the world 
+  
+---
+
+# Picking Up a Block X 
+
+Precondition:
+$$
+\forall Y \in \mathit{blocks}: \neg \text{holds}(Y) \wedge \\\\
+\forall Y \in \mathit{blocks}: \neg \text{on}(Y, X) 
+$$
+
+Effect:
+$$
+\forall Y \in \mathit{blocks}: \neg \text{on}(X, Y) \wedge \\\\
+\neg \text{on}(X, \mathit{table}) \wedge \\\\
+\text{holds}(X) 
+$$
+
+---
+
+# Putting a Block X on Top of a Block Y
+
+Precondition:
+$$
+\text{holds}(X) \wedge \\\\
+\forall Z \in \mathit{blocks}: \neg \text{on}(Z, Y) 
+$$
+
+Effect:
+$$
+\text{on}(X, Y) \wedge \\\\
+\neg \text{holds}(X)
+$$ 
+
+---
+
+class: medium
+
+# Complexity?
+
+  * Logic is nice, but this seems like a pretty complex problem to solve?
+  
+  * Whenever we want to execute an action we have to check against all blocks to see if the agent is already holding something, or if there's already something on 
+  the target block 
+  
+  * We can use an encoding trick to simplify the problem: Have predicates for negative conditions, too
+  
+  * For example: There is a predicate `holds` and a predicate `free` for the gripper, and a predicate `on` and a predicate `clear` for the blocks
+  
+---
+
+# Picking Up a Block X 
+
+Precondition:
+$$
+\text{free}() \wedge \\\\
+\text{clear}(X)
+$$
+
+Effect:
+$$
+\neg \text{clear}(X) \wedge \\\\
+\neg \text{free}() \wedge 
+\text{holds}(X)
+$$
+
+---
+
+# Putting a Block X on Top of a Block Y
+
+Precondition:
+$$
+\text{holds}(X) \wedge \\\\
+\text{clear}(Y)
+$$
+
+Effect:
+$$
+\text{on}(X, Y) \wedge \\\\
+\neg \text{clear}(Y) \wedge \\\\
+\neg \text{holds}(X) \\\\
+\text{clear}(X)
+$$
+
+---
+
+# STRIPS
+
+
+.left-column[ 
+  <img src="/PF-3341/assets/img/Shakey.png" width="100%"/>
+]
+
+.right-column[
+
+* Shakey the Robot could solve problems given by a goal state
+
+* Various sensors let it build a model of the current world state
+
+* The Stanford Research Institute Problem Solver was the planner responsible for finding a solution
+ 
+]
+
+---
+
+class: small
+
+# STRIPS planning 
+
+  * A state (and the goal!) is defined as a set of atomic propositions of what is true in the world
+  
+  * The goal is reached when it is a **subset** of a state
+  
+  * Each action consists of four sets of atomic propositions: 
+      * Two sets of preconditions: positive and negative
+      * An add list: What the action makes true
+      * A delete list: What the action makes false 
+      
+  * To check if an action can be executed in a state, the planner checks if all positive preconditions are in the state and all negative ones are not
+  
+  * To execute the action, a new state is produced as the union of the old state with the add list, and then the delete list is removed
+  
+---
+
+# Picking Up a Block X in STRIPS
+
+Positive Preconditions:
+$$
+\text{free}(), \text{clear}(X)
+$$
+Negative Preconditions: None
+
+Add List:
+$$
+\text{holds}(X)
+$$
+
+Delete List:
+$$
+\text{free}(), \text{clear}(X)
+$$
+
+---
+
+class: medium
+
+# Actions vs. Action Schemata
+
+  * Technically "Picking up a block X" (`pickup(X)`) is not an action, because there is no "Block X" in our domain 
+  
+  * We used "X" as a free variable to refer to "any block"
+  
+  * An actual (classical) STRIPS planning problem needs ground actions, without any free variables 
+  
+  * `pickup(X)` is an **action schema** that will need to be turned into ground actions (without free variables) `pickup(A)`, `pickup(B)`, and `pickup(C)`
+  
+  * We also had "Put block X on top of block Y" (`put(X,Y)`), which would resolve into `put(A,A)`, `put(A,B)`, etc.
+  
+---
+
+# The Actual Planning Process
+
+  * Forward-Chaining: The planner starts with the start state, and applies actions to get a new state until it reaches a state that satisfies the goal. It may do so 
+  by dividing the goal into subgoals that have to be reached.
+  
+  * Backward-Chaining: The planner examines the goal and determines which actions have an effect that contributes to that goal and which preconditions these actions 
+  have, until it reaches the start state
+
+---
+
+# The Sussman Anomaly
+
+Let's look at a slightly different problem:
+
+<img src="/PF-3341/assets/img/sussman.png" width="100%"/>
+
+---
+
+class: small
+
+# The Sussman Anomaly
+
+There are two goals: `on(A,B)` and `on(B,C)`. If the planner divides the goal into subgoals:
+ 
+- If it tries to reach a state with A on top of B first, it will put C aside, then put A on B, and then can not fulfill the other goal without undoing the first (by removing A).
+
+- If it tries to reach a state with B on top of C first, it will just put B on top of the pile, and then can't satisfy the other goal.
+    
+A "proper" solution has to interleave solving these two goals: First remove C, then put B on C, then put A on B. This requirement for interleaving is called "the Sussman Anomaly", discovered in the 1970s. Modern Planners do not run into this problem anymore.
+
+---
+
+class: center, middle 
+
+# Planning as Heuristic Search
+
+---
+
+# Planning as Heuristic Search 
+
+  * Remember: Everything in AI is either representation or search 
+  
+  * We now have a representation for planning problems
+  
+  * Let's search for a solution!
+  
+  * How? A*! What do we need? 
+--
+A graph and a heuristic
+
+---
+
+# State-Space Planning
+
+We define our graph as follows:
+
+   * Each node is a state of the world 
+   
+   * Each edge represents an action 
+   
+   * A node n is connected to a node m with an action if the action is applicable in n, and the result of applying the action is m
+   
+   * Now we can search a path to *a* node that satisfies the goal 
+   
+---
+
+# State-Space Planning
+
+<img src="/PF-3341/assets/img/planspace.png" width="100%"/>
+   
+---
+
+class: medium
+
+# Heuristic Search 
+
+  * There are many different heuristics for planning 
+  
+  * One option: For each atomic proposition in the goal, estimate how "hard" (in terms of actions) it is to achieve that proposition
+  
+  * How expensive is it to achieve a proposition? Depends on how hard it is to achieve the preconditions of the actions that add it (recursive definition).
+  
+  * Another way to think about it: If we ignore what actions delete, how can we get to *adding* the right propositions to the state as quickly as possible.
+
+---
+
+# Planning Complexity 
+
+  * Planning is PSPACE complete 
+  
+  * You probably know the problem of P vs. NP?
+  
+  * PSPACE is (probably) even worse than NP
+  
+$$
+P \subseteq \mathit{NP} \subseteq \mathit{PSPACE} \subseteq \mathit{EXP}
+$$
+
+(Any of these subsets may or may not be proper, but at least one of them is)
+
+---
+
+# Why is Planning Hard?
+
+  * We just said that planning is pathfinding on a graph consisting of the states 
+  
+  * Pathfinding is solvable in polynomial time 
+  
+  * Planning is not? Why?
+
+--
+
+  * For a pathfinding problem, the input is the graph. For a planning problem the input is the initial state, the goal condition and the actions. The graph is 
+  **implicit** (and potentially exponentially large)
+  
+---
+
+# The Good News
+
+  * [All PSPACE-complete planning problems are equal, but some are more equal than others](https://www.aaai.org/ocs/index.php/SOCS/SOCS11/paper/view/4009/4353)
+  
+  * Many interesting planning problems, i.e. the ones that show up in practice, are tractable, even if their generalizations are theoretically hard to solve.
+  
+  * Another way to think about it: Since the solutions we usually *want* are not going to be exponential in length, we shouldn't have to generate a graph of 
+  exponential size.
+
+---
+
+class: center, middle
+
+# Plan-Space Planning 
+
+---
+
+# Plan-Space Planning 
+
+  * So far, we have looked at planning is finding a path from the start state to a goal state
+  
+  * There is another way to look at it: Finding a path from an empty plan to one that solves the problem 
+  
+  * Each node in this graph is a plan (an ordered list of actions), and each edge is a "refinement" operation
+  
+  * How can we "refine" plans? By adding actions!
+  
+---
+
+class: medium
+
+# Why Plan-Space Planning?
+
+  * So far, looking at planning through this new lens hasn't actually changed the problem or the solution 
+  
+  * But what if we have a different *representation* of plans?
+  
+  * Sometimes we don't care about the order of two actions 
+  
+  * For some actions, we don't care about the specific instantiation (imagine giving a package to someone: You only have to be in the same location, but it doesn't 
+  matter where exactly)
+
+---
+
+class: small
+
+# Partial-Order Causal-Link Plans 
+
+  * Instead of using an ordered list of actions, our plans consist of three parts:
+     * A set of actions 
+     * A set of ordering constraints 
+     * A set of causal links 
+     
+  * The actions are unordered 
+  
+  * The ordering constraints define which actions **have to be** ordered before which (e.g. `\(a \lt c, b \lt c\)`)
+  
+  * The causal links connect two actions a and b if an effect p of a is a precondition p of b, usually written as `\(a \overset{p}{\rightarrow} b\)`
+  
+---
+
+class: small
+
+# Adding Actions 
+
+  * Since our actions are unordered, adding a new action may require the addition of some ordering constraints 
+  
+  * This is what the causal links are used for: Say a has an effect p, and b requires p to be true. If we want to add an action c that has `\(\neg p\)` as an 
+  effect, it can't be executed between a and b. 
+  
+  * We can **demote** c by requiring `\(c \lt a\)`
+
+  * Alternatively, we can **promote** it by requiring `\(b \lt c\)`
+  
+  * But how do we decide which one, when we add the action?
+  
+---
+
+class: small
+
+# More Refinement Operations
+
+  * By construction most of the plans in our plan space are invalid
+  
+  * For example: We start with the empty plan, which does not solve the problem 
+  
+  * We also don't want to be forced to add the first step first, to allow search to be potentially more efficient 
+  
+  * Instead, we keep incomplete plans and try to fix their flaws (all of them) by refinement
+  
+  * A **causal link threat** is one such kind of flaw, that can be fixed with demotion or promotion
+  
+  * Another type of flaw is that of an open precondition
+  
+---
+
+class: small
+
+# The Empty Plan
+
+  * The initial state of our search process is the "empty plan"
+  
+  * It is not exactly empty, since it consists of two actions: 
+  
+     * One action represents the initial state of the world. It has no preconditions, and all propositions in the state of the world as its effects
+     
+     * Another action represents the goal. It has no effects, but all goal propositions as its precondition
+     
+  * There is also an ordering constraint that says that the start has to be ordered before the goal
+  
+  * Now we have a number of open precondition flaws that the planner needs to fix: One for each proposition in the goal
+
+---
+
+class: small
+
+# Least-Commitment Planning
+
+  * As a final representation trick, we can directly use partially instantiated action schemata instead of ground actions in our plans
+
+  * For example, we can add an action `givePackage(carl, anna, X)`, where X is a variable, to the plan 
+  
+  * Later on, maybe another action requires Carl to be at the park, so the planner will add an action `goto(carl, park)`
+  
+  * The planner can wait until such time to also move Anna to the park
+  
+  * Or maybe the plan takes them both to the city hall anyway
+  
+  * By delaying decisions as long as possible, the planner has an easier time finding a shorter solution
+  
+---
+
+class: small
+
+# Plan-Space Planning: Recap
+
+  * The planner starts with an empty plan, and searches for a plan that solves the problem 
+  
+  * Every node in the search graph is another, potentially flawed, plan
+  
+  * The planner moves from node to node using refinement operations, including:
+     * Adding (partially or fully ground) actions 
+     * Promoting and demoting actions to protect causal links 
+     * Resolving variables
+  
+  * It keeps track of flaws in the plan, and uses these refinement operations to fix them
+  
+  * When a plan without flaws is reached, the problem is solved
+
+---
+
+class: center, middle 
+
+# PDDL
+
+---
+
+class: small
+
+# PDDL 
+
+  * The Planning Domain Definition Language standardizes how planning problems are represented 
+  
+  * A standardized language enabled the creation of planning competitions
+  
+  * Since Planning, and AI in general, was historically LISP-based, the syntax is LISP-y
+  
+  * They distinguish between the **planning domain**, consisting of the actions that can be taken, and the **planning problem**, which defines the initial state 
+  and goal conditions 
+  
+  * Most contemporary planners accept PDDL input, often with some restrictions and/or extensions 
+
+---
+
+# PDDL: Types 
+
+A PDDL domain can define types, and then restrict the domain of predicates using these types.
+  
+```
+(:types character place - object
+      weapon - item)
+      
+(:constants ark - item)
+
+(:predicates (open ark)
+   (alive ?character - character)
+   (armed ?character - character)
+   (buried ?item - item ?place - place)
+   (knows-location ?character - character ?item - item ?place - place)
+   (at ?character - character ?place - place)
+   (has ?character - character ?item - item))
+```
+
+---
+
+# PDDL: Actions
+
+An action (schema) has (typed) parameters, preconditions, and effects.
+
+Note: This moves beyond STRIPS style planning, and some PDDL implementations allow disjunctions in preconditions and/or effects.
+  
+```
+(:action travel
+    :parameters   (?character - character ?from - place ?to - place)
+	:precondition (and (not (= ?from ?to))
+                       (alive ?character)
+                       (at ?character ?from))
+	:effect       (and (not (at ?character ?from))
+                       (at ?character ?to)))
+```
+  
+---
+
+class: small
+
+# Beyond Classical Planning 
+
+There are many extensions to classical planning in some PDDL-versions:
+
+  * Conditional effects, to simplify action representation
+
+  * Numerical fluents, as an easier way to represent numbers 
+  
+  * Probabilistic planning, for actions they may not always succeed
+  
+  * Durative actions, to schedule actions that require different lengths of time to complete 
+  
+  * Domain axioms, for actions that *have to* happen when a condition is fulfilled
+  
+  * etc.
+
+---
+
+class: small
+
+# Decompositional Planning 
+
+  * Another way to think of planning is as decomposition of tasks
+  
+  * A planning problem is really just a high-level description of a task (e.g. "Go on vacation")
+  
+  * A human problem solver would split that into smaller problems ("book vacation", "go to airport", "fly on vacation")
+  
+  * These smaller problems can then be subdivided again, and so on, until we get concrete actions 
+  
+  * Many of these problems may have multiple possible solutions (e.g. taking the bus or a car to the airport)
+	    
+---
+
+# For Next Week
+
+   * Read [Three States and a Plan: The A.I. of F.E.A.R.](http://alumni.media.mit.edu/~jorkin/gdc2006_orkin_jeff_fear.pdf)
+   
+   * We will discuss this paper next week!
+  
+---
+
+# Resources 
+
+  * [Planning as Heuristic Search](https://www.cs.toronto.edu/~sheila/2542/s14/A1/bonetgeffner-heusearch-aij01.pdf)
+  
+  * [An Introduction to Least-Commitment Planning](https://homes.cs.washington.edu/~weld/papers/pi.pdf)
+  
+  * [PDDL Resources](http://icaps-conference.org/ipc2008/deterministic/PddlResources.html)
+  
+  * [Introduction to STRIPS Planning and Applications in Video-games](https://www.dis.uniroma1.it/~degiacom/didattica/dottorato-stavros-vassos/)
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+    <script>
+      var slideshow = remark.create({"highlightStyle": "dark"});
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

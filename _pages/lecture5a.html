@@ -1,0 +1,343 @@
+---
+permalink: /slides/lecture5a.html
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fast and Diverse Narrative Planning through Novelty Pruning</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .medium li {  font-size: 1.1em; }
+      
+      .mmedium li {  font-size: 1.05em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .left-column {
+        color: #777;
+        width: 25%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 70%;
+        float: right;
+        padding-top: 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Fast and Diverse Narrative Planning through Novelty Pruning
+
+### Rachelyn Farrell, Stephen G. Ware 
+### Narrative Intelligence Lab, University of New Orleans
+
+#### Presentation by: Markus Eger
+
+---
+
+class: center, middle
+
+# Narrative Planning 
+
+---
+
+class: medium
+
+# Narrative Planning 
+
+  * Planning Problem:
+     - Initial State
+     - Goal Condition
+     - Action Specification 
+     
+  * For Narratives, the goal is author-defined
+  
+  * Additionally, we require the agents to *consent* to the actions
+  
+  * This consent is encoded as character goals, and no agent can take an action that doesn't contribute to their own goals 
+  
+---
+
+# Narrative Planning Domains 
+
+  * Heist: A bank robbery
+  
+  * Space, Fantasy, Western: Domains corresponding to specific environments 
+  
+  * Ark: A recreation of Raiders of the Lost Ark
+  
+  * Best-Laid Plans: The story of a goblin who has to buy hair tonic for his warlock master 
+  
+  * Life: A very restricted domain in which a character must achieve two goals
+  
+---
+
+# Challenges
+
+  * The Heist domain has 1830 (ground) actions, and the shortest solution has 30 steps
+  
+  * The Best-Laid Plans domain has 845 (ground) actions.
+      - The shortest solution where the character dies has 7 steps.
+      - The shortest solution where the character lives has 10 steps.
+      
+  * Because the Life domain is so restricted, only very particular sequences of steps are solutions
+  
+---
+
+class: medium
+
+# Planners
+
+  * Breadth-First Search:
+      - Start with the start state as the frontier
+      - Apply all actions to get the new frontier
+      - Continue applying all actions to all states in the frontier until a solution is found
+
+  * Glaive
+      - A* with a custom heuristic geared towards narrative planning
+      - This heuristic combines an estimate of how far a state is from the goal state and how many actions are not currently part of any character's plan
+      
+---
+
+class: center, middle 
+
+# Novelty Pruning 
+
+---
+
+class: medium
+
+# Novelty Pruning
+ 
+  * One challenge with planning is that there is a large number of states to consider
+  
+  * For example, if there is an action `move(a,b)` that allows an agent to move from a to b, then `move(a,b)`, `move(a,b), move(b,a), move(a,b)`, or even
+  `move(a,c), move(c,a), move(a,b)` would all have to be considered as options to get to b 
+  
+  * However, moving back and forth is usually not efficient
+  
+  * What if we try to find states that are "new"
+  
+  * What does "new" mean in this context?
+  
+---
+
+# A Measure of Novelty 
+
+  * A state at the (current) end of a plan has novelty n, if there are n atomic propositions (literals) in the state that have never all been true at the same time in another state on the trajectory
+  
+  * Lower novelty values correspond to "more novel" states
+  
+  * However, it may be necessary to visit "less novel" states in order to solve a problem
+  
+---
+
+class: small
+
+# A Measure of Novelty: An Example
+  
+  * The initial state is `at(a), has(money)`, 
+  
+  * `move(a,b)` leads to a state `at(b), has(money)`, which has novelty 1, since `at(b)` has not been true before. Performing `move(b,a)` at this time would lead to the state `at(a), has(money)`, where we can not find any single literal that has not been seen before.
+  
+  * Now consider an action `spend`, that just gets rid of the money: `move(a,b)` leads to `at(b), has(money)`, and then `spend` results in the state `at(b)`, which *also* has novelty 1, because `not has(money)` has never been true before. Using the action `move(b,a)` then leads to the state `at(a)` which has novelty 2:
+  `at(a)` has been true at the start, `not has(money)` was true in the step before, but `at(a)` and `not has(money)` have never been true before **in the same state**
+  
+---
+
+class: mmedium
+
+# Novelty Pruning
+
+  * By using this novelty values, we can prevent the planner from "going in circles"
+  
+  * When a state is expanded, only consider the neighbors with novelty less than or equal to some defined value 
+  
+  * Of course this requires checking novelty by comparing the state to each previous state on the path
+  
+  * But it will also remove many nodes from being considered 
+  
+  * What if the novelty value is chosen too low? No solution will be found
+
+---
+
+class: center, middle
+
+# Solution Speed Results
+
+---
+
+# Solution Speed Experiment
+
+  * Run the planner on the test domains 
+  
+  * Four variations:
+      - Breadth-First Search 
+      - Breadth-First Search with Novelty Pruning 
+      - A* with Glaive Heuristic 
+      - A* with Glaive Heuristic and Novelty Pruning
+      
+  * For novelty pruning use n = 1, and n = 2 as thresholds
+  
+---
+
+class: medium
+
+# Main Results 
+
+  * Novelty Pruning reduces the time required for almost all problems significantly
+  
+  * The Space domain is so small that it made no difference
+  
+  * The Life domain is so specific that it actually incurs a small overhead
+  
+  * For the Best Laid Plans domain it reduced the time needed from 28 minutes to 7 minutes (for BFS), and from 40 minutes down to 40 seconds (Glaive)
+  
+  * It also reduced the number of states that were visited from 1.2mio down to 200k (BFS), and from 1 mio down to only 19k (Glaive)
+  
+---
+
+# Other Notable Results 
+
+  * There are several problems where the planner can not find a solution with n=1
+  
+  * Glaive does not always find the shortest solution, because its heuristic may overestimate
+  
+  * Novelty pruning can be effective, regardless of which search-strategy is used
+
+---
+
+class: center, middle 
+
+# Plan Diversity
+
+---
+
+# Plan Diversity
+
+ * In addition to finding solutions fast, we want to find (many) different solutions
+ 
+ * For stories this means (meaningfully) different stories 
+ 
+ * What makes stories "different"?
+ 
+--
+
+ * Different "important" actions!
+ 
+ * Different character goals!
+ 
+---
+
+class: small
+
+# Important-Step Intention-Frame Summary
+
+What is an Important Step?
+
+* An action with high "causal degree", i.e. an action that needs many and/or produces many conditions that are referenced elsewhere in the story 
+  
+What is an Intention-Frame Summary?
+
+* An intention frame consists of an action that causes an agent to adopt a goal, and all steps it takes to reach that goal 
+
+* The *summary* of an intention frame simply ignores all intermediate steps, and only contains the action that caused the agent to adopt the intention, the last step taken to reach the character goal, and the character and the goal themselves
+
+---
+
+class: small
+
+# ISIF Distance Metric
+
+  * Based on the Jaccard distance (intersection over union)
+  
+  * If two sets are completely disjoint, this value is 0 (intersection is 0), if they are the same, the value is 1
+  
+  * The ISIF distance is defined as the **complement** of the average between the Jaccard distance of the important steps and the Jaccard distance of the intention frame summaries
+  
+  * Example: Two stories with the same character goals, but completely disjoint important steps to achieve them will have distance `\(1 - \frac{1}{2} (1 + 0) = \frac{1}{2}\)`
+  
+  * This means, the ISIF distance is 0 if two stories are the same, and 1 if they are "completely different"
+  
+---
+
+# Plan Diversity Experiment 
+
+  * Let both planners generate 100 plans
+  
+  * Check the average distance between pairs of plans in this solution set 
+  
+  * Higher values mean more diverse solutions 
+  
+  * It is also interesting to see how quickly different solutions are found 
+  
+---
+
+# Plan Diversity Experiment: Results
+
+<img src="/PF-3341/assets/img/novprunres.png" width="100%"/>
+
+For 4 other experiments (out of 14 total), novelty pruning also resulted in a higher diversity of plans.
+
+---
+
+# Conclusion
+
+  * Novelty pruning can provide improvements in performance 
+  
+  * It may also result in more diverse stories 
+  
+  * Typical story domains are either so complex (like the Heist domain) that planners have a hard time finding any solution within reasonable time, or so restricted that they don't afford a wide variety of stories
+
+---
+
+class: center, middle
+
+# Discussion
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+    <script>
+      var slideshow = remark.create({"highlightStyle": "dark"});
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

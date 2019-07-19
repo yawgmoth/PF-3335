@@ -1,0 +1,578 @@
+---
+permalink: /slides/lecture10.html
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lecture 10: Reinforcement Learning</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .ssmall li {  font-size: 0.9em; }
+      
+      .oneline li { font-size: 1.25em; line-height: 1.25em; }
+      .oneline li p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline div { font-size: 1.25em; line-height: 1.25em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .medium li {  font-size: 1.1em; }
+     
+      .mmedium li {  font-size: 1.05em; }
+      
+        
+      .left-column {
+        color: #777;
+        width: 40%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# AI in Digital Entertainment
+
+### Reinforcement Learning
+
+---
+
+class: center, middle 
+
+# Reinforcement Learning
+
+---
+
+class: medium
+
+# The Problem 
+
+  * We want an agent that "figures out" how to "perform well"
+  
+  * Given an environment in which the agent perform actions, we tell the agent which reward they get 
+  
+  * We generally assume that our states are discrete, and actions transition between them
+  
+  * The goal of the agent is to learn which actions are "good" to perform in which state 
+  
+  * Rewards may be negative, representing "punishment"
+
+---
+
+# The Problem 
+
+<img src="/PF-3341/assets/img/rl.png" width="100%"/>
+
+---
+
+# Reinforcement Learning
+
+  * The idea is that the agent performs several trial runs in the environment to determine a good policy
+  
+  * Compare to how a human player might learn how to play a game: Try some actions, observe the result 
+  
+  * Games are a natural fit for this kind of learning, but there are other applications as well!
+  
+---
+
+# An Example 
+
+<center>
+<img src="/PF-3341/assets/img/qprob.png" width="80%"/>
+</center>
+
+---
+
+# An Example 
+
+<center>
+<img src="/PF-3341/assets/img/qreward.png" width="80%"/>
+</center>
+  
+---
+
+class: medium
+
+# Reinforcement Learning: Notation
+
+  * `s` is a state 
+  
+  * `a` is an action
+  
+  * `T(s,a)` is the *state transition function*, it tells us which state we reach when we use action `a` in state `s`
+  
+  * `R(s)` is the (immediate) *reward* for a particular state 
+  
+  * `V(s)` is the (utility) value of a state
+
+---
+
+# Policies
+
+  * `\(\pi(s)\)` is a *policy*
+  
+  * A policy tells the agent which action it should take in each state 
+  
+  * The goal of learning is to learn a "good" policy 
+  
+  * The *optimal policy* is usually written as `\(\pi^*(s)\)`
+  
+---
+
+# A Policy 
+
+<center>
+<img src="/PF-3341/assets/img/qpolicy.png" width="80%"/>
+</center>
+
+---
+
+# The Bellman Equation
+
+  * `V(s)` is the (utility) value of a state
+  
+  * This utility value depends on the reward of the state, as well as all future rewards the agent will receive 
+  
+  * However, the future rewards depend on what the agent will do, i.e. what the policy says
+  
+$$
+V^\pi(s) = R(s) + \gamma V(T(s, \pi(s)))
+$$
+
+For the optimal policy:
+
+$$
+V(s) = R(s) + \max_a \gamma V(T(s, a))
+$$
+
+---
+
+# (Partial) Value Function
+
+<center>
+<img src="/PF-3341/assets/img/qvalue.png" width="50%"/><img src="/PF-3341/assets/img/qpolicy.png" width="50%"/>
+</center>
+
+---
+
+# Learning 
+
+  * The problem is: We don't generally know `V`, because we don't know `T(s,a)` (or `R(s)`) a priori
+  
+  * What can we do?
+  
+  * In our learning runs (episodes), we record the rewards we get, and use them to find an estimate of `V`
+  
+  * But we would also need to learn which state each action takes us to, in order to determine which action we should take 
+
+---
+
+# The Q function
+
+  * Instead of learning `V` directly, we define a new function `Q(s,a)`, that satisfies `\(V(s) = \max_a Q(s,a)\)`
+
+$$
+Q(s,a) = R(s) + \max_{a'} \gamma Q(T(s,a),a')
+$$
+
+  * Now we learn the value of `Q` for "each" pair of state and action
+  
+  * The agent's policy is then `\(\pi(s) = \text{argmax}_a Q(s,a)\)`
+  
+  * How do we learn `Q`?
+  
+---
+
+# Q-Learning 
+
+  * We store Q as a table, with one row per state and one column per action
+  
+  * We then initialize the table "somehow"
+  
+  * During each training episode, we update the table when we are in a state s and perform the action a:
+  
+<span style="font-size: 0.7em;">
+$$
+Q(s,a) \leftarrow Q(s,a) + \alpha (R(s) + \gamma \max_{a'} Q(T(s,a), a') - Q(s,a))
+$$
+</span>
+
+---
+
+# Q-Learning: Training
+
+  * How do we train this agent?
+  
+  * We could just pick the action with the highest Q-value in our table 
+  
+  * But then the initial values of the table would guide the exploration
+  
+  * Instead, we use an exploration policy
+  
+  * This could be random, or `\(\varepsilon\)`-greedy
+  
+---
+
+# Q-Table 
+
+<img src="/PF-3341/assets/img/qtable.png" width="45%"/>
+  
+---
+
+class: small
+
+# SARSA 
+
+  * Q-Learning is very flexible, because it can use any policy to explore and construct the Q-table (off-policy learning)
+  
+  * However, when we already have a somewhat reasonable policy, it may be faster to use the *actual actions* the agent takes to update the Q-values (on-policy learning)
+  
+  * This approach is called SARSA: State-action-reward-state-action
+  
+SARSA:
+<span style="font-size: 0.7em;">
+$$
+Q(s,a) \leftarrow Q(s,a) + \alpha (R(s) + \gamma Q(T(s,a), a') - Q(s,a))
+$$
+</span>
+
+Compare with Q-Learning:
+<span style="font-size: 0.7em;">
+$$
+Q(s,a) \leftarrow Q(s,a) + \alpha (R(s) + \gamma \max_{a'} Q(T(s,a), a') - Q(s,a))
+$$
+</span>
+
+---
+
+class: small
+
+# Policy Search 
+
+  * Finally, instead of learning the values of `Q`, we could just directly learn a good policy 
+  
+  * For example, start with an initial policy and tweak it until a good result is obtained
+  
+  * The idea is to use a parameterized representation of `\(\pi\)` that has fewer parameters than there are states
+  
+  * The problem is that a policy is usually a discontinuous function (if we change one parameter a little bit, we get a completely different action), so we can't use the gradient to find optima 
+  
+  * Solution: Use a stochastic policy, which has probabilities for each action to be selected, and change these probabilities continuously
+
+---
+
+class: mmedium
+
+# Markov Decision Processes 
+
+  * So far, we have assumed actions will take us from one state to another deterministically
+  
+  * However, in many environments, transitions are non-deterministic 
+  
+  * Fortunately, we don't have to change much: Instead of a transition function `T(s,a)` we have transition probabilities `\(P(s' | s, a)\)`
+  
+  * Wherever we used `T(s,a)` we now use the expected value over all possible successor states
+  
+  * Note that with Q-Learning we did not have to learn `T(s,a)`, and we also do **not** have to learn `\(P(s' | s, a)\)` (model-free algorithm)
+  
+---
+
+class: small
+
+# Deep Q-Learning 
+
+  * One major limitation of Q-Learning is that the Q-table can become quite large, and hard to learn completely 
+  
+  * However, the Q-table, and the policy are just functions, and we could approximate them
+  
+  * What do we use for function approximation? Neural Networks 
+  
+  * There are a variety of approaches for this, including Deep Q Networks (DQN), Dueling Deep Q Networks (DDQN), etc.
+  
+  * Most of these advances are made to overcome problems with going from the discontinuous world of Reinforcement Learning to the continuous world of ANNs
+  
+---
+
+# Deep Q-Learning: Example 
+
+<img src="/PF-3341/assets/img/conv_agent.png" width="100%"/>
+
+---
+
+class: center, middle
+
+# Some Applications
+
+---
+
+# Applications 
+
+  * Games are a natural fit for Reinforcement Learning 
+  
+  * Indeed, arguably the first ever AI agent was a Reinforcement Learning agent for checkers in 1959
+  
+  * The Backgammon agent TD-Gammon was another early success able to beat top players in 1992
+  
+  * Another popular application is robot control, such as for an inverted pendulum, autonomous cars, helicopters, etc. 
+
+---
+
+# Games
+
+  * Games, particularly classic arcade/Atari/NES games, have a become a standard testing-environment for Reinforcement Learning
+  
+  * Often, the state is given to the agent in terms of the raw pixels of the screen
+  
+  * Reinforcement Learning agents have become *very* good at playing these games 
+  
+  * Sometimes they find exploits!
+  
+---
+
+# Exploiting Coast Runners 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/tlOIHko8ySg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+---
+
+# Q*Bert 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/-p7VhdTXA0k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+---
+
+# Inverted Pendulum 
+
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="600" height="400" viewBox="-150 70 300 330">
+<title>Cart pendulum</title>
+<defs>
+	<marker id="EndArrow" viewBox="0 0 10 10" refX="10" refY="5"
+		markerUnits="strokeWidth" orient="auto"
+		markerWidth="10" markerHeight="10">
+		<polyline points="10,5 0,10 4,5 0,0 10,5" fill="black" />
+	</marker>
+	<marker id="StartArrow" viewBox="0 0 10 10" refX="0" refY="5"
+		markerUnits="strokeWidth" orient="auto"
+		markerWidth="10" markerHeight="10">
+		<polyline points="0,5 10,0 6,5 10,10 0,5" fill="black" />
+	</marker>
+</defs>
+<circle cx="0" cy="80" r="20" fill="black" transform="rotate(-30,0,300)" />
+<g style="stroke:black;stroke-width:1;fill:none">
+	<line x1="-150" x2="150" y1="390" y2="390" />
+	<line x1="0" x2="0" y1="300" y2="70" stroke-width=".3" />
+	<g marker-end="url(#EndArrow)" >
+		<line x1="-140" x2="-140" y1="280" y2="230" />
+		<line x1="-140" x2="-90" y1="280" y2="280" />
+		<line x1="80" x2="150" y1="327.5" y2="327.5" />
+		<path d="M0,150 A150,150 0 0,0 -75,170" marker-start="url(#StartArrow)" />
+	</g>
+</g>
+<g id="set2">
+<g id="set1" style="stroke:black;stroke-width:1;">
+	<line id="hash" x1="-145" x2="-150" y1="390" y2="400" />
+	<use xlink:href="#hash" transform="translate(10)" />
+	<use xlink:href="#hash" transform="translate(20)" />
+	<use xlink:href="#hash" transform="translate(30)" />
+	<use xlink:href="#hash" transform="translate(40)" />
+	<use xlink:href="#hash" transform="translate(50)" />
+</g>
+<use xlink:href="#set1" transform="translate(60)" />
+</g>
+<use xlink:href="#set2" transform="translate(120)" />
+<use xlink:href="#set1" transform="translate(240)" />
+<g style="stroke:black;stroke-width:1;fill:rgb(170,170,170)">
+	<circle id="wheel" cx="-50" cy="370" r="20" />
+	<use xlink:href="#wheel" x="100" />
+	<rect x="-80" y="305" width="160" height="45" />
+	<path d="M-10,304 A11,19 0 0,1 10,304" />
+	<rect x="-2.5" y="100" width="5" height="200" transform="rotate(-30,0,300)" />
+</g>
+<text font-size="15" font-style="italic" fill="black">
+	<tspan x="-130" y="235">y</tspan>
+	<tspan x="-95" y="295">x</tspan>
+	<tspan x="-100" y="330">M</tspan>
+	<tspan x="110" y="325">F</tspan><tspan x="110" dy="-10">&#x0279d;</tspan>
+	<tspan x="-45" y="150">&#x03b8;</tspan>
+	<tspan x="-70" y="225">l</tspan>
+	<tspan x="-85" y="100">m</tspan>
+</text>
+</svg>
+
+  
+---
+
+# Stanford Autonomous Helicopter 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VCdxqn0fcnE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+---
+
+# Circuit Design 
+
+<img src="/PF-3341/assets/img/circuit.png" width="60%"/>
+
+---
+
+class: small
+
+# Self-Driving Cars 
+
+  * Reinforcement Learning is usually an integral part of self-driving cars 
+  
+  * What do we use as the reward function?  
+  
+     - Get the passengers to the destination
+     - Don't kill/injure anyone 
+     
+  * What if an accident is unavoidable?
+  
+  * One scenario: Crash the car into a motorcycle driver with helmet, vs. one without a helmet 
+  
+  * The driver with helmet would probably be injured less, so our agent would get a less negative reward
+  
+  * But now we are rewarding people for driving without helmets ...
+  
+---
+
+# Moral Machine 
+
+<img src="/PF-3341/assets/img/moralmachine.png" width="90%"/>
+
+---
+
+# Moral Machine: Results 
+
+<img src="/PF-3341/assets/img/moralmachineresults.png" width="90%"/>
+
+---
+
+class: mmedium
+
+# General Video Game AI 
+
+  * A current trend in Reinforcement Learning is to build agents that can learn to play *any* game 
+  
+  * The Video Game Description Language (VGDL) is used to describe games and levels 
+  
+  * Researchers design an agent, and then the agent is given a number of different games, and has to learn how to play them all well 
+  
+  * There is even a GVGAI competition, where participants get some games to build and train their agents, then get the competition games a few weeks before the competition to fine-tune, and then play unknown levels of these 
+  games at the competition
+  
+---
+
+class: center, middle 
+
+# Inverse Reinforcement Learning 
+
+---
+
+# Inverse Reinforcement Learning 
+
+  * As we have seen, defining a good reward function can be tricky 
+  
+  * But what if we observe an expert playing a game and try to learn what they are working towards 
+  
+  * One approach to this is called Inverse Reinforcement Learning, where we try to learn the reward function from observations of the states and actions 
+  
+---
+
+# Inverse Reinforcement Learning 
+
+<img src="/PF-3341/assets/img/IRL.png" width="100%"/>
+
+---
+
+# Inverse Reinforcement Learning: How?
+
+  * Function approximation of the reward function (using neural networks, radial basis functions, etc.)
+  
+  * Problem: Multiple reward functions can equally well explain the expert's behavior 
+  
+     - Measure entropy of the different solutions and use that to decide 
+     - Use prior and/or posterior probabilities of trajectories for a given reward function
+     
+  * IRL is still a relatively new field of research
+
+---
+
+# Next Week 
+
+  * [Improving Generalization Ability in a Puzzle Game Using Reinforcement Learning](http://www.cig2017.com/wp-content/uploads/2017/08/paper_71.pdf)
+  
+---
+
+class: ssmall
+
+# References
+  
+  * Chapter 21 of *AI: A Modern Approach*, by Russel and Norvig
+
+  * [A Painless Q-Learning Tutorial](http://mnemstudio.org/path-finding-q-learning-tutorial.htm)
+
+  * [Fault Reward Functions in the Wild](https://openai.com/blog/faulty-reward-functions/)
+  
+  * [Exploiting Q*Bert](https://www.theverge.com/tldr/2018/2/28/17062338/ai-agent-atari-q-bert-cracked-bug-cheat)
+
+  * [Deep Reinforcement Learning Doesn't Work Yet](https://www.alexirpan.com/2018/02/14/rl-hard.html)
+
+  * [The Moral Machine Experiment](https://www.nature.com/articles/s41586-018-0637-6)
+  
+  * [Deep Reinforcement Learning for General Video Game AI](https://arxiv.org/pdf/1806.02448.pdf)
+  
+  * [GVGAI Gym](http://www.gvgai.net/)
+  
+  * [A Survey of Inverse Reinforcement Learning: Challenges, Methods and Progress](https://arxiv.org/pdf/1806.06877.pdf)
+  
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+
+    <script>
+      var slideshow = remark.create();
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

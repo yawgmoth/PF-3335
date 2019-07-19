@@ -1,0 +1,3022 @@
+---
+permalink: /slides/lecture6.html
+---
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lecture 6: Monte Carlo Tree Search</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .oneline li { font-size: 1.25em; line-height: 1.25em; }
+      .oneline li p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline div { font-size: 1.25em; line-height: 1.25em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .medium li {  font-size: 1.1em; }
+     
+      .mmedium li {  font-size: 1.05em; }
+      
+        
+      .left-column {
+        color: #777;
+        width: 40%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# AI in Digital Entertainment
+
+### Monte Carlo Tree Search
+
+---
+
+# Game Trees 
+
+  * We want to build an agent for a turn-based game
+  
+  * On its turn, the agent needs to figure out which action to perform
+  
+  * Ideally, all the agent knows are the rules of the game (including scoring), and then is able to figure out the best move automatically
+  
+  * We've talked about this before, in the form for game trees
+  
+---
+
+class: small
+
+# Minimax
+
+  * Let's say we want to get the highest possible score 
+  
+  * Then our opponent wants us to get the lowest possible score 
+  
+  * For each of our potential actions, we look at each of the opponents possible actions 
+  
+  * The opponent will pick the action that gives us the lowest score, and we will pick from our actions the one where the opponent's choice gives us the highest score 
+  
+  * How does the opponent decide what to pick? The same way!
+  
+---
+
+# Minimax 
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="701"
+   height="410"
+   id="svg2"
+   version="1.0">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     showgrid="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     transform="translate(-38.99998,-322.3622)">
+    <g
+       id="g7309"
+       style="fill:#e3e3e3;fill-opacity:1">
+      <path
+         transform="translate(129,-9)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path1874"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="411.36218"
+         x="261"
+         height="50"
+         width="50"
+         id="rect2762"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="411.36218"
+         x="561"
+         height="50"
+         width="50"
+         id="rect2764"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(-99,169)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2770"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(51,169)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2772"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(211,169)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2774"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(369,169)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2776"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="119"
+         height="50"
+         width="50"
+         id="rect2778"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="241"
+         height="50"
+         width="50"
+         id="rect2780"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="331"
+         height="50"
+         width="50"
+         id="rect2782"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="431"
+         height="50"
+         width="50"
+         id="rect2784"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="551"
+         height="50"
+         width="50"
+         id="rect2788"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="649"
+         height="50"
+         width="50"
+         id="rect2790"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(-189,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2794"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(-131,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2796"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(-39,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2798"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(51,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2800"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(121,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2802"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(179,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2804"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(271,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2806"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(339,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2808"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(401,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2810"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <g
+       id="g7333">
+      <path
+         id="path2812"
+         d="M 290,402.36218 C 290,402.36218 283.57143,402.36218 433.57143,382.36218 C 573.57143,402.36218 580,402.36218 580,402.36218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path2814"
+         d="M 210,490.36218 C 290,470.36218 285,470.36218 285,470.36218 L 350,490.36218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path2816"
+         d="M 520.5,489.86218 C 585.5,471.29075 585.5,471.29075 585.5,471.29075 L 670.5,492.00504"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3703"
+         d="M 151.21429,579.86218 C 206.21429,559.86218 205.5,559.86218 205.5,559.86218 L 258.35714,579.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3705"
+         d="M 462.5,579.86218 C 517.5,559.86218 516.78571,559.86218 516.78571,559.86218 L 569.64285,579.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3707"
+         d="M 119.50001,670.14789 C 146.64286,651.57647 146.64286,650.86218 146.64286,650.86218 L 170.21429,670.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3709"
+         d="M 428.78572,670.14789 C 455.92857,651.57647 455.92857,650.86218 455.92857,650.86218 L 479.5,670.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3711"
+         d="M 648.78572,670.14789 C 675.92857,651.57647 675.92857,650.86218 675.92857,650.86218 L 699.5,670.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3713"
+         d="M 266,650.36218 L 266,670.36218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3715"
+         d="M 355.5,650.86218 L 355.5,670.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3717"
+         d="M 574.57143,650.07647 L 574.57143,670.07647"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3719"
+         d="M 675.5,560.86218 L 675.5,580.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3721"
+         d="M 354.5,559.86218 L 354.5,579.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <g
+       id="g7348"
+       style="stroke:black;stroke-opacity:1">
+      <path
+         id="path4608"
+         d="M 739.5,392.86218 C 39.5,392.86218 39.5,392.86218 39.5,392.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         id="path6380"
+         d="M 739.5,482.86218 C 39.5,482.86218 39.5,482.86218 39.5,482.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         id="path6382"
+         d="M 739.5,572.86218 C 39.50004,572.86218 39.50004,572.86218 39.50004,572.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         id="path6384"
+         d="M 739.5,662.86218 C 39.49998,662.86218 39.49998,662.86218 39.49998,662.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="38.339844"
+       y="361.8739"
+       id="text6386"><tspan
+         id="tspan6388"
+         x="38.339844"
+         y="361.8739"
+         style="font-size:40px;font-family:Arial">0</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="38.339844"
+       y="451.8739"
+       id="text6390"><tspan
+         id="tspan6392"
+         x="38.339844"
+         y="451.8739"
+         style="font-size:40px;font-family:Arial">1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="38.339844"
+       y="541.8739"
+       id="text6394"><tspan
+         id="tspan6396"
+         x="38.339844"
+         y="541.8739"
+         style="font-size:40px;font-family:Arial">2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="38.339844"
+       y="631.8739"
+       id="text6398"><tspan
+         id="tspan6400"
+         x="38.339844"
+         y="631.8739"
+         style="font-size:40px;font-family:Arial">3</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="40.339844"
+       y="721.8739"
+       id="text6402"><tspan
+         id="tspan6404"
+         x="40.339844"
+         y="721.8739"
+         style="font-size:40px;font-family:Arial">4</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="155.73828"
+       y="715.85046"
+       id="text1925"><tspan
+         id="tspan1927"
+         x="155.73828"
+         y="715.85046"
+         style="font-size:28px">+∞</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="98.951172"
+       y="715.02039"
+       id="text1929"><tspan
+         id="tspan1931"
+         x="98.951172"
+         y="715.02039"
+         style="font-size:28px;font-family:Arial">10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="256.95117"
+       y="716.02039"
+       id="text1933"><tspan
+         id="tspan1935"
+         x="256.95117"
+         y="716.02039"
+         style="font-size:28px;font-family:Arial">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="336.18164"
+       y="714.48718"
+       id="text1937"><tspan
+         id="tspan1939"
+         x="336.18164"
+         y="714.48718"
+         style="font-size:28px;font-family:Arial">-10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="418.95117"
+       y="716.02039"
+       id="text1941"><tspan
+         id="tspan1943"
+         x="418.95117"
+         y="716.02039"
+         style="font-size:28px;font-family:Arial">7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="476.95117"
+       y="716.02039"
+       id="text1945"><tspan
+         id="tspan1947"
+         x="476.95117"
+         y="716.02039"
+         style="font-size:28px;font-family:Arial">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="690.18164"
+       y="716.48718"
+       id="text1949"><tspan
+         id="tspan1951"
+         x="690.18164"
+         y="716.48718"
+         style="font-size:28px;font-family:Arial">-5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="630.95117"
+       y="716.02039"
+       id="text1953"><tspan
+         id="tspan1955"
+         x="630.95117"
+         y="716.02039"
+         style="font-size:28px;font-family:Arial">-7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="560.44141"
+       y="715.60242"
+       id="text1957"><tspan
+         id="tspan1959"
+         x="560.44141"
+         y="715.60242"
+         style="font-size:28px;font-family:Arial">-∞</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="126.18164"
+       y="624.48718"
+       id="text1961"><tspan
+         id="tspan1963"
+         x="126.18164"
+         y="624.48718"
+         style="font-size:28px;font-family:Arial">10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="257.54883"
+       y="626.13171"
+       id="text1965"><tspan
+         id="tspan1967"
+         x="257.54883"
+         y="626.13171"
+         style="font-size:28px;font-family:Arial">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="334.83008"
+       y="626.48718"
+       id="text1969"><tspan
+         id="tspan1971"
+         x="334.83008"
+         y="626.48718"
+         style="font-size:28px;font-family:Arial">-10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="659.11133"
+       y="626.36218"
+       id="text1981"><tspan
+         id="tspan1983"
+         x="659.11133"
+         y="626.36218"
+         style="font-size:28px;font-family:Arial">-7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="190.18164"
+       y="536.48718"
+       id="text1985"><tspan
+         id="tspan1987"
+         x="190.18164"
+         y="536.48718"
+         style="font-size:28px;font-family:Arial">10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="334.83008"
+       y="534.48718"
+       id="text1989"><tspan
+         id="tspan1991"
+         x="334.83008"
+         y="534.48718"
+         style="font-size:28px;font-family:Arial">-10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="559.11133"
+       y="627.66687"
+       id="text1997"><tspan
+         id="tspan1999"
+         x="559.11133"
+         y="627.66687"
+         style="font-size:28px;font-family:Arial">-∞</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="659.11133"
+       y="536.36218"
+       id="text2009"><tspan
+         id="tspan2011"
+         x="659.11133"
+         y="536.36218"
+         style="font-size:28px;font-family:Arial">-7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="571.11133"
+       y="446.36218"
+       id="text2013"><tspan
+         id="tspan2015"
+         x="571.11133"
+         y="446.36218"
+         style="font-size:28px;font-family:Arial">-7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="266.83008"
+       y="444.48718"
+       id="text2017"><tspan
+         id="tspan2019"
+         x="266.83008"
+         y="444.48718"
+         style="font-size:28px;font-family:Arial">-10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="448.83789"
+       y="626.02039"
+       id="text2021"><tspan
+         id="tspan2023"
+         x="448.83789"
+         y="626.02039"
+         style="font-size:28px;font-family:Arial">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="507.41177"
+       y="535.82721"
+       id="text2025"><tspan
+         id="tspan2027"
+         x="507.41177"
+         y="535.82721"
+         style="font-size:28px;font-family:Arial">5</tspan></text>
+   
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="419.11133"
+       y="356.36218"
+       id="text4034"><tspan
+         id="tspan4036"
+         x="419.11133"
+         y="356.36218"
+         style="font-size:28px;font-family:Arial">-7</tspan></text>
+  </g>
+</svg>
+  
+---
+
+# Minimax 
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="701"
+   height="410"
+   id="svg2"
+   version="1.0">
+  <defs
+     id="defs4" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     transform="translate(-38.99998,-322.3622)">
+    <g
+       id="g7309"
+       style="fill:#e3e3e3;fill-opacity:1">
+      <path
+         transform="translate(129,-9)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path1874"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="411.36218"
+         x="261"
+         height="50"
+         width="50"
+         id="rect2762"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="411.36218"
+         x="561"
+         height="50"
+         width="50"
+         id="rect2764"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(-99,169)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2770"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(51,169)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2772"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(211,169)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2774"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(369,169)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2776"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="119"
+         height="50"
+         width="50"
+         id="rect2778"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="241"
+         height="50"
+         width="50"
+         id="rect2780"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="331"
+         height="50"
+         width="50"
+         id="rect2782"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="431"
+         height="50"
+         width="50"
+         id="rect2784"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="551"
+         height="50"
+         width="50"
+         id="rect2788"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         y="591.36218"
+         x="649"
+         height="50"
+         width="50"
+         id="rect2790"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(-189,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2794"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(-131,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2796"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(-39,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2798"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(51,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2800"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(121,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2802"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(179,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2804"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(271,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2806"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(339,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2808"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         transform="translate(401,349)"
+         d="M 330 357.36218 A 25 25 0 1 1  280,357.36218 A 25 25 0 1 1  330 357.36218 z"
+         id="path2810"
+         style="fill:#e3e3e3;fill-opacity:1;stroke:black;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <g
+       id="g7333">
+      <path
+         id="path2812"
+         d="M 290,402.36218 C 290,402.36218 283.57143,402.36218 433.57143,382.36218 C 573.57143,402.36218 580,402.36218 580,402.36218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path2814"
+         d="M 210,490.36218 C 290,470.36218 285,470.36218 285,470.36218 L 350,490.36218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path2816"
+         d="M 520.5,489.86218 C 585.5,471.29075 585.5,471.29075 585.5,471.29075 L 670.5,492.00504"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3703"
+         d="M 151.21429,579.86218 C 206.21429,559.86218 205.5,559.86218 205.5,559.86218 L 258.35714,579.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3705"
+         d="M 462.5,579.86218 C 517.5,559.86218 516.78571,559.86218 516.78571,559.86218 L 569.64285,579.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3707"
+         d="M 119.50001,670.14789 C 146.64286,651.57647 146.64286,650.86218 146.64286,650.86218 L 170.21429,670.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3709"
+         d="M 428.78572,670.14789 C 455.92857,651.57647 455.92857,650.86218 455.92857,650.86218 L 479.5,670.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3711"
+         d="M 648.78572,670.14789 C 675.92857,651.57647 675.92857,650.86218 675.92857,650.86218 L 699.5,670.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3713"
+         d="M 266,650.36218 L 266,670.36218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3715"
+         d="M 355.5,650.86218 L 355.5,670.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3717"
+         d="M 574.57143,650.07647 L 574.57143,670.07647"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3719"
+         d="M 675.5,560.86218 L 675.5,580.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3721"
+         d="M 354.5,559.86218 L 354.5,579.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <g
+       id="g7348"
+       style="stroke:black;stroke-opacity:1">
+      <path
+         id="path4608"
+         d="M 739.5,392.86218 C 39.5,392.86218 39.5,392.86218 39.5,392.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         id="path6380"
+         d="M 739.5,482.86218 C 39.5,482.86218 39.5,482.86218 39.5,482.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         id="path6382"
+         d="M 739.5,572.86218 C 39.50004,572.86218 39.50004,572.86218 39.50004,572.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         id="path6384"
+         d="M 739.5,662.86218 C 39.49998,662.86218 39.49998,662.86218 39.49998,662.86218"
+         style="fill:none;fill-rule:evenodd;stroke:black;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:6, 6;stroke-dashoffset:0;stroke-opacity:1" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="38.339844"
+       y="361.8739"
+       id="text6386"><tspan
+         id="tspan6388"
+         x="38.339844"
+         y="361.8739"
+         style="font-size:40px;font-family:Arial">0</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="38.339844"
+       y="451.8739"
+       id="text6390"><tspan
+         id="tspan6392"
+         x="38.339844"
+         y="451.8739"
+         style="font-size:40px;font-family:Arial">1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="38.339844"
+       y="541.8739"
+       id="text6394"><tspan
+         id="tspan6396"
+         x="38.339844"
+         y="541.8739"
+         style="font-size:40px;font-family:Arial">2</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="38.339844"
+       y="631.8739"
+       id="text6398"><tspan
+         id="tspan6400"
+         x="38.339844"
+         y="631.8739"
+         style="font-size:40px;font-family:Arial">3</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="40.339844"
+       y="721.8739"
+       id="text6402"><tspan
+         id="tspan6404"
+         x="40.339844"
+         y="721.8739"
+         style="font-size:40px;font-family:Arial">4</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="155.73828"
+       y="715.85046"
+       id="text1925"><tspan
+         id="tspan1927"
+         x="155.73828"
+         y="715.85046"
+         style="font-size:28px">+∞</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="98.951172"
+       y="715.02039"
+       id="text1929"><tspan
+         id="tspan1931"
+         x="98.951172"
+         y="715.02039"
+         style="font-size:28px;font-family:Arial">10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="256.95117"
+       y="716.02039"
+       id="text1933"><tspan
+         id="tspan1935"
+         x="256.95117"
+         y="716.02039"
+         style="font-size:28px;font-family:Arial">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="336.18164"
+       y="714.48718"
+       id="text1937"><tspan
+         id="tspan1939"
+         x="336.18164"
+         y="714.48718"
+         style="font-size:28px;font-family:Arial">-10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="418.95117"
+       y="716.02039"
+       id="text1941"><tspan
+         id="tspan1943"
+         x="418.95117"
+         y="716.02039"
+         style="font-size:28px;font-family:Arial">7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="476.95117"
+       y="716.02039"
+       id="text1945"><tspan
+         id="tspan1947"
+         x="476.95117"
+         y="716.02039"
+         style="font-size:28px;font-family:Arial">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="690.18164"
+       y="716.48718"
+       id="text1949"><tspan
+         id="tspan1951"
+         x="690.18164"
+         y="716.48718"
+         style="font-size:28px;font-family:Arial">-5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="630.95117"
+       y="716.02039"
+       id="text1953"><tspan
+         id="tspan1955"
+         x="630.95117"
+         y="716.02039"
+         style="font-size:28px;font-family:Arial">-7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="560.44141"
+       y="715.60242"
+       id="text1957"><tspan
+         id="tspan1959"
+         x="560.44141"
+         y="715.60242"
+         style="font-size:28px;font-family:Arial">-∞</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="126.18164"
+       y="624.48718"
+       id="text1961"><tspan
+         id="tspan1963"
+         x="126.18164"
+         y="624.48718"
+         style="font-size:28px;font-family:Arial">10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="257.54883"
+       y="626.13171"
+       id="text1965"><tspan
+         id="tspan1967"
+         x="257.54883"
+         y="626.13171"
+         style="font-size:28px;font-family:Arial">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="334.83008"
+       y="626.48718"
+       id="text1969"><tspan
+         id="tspan1971"
+         x="334.83008"
+         y="626.48718"
+         style="font-size:28px;font-family:Arial">-10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="659.11133"
+       y="626.36218"
+       id="text1981"><tspan
+         id="tspan1983"
+         x="659.11133"
+         y="626.36218"
+         style="font-size:28px;font-family:Arial">-7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="190.18164"
+       y="536.48718"
+       id="text1985"><tspan
+         id="tspan1987"
+         x="190.18164"
+         y="536.48718"
+         style="font-size:28px;font-family:Arial">10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="334.83008"
+       y="534.48718"
+       id="text1989"><tspan
+         id="tspan1991"
+         x="334.83008"
+         y="534.48718"
+         style="font-size:28px;font-family:Arial">-10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="559.11133"
+       y="627.66687"
+       id="text1997"><tspan
+         id="tspan1999"
+         x="559.11133"
+         y="627.66687"
+         style="font-size:28px;font-family:Arial">-∞</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="659.11133"
+       y="536.36218"
+       id="text2009"><tspan
+         id="tspan2011"
+         x="659.11133"
+         y="536.36218"
+         style="font-size:28px;font-family:Arial">-7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="571.11133"
+       y="446.36218"
+       id="text2013"><tspan
+         id="tspan2015"
+         x="571.11133"
+         y="446.36218"
+         style="font-size:28px;font-family:Arial">-7</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="266.83008"
+       y="444.48718"
+       id="text2017"><tspan
+         id="tspan2019"
+         x="266.83008"
+         y="444.48718"
+         style="font-size:28px;font-family:Arial">-10</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="448.83789"
+       y="626.02039"
+       id="text2021"><tspan
+         id="tspan2023"
+         x="448.83789"
+         y="626.02039"
+         style="font-size:28px;font-family:Arial">5</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="507.41177"
+       y="535.82721"
+       id="text2025"><tspan
+         id="tspan2027"
+         x="507.41177"
+         y="535.82721"
+         style="font-size:28px;font-family:Arial">5</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 109.78299,676.61979 C 108.76217,669.18889 112.83152,657.11102 122.56091,648.79111"
+       id="path2029" />
+    <path
+       sodipodi:type="star"
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path3987"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-0.541426,-0.840748,0.840748,-0.541426,-396.4152,953.1478)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 139.28753,583.38756 C 139.56041,571.20959 160.19175,548.97904 172.2685,541.66929"
+       id="path3989" />
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path3991"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-0.492129,-0.870521,0.870521,-0.492129,-363.6836,815.2334)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 249.59321,681.9418 C 245.54194,674.5109 244.05545,665.21095 248.73407,652.85043"
+       id="path3994" />
+    <path
+       sodipodi:type="star"
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path3996"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-0.935654,-0.352918,0.352918,-0.935654,12.9768,1206.056)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 338.26132,680.86218 C 334.21005,673.43128 332.72356,664.13133 337.40218,651.77081"
+       id="path3998" />
+    <path
+       sodipodi:type="star"
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4000"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-0.935654,-0.352918,0.352918,-0.935654,101.6449,1204.976)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 558.52771,681.05052 C 554.47644,673.61962 552.98995,664.31967 557.66857,651.95915"
+       id="path4002" />
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4004"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-0.935654,-0.352918,0.352918,-0.935654,321.9113,1205.164)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 335.26132,585.86218 C 331.21005,578.43128 329.72356,569.13133 334.40218,556.77081"
+       id="path4006" />
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4008"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-0.935654,-0.352918,0.352918,-0.935654,98.64494,1109.977)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 654.96827,586.52197 C 650.917,579.09107 649.43051,569.79112 654.10913,557.4306"
+       id="path4010" />
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4012"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-0.935654,-0.352918,0.352918,-0.935654,418.3519,1110.636)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 450.52072,581.545 C 450.7936,569.36703 468.89956,549.66186 480.97631,542.35211"
+       id="path4014" />
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4016"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-0.492129,-0.870521,0.870521,-0.492129,-54.45041,815.3909)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 490.34703,676.48754 C 491.36785,669.05664 487.2985,656.97877 477.56911,648.65886"
+       id="path4018" />
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4020"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(0.541426,-0.840748,-0.840748,-0.541426,996.545,953.0155)"/>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 637.56152,677.4875 C 636.5407,670.0566 640.61005,657.97873 650.33944,649.65882"
+       id="path4022"/>
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4024"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-0.541426,-0.840748,0.840748,-0.541426,131.3633,954.0155)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 358.47931,492.86218 C 358.20643,480.68421 337.57509,458.45366 325.49834,451.14391"
+       id="path4026"/>
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4028"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(0.492129,-0.870521,-0.870521,-0.492129,861.4504,724.708)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 678.47931,495.21933 C 678.78296,486.10484 664.71311,461.16459 623.35548,444.92963"
+       id="path4030" />
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4032"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(0.274369,-0.961623,-0.961623,-0.274369,1209.226,586.0477)" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="419.11133"
+       y="356.36218"
+       id="text4034"><tspan
+         id="tspan4036"
+         x="419.11133"
+         y="356.36218"
+         style="font-size:28px;font-family:Arial">-7</tspan></text>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:red;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 588.49649,403.67797 C 577.79949,367.41544 520.08418,351.37085 471.94409,348.38828"
+       id="path4038" />
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:red;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4040"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-5.000154e-2,-0.998748,-0.998748,5.000154e-2,1071.611,292.9209)" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:blue;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 435,382.36218 C 580,402.36218 580,402.36218 580,402.36218"
+       id="path4042" />
+    <path
+       style="fill:#e3e3e3;fill-opacity:1;stroke:blue;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4929"
+       d="M -25.001277,606.12732 L -26.502907,603.96383 L -28.004537,601.80034 L -25.380084,601.58163 L -22.75563,601.36293 L -23.878454,603.74513 L -25.001277,606.12732 z "
+       transform="matrix(-5.902173e-2,1.114682,1.331056,4.942729e-2,-226.3558,400.4239)" />
+  </g>
+</svg>
+
+---
+
+# Minimax
+
+  * Remember what we did next?
+  
+  * I played a game against a student, and then the student was upset because he lost.
+  
+  * So let's make a fairer game: Instead of me, a die will play
+  
+---
+
+# A fairer game
+
+You choose a number between 1 and 6 as the first digit, then I roll a d6 (six-sided die) to get a second digit. If the resulting number is prime *or* divisible by 3 you get that many points, otherwise you lose that many points. For example: You pick 3, the die roll shows a 1, so the resulting number is 31, which is prime, and you get 31 points.
+
+What's your move?
+
+---
+
+class: small
+
+# How would we play this game?
+
+  * Winning numbers: 11, 12, 13, 15, 21, 23, 24, 31, 33, 36, 41, 42, 43, 46, 51, 53, 54, 61, 63, 66
+  
+  * If we pick 2, 3, 5 or 6 there there are three possible die rolls that give us points, for 1 or 4 there are four.
+  
+  * We can calculate the **expected value** for each choice:
+  
+<span style="font-size: 0.5em">
+$$
+E(c=1) = \frac{1}{6}\cdot 11 + \frac{1}{6} \cdot 12 + \frac{1}{6} \cdot 13 + \frac{1}{6} \cdot 15 - (\frac{1}{6}\cdot 14 + \frac{1}{6}\cdot 16) = 3.5\\\\
+E(c=2) = \frac{1}{6}\cdot 21 + \frac{1}{6}\cdot 23 + \frac{1}{6}\cdot 24 - (\frac{1}{6} \cdot 22 + \frac{1}{6}\cdot 25 + \frac{1}{6}\cdot 26) = -0.8\\\\
+E(c=3) = \frac{1}{6}\cdot 31 + \frac{1}{6}\cdot 33 + \frac{1}{6}\cdot 36 - (\frac{1}{6} \cdot 32  + \frac{1}{6}\cdot 34 + \frac{1}{6}\cdot 35) = -0.2\\\\
+E(c=4) = \frac{1}{6}\cdot 41 + \frac{1}{6} \cdot 42 + \frac{1}{6} \cdot 43 + \frac{1}{6} \cdot 45 - (\frac{1}{6}\cdot 44 + \frac{1}{6}\cdot 46) = 13.5\\\\
+E(c=5) = \frac{1}{6} \cdot 51 + \frac{1}{6}\cdot 53 + \frac{1}{6}\cdot 54 - (\frac{1}{6}\cdot 52 + \frac{1}{6}\cdot 55 + \frac{1}{6}\cdot 56) = -0.8\\\\
+E(c=6) = \frac{1}{6}\cdot 61 + \frac{1}{6}\cdot 63 + \frac{1}{6}\cdot 66 - (\frac{1}{6} \cdot 62 + \frac{1}{6}\cdot 64 + \frac{1}{6}\cdot 65) = -0.2
+$$
+</span>
+
+---
+
+class: small
+
+# How about this game?
+
+Let's make the game more interesting: You choose a number from 1 to 6, I roll a die, then you choose another number, then I roll a die, etc., until we have 10 digits (5 each). Same scoring as before: If the number is prime or divisible by 3 you get that many points, otherwise you lose them. For example, you choose 3, I roll 2, you choose 4, I roll 1, you choose 5, I roll 1, you choose 6, I roll 1, you choose 4, I roll 3. Result: 3241516143 = 3*1080505381, so you get 3241516143 points.
+
+What's your move?
+
+---
+
+# How would we play this game?
+
+  * There are 6^10 = 60446176 possible outcomes 
+  
+  * We could compute expected values again, it might just take a bit
+  
+  * How about we just try a few random combinations for each of our options to get a feeling for what might be a good move?
+ 
+  * But let's do this in a systematic way!
+  
+---
+
+class: small
+
+# Sampling!
+
+  * Say we try 10 random numbers for each of our 6 options, and get averages of: 
+  
+     * 1: -241591424.3
+     * 2: -1049205520.1
+     * 3: -711555192.8
+     * 4: 838179893.4
+     * 5: -2208620186.1
+     * 6: 1289273320.5
+     
+  * Instead of trying another 10 numbers for each option, we may want to focus more on the more promising ones?
+  
+  * But 10 tries are very few. Maybe the value for e.g. 2 is completely wrong?
+  
+---
+
+class: small
+
+# A more structured approach
+
+  * How do we randomly try options?
+  
+  * First we need to pick the first number 
+  
+  * Then we randomly generate the second one 
+  
+  * Then we pick the third number, etc. 
+  
+  * We can memorize these picks!
+  
+  * It will basically be a game tree, but incomplete
+  
+---
+
+class: center, middle
+
+# Monte Carlo Tree Search 
+  
+---
+
+# Initialization and Data Structure
+
+  * We always have a partial game tree
+  
+  * For each node remember the expected score/win rate 
+  
+  * We start with a single node: The current state 
+  
+  * A node can be expanded by performing a possible action in that node, resulting in a child node
+  
+---
+
+# Monte Carlo Tree Search 
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="646.0206pt" height="216.15964pt" viewBox="-10.03012 -180.30692 646.0206 216.15964 "> 
+<g transform="translate(0, 35.85272 ) scale(0.8,-0.8) translate(0,180.30692 )"> 
+        
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.4pt"> 
+ <g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt">  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,35.56242,24.85275)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(21.34306,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="12">Selection</tspan></text> 
+</g>  </g>  </g> </g> </g> </g> </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  98.98518 0.0 C  98.98518 7.56285 92.92108 13.62695 85.35823 13.62695 C  77.79538 13.62695 71.73128 7.56285 71.73128 0.0 C  71.73128 -7.56285 77.79538 -13.62695 85.35823 -13.62695 C  92.92108 -13.62695 98.98518 -7.56285 98.98518 0.0 Z M  85.35823 0.0  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,73.7958,-2.25)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(11.56242,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">11/21</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  25.78569 -34.1432 C  25.78569 -27.72787 20.6417 -22.58388 14.22636 -22.58388 C  7.81104 -22.58388 2.66704 -27.72787 2.66704 -34.1432 C  2.66704 -40.55853 7.81104 -45.70253 14.22636 -45.70253 C  20.6417 -45.70253 25.78569 -40.55853 25.78569 -34.1432 Z M  14.22636 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,4.97643,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(9.24994,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">7/10</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  94.98836 -34.1432 C  94.98836 -28.79857 90.70287 -24.51308 85.35823 -24.51308 C  80.0136 -24.51308 75.7281 -28.79857 75.7281 -34.1432 C  75.7281 -39.48784 80.0136 -43.77333 85.35823 -43.77333 C  90.70287 -43.77333 94.98836 -39.48784 94.98836 -34.1432 Z M  85.35823 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,78.42078,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">3/8</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  123.4411 -34.1432 C  123.4411 -28.79857 119.15561 -24.51308 113.81097 -24.51308 C  108.46634 -24.51308 104.18085 -28.79857 104.18085 -34.1432 C  104.18085 -39.48784 108.46634 -43.77333 113.81097 -43.77333 C  119.15561 -43.77333 123.4411 -39.48784 123.4411 -34.1432 Z M  113.81097 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,106.87352,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">0/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  9.63013 -68.2864 C  9.63013 -62.94177 5.34464 -58.65628 0.0 -58.65628 C  -5.34464 -58.65628 -9.63013 -62.94177 -9.63013 -68.2864 C  -9.63013 -73.63104 -5.34464 -77.91653 0.0 -77.91653 C  5.34464 -77.91653 9.63013 -73.63104 9.63013 -68.2864 Z M  0.0 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-6.93745,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/4</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  38.08287 -68.2864 C  38.08287 -62.94177 33.79738 -58.65628 28.45274 -58.65628 C  23.10811 -58.65628 18.82262 -62.94177 18.82262 -68.2864 C  18.82262 -73.63104 23.10811 -77.91653 28.45274 -77.91653 C  33.79738 -77.91653 38.08287 -73.63104 38.08287 -68.2864 Z M  28.45274 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,21.51529,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">1/6</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  66.53561 -68.2864 C  66.53561 -62.94177 62.25012 -58.65628 56.90549 -58.65628 C  51.56085 -58.65628 47.27536 -62.94177 47.27536 -68.2864 C  47.27536 -73.63104 51.56085 -77.91653 56.90549 -77.91653 C  62.25012 -77.91653 66.53561 -73.63104 66.53561 -68.2864 Z M  56.90549 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,49.96803,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">1/2</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  94.98836 -68.2864 C  94.98836 -62.94177 90.70287 -58.65628 85.35823 -58.65628 C  80.0136 -58.65628 75.7281 -62.94177 75.7281 -68.2864 C  75.7281 -73.63104 80.0136 -77.91653 85.35823 -77.91653 C  90.70287 -77.91653 94.98836 -73.63104 94.98836 -68.2864 Z M  85.35823 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,78.42078,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  123.4411 -68.2864 C  123.4411 -62.94177 119.15561 -58.65628 113.81097 -58.65628 C  108.46634 -58.65628 104.18085 -62.94177 104.18085 -68.2864 C  104.18085 -73.63104 108.46634 -77.91653 113.81097 -77.91653 C  119.15561 -77.91653 123.4411 -73.63104 123.4411 -68.2864 Z M  113.81097 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,106.87352,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  23.85649 -102.43004 C  23.85649 -97.0854 19.571 -92.79991 14.22636 -92.79991 C  8.88173 -92.79991 4.59624 -97.0854 4.59624 -102.43004 C  4.59624 -107.77467 8.88173 -112.06017 14.22636 -112.06017 C  19.571 -112.06017 23.85649 -107.77467 23.85649 -102.43004 Z M  14.22636 -102.43004  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,7.28891,-104.68004)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  52.30923 -102.43004 C  52.30923 -97.0854 48.02374 -92.79991 42.67911 -92.79991 C  37.33447 -92.79991 33.04898 -97.0854 33.04898 -102.43004 C  33.04898 -107.77467 37.33447 -112.06017 42.67911 -112.06017 C  48.02374 -112.06017 52.30923 -107.77467 52.30923 -102.43004 Z M  42.67911 -102.43004  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,35.74165,-104.68004)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">3/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <path d=" M  72.66344 -6.09334 L  25.69246 -28.6396  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(-0.90503,-0.43445,0.43445,-0.90503,25.69246,-28.6396)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  85.35823 -14.02695 L  85.35823 -24.11308  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  94.35323 -10.79352 L  107.37901 -26.42519  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  9.61589 -45.20853 L  3.86674 -59.00607  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <path d=" M  18.83684 -45.20853 L  24.31227 -58.34915  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(0.38553,-0.92525,0.92525,0.38553,24.31227,-58.34915)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  78.92627 -41.86122 L  63.33745 -60.56839  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  85.35823 -44.17332 L  85.35823 -58.25629  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  91.79019 -41.86122 L  107.37901 -60.56839  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  24.586 -77.56674 L  18.09311 -93.1497  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <path d=" M  32.31949 -77.56674 L  38.53867 -92.49278  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(0.3855,-0.92525,0.92525,0.3855,38.53867,-92.49278)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt">  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,203.9864,23.53275)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(23.63554,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="12">Expansion</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  269.70164 0.0 C  269.70164 7.56285 263.63754 13.62695 256.07469 13.62695 C  248.51184 13.62695 242.44774 7.56285 242.44774 0.0 C  242.44774 -7.56285 248.51184 -13.62695 256.07469 -13.62695 C  263.63754 -13.62695 269.70164 -7.56285 269.70164 0.0 Z M  256.07469 0.0  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,244.51227,-2.25)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(11.56242,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">11/21</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  196.50215 -34.1432 C  196.50215 -27.72787 191.35815 -22.58388 184.94283 -22.58388 C  178.5275 -22.58388 173.3835 -27.72787 173.3835 -34.1432 C  173.3835 -40.55853 178.5275 -45.70253 184.94283 -45.70253 C  191.35815 -45.70253 196.50215 -40.55853 196.50215 -34.1432 Z M  184.94283 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,175.69289,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(9.24994,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">7/10</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  265.70482 -34.1432 C  265.70482 -28.79857 261.41933 -24.51308 256.07469 -24.51308 C  250.73006 -24.51308 246.44456 -28.79857 246.44456 -34.1432 C  246.44456 -39.48784 250.73006 -43.77333 256.07469 -43.77333 C  261.41933 -43.77333 265.70482 -39.48784 265.70482 -34.1432 Z M  256.07469 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,249.13724,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">3/8</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  294.15756 -34.1432 C  294.15756 -28.79857 289.87207 -24.51308 284.52744 -24.51308 C  279.1828 -24.51308 274.89731 -28.79857 274.89731 -34.1432 C  274.89731 -39.48784 279.1828 -43.77333 284.52744 -43.77333 C  289.87207 -43.77333 294.15756 -39.48784 294.15756 -34.1432 Z M  284.52744 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,277.58998,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">0/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  180.34659 -68.2864 C  180.34659 -62.94177 176.0611 -58.65628 170.71646 -58.65628 C  165.37183 -58.65628 161.08633 -62.94177 161.08633 -68.2864 C  161.08633 -73.63104 165.37183 -77.91653 170.71646 -77.91653 C  176.0611 -77.91653 180.34659 -73.63104 180.34659 -68.2864 Z M  170.71646 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,163.779,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/4</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  208.79933 -68.2864 C  208.79933 -62.94177 204.51384 -58.65628 199.1692 -58.65628 C  193.82457 -58.65628 189.53908 -62.94177 189.53908 -68.2864 C  189.53908 -73.63104 193.82457 -77.91653 199.1692 -77.91653 C  204.51384 -77.91653 208.79933 -73.63104 208.79933 -68.2864 Z M  199.1692 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,192.23175,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">1/6</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  237.25208 -68.2864 C  237.25208 -62.94177 232.96658 -58.65628 227.62195 -58.65628 C  222.27731 -58.65628 217.99182 -62.94177 217.99182 -68.2864 C  217.99182 -73.63104 222.27731 -77.91653 227.62195 -77.91653 C  232.96658 -77.91653 237.25208 -73.63104 237.25208 -68.2864 Z M  227.62195 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,220.6845,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">1/2</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  265.70482 -68.2864 C  265.70482 -62.94177 261.41933 -58.65628 256.07469 -58.65628 C  250.73006 -58.65628 246.44456 -62.94177 246.44456 -68.2864 C  246.44456 -73.63104 250.73006 -77.91653 256.07469 -77.91653 C  261.41933 -77.91653 265.70482 -73.63104 265.70482 -68.2864 Z M  256.07469 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,249.13724,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  294.15756 -68.2864 C  294.15756 -62.94177 289.87207 -58.65628 284.52744 -58.65628 C  279.1828 -58.65628 274.89731 -62.94177 274.89731 -68.2864 C  274.89731 -73.63104 279.1828 -77.91653 284.52744 -77.91653 C  289.87207 -77.91653 294.15756 -73.63104 294.15756 -68.2864 Z M  284.52744 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,277.58998,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  194.57295 -102.43004 C  194.57295 -97.0854 190.28746 -92.79991 184.94283 -92.79991 C  179.59819 -92.79991 175.3127 -97.0854 175.3127 -102.43004 C  175.3127 -107.77467 179.59819 -112.06017 184.94283 -112.06017 C  190.28746 -112.06017 194.57295 -107.77467 194.57295 -102.43004 Z M  184.94283 -102.43004  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,178.00537,-104.68004)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  223.0257 -102.43004 C  223.0257 -97.0854 218.7402 -92.79991 213.39557 -92.79991 C  208.05093 -92.79991 203.76544 -97.0854 203.76544 -102.43004 C  203.76544 -107.77467 208.05093 -112.06017 213.39557 -112.06017 C  218.7402 -112.06017 223.0257 -107.77467 223.0257 -102.43004 Z M  213.39557 -102.43004  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,206.45811,-104.68004)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">3/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <path d=" M  223.0257 -136.57324 C  223.0257 -131.2286 218.7402 -126.94312 213.39557 -126.94312 C  208.05093 -126.94312 203.76544 -131.2286 203.76544 -136.57324 C  203.76544 -141.91788 208.05093 -146.20337 213.39557 -146.20337 C  218.7402 -146.20337 223.0257 -141.91788 223.0257 -136.57324 Z M  213.39557 -136.57324  " style="fill:none"/>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,206.45811,-138.82324)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">0/0</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  243.3799 -6.09334 L  195.76636 -28.94806  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  256.07469 -14.02695 L  256.07469 -24.11308  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  265.06969 -10.79352 L  278.09547 -26.42519  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  180.33235 -45.20853 L  174.5832 -59.00607  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  189.5533 -45.20853 L  195.30246 -59.00607  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  249.64273 -41.86122 L  234.05391 -60.56839  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  256.07469 -44.17332 L  256.07469 -58.25629  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  262.50665 -41.86122 L  278.09547 -60.56839  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  195.30246 -77.56674 L  188.80957 -93.1497  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  203.03595 -77.56674 L  209.52882 -93.1497  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <path d=" M  213.39557 -112.46016 L  213.39557 -125.83311  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(0.0,-1.0,1.0,0.0,213.39557,-125.83311)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt">  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,366.80965,24.85275)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(31.52876,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="12">Simulation</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  440.4181 0.0 C  440.4181 7.56285 434.354 13.62695 426.79115 13.62695 C  419.2283 13.62695 413.1642 7.56285 413.1642 0.0 C  413.1642 -7.56285 419.2283 -13.62695 426.79115 -13.62695 C  434.354 -13.62695 440.4181 -7.56285 440.4181 0.0 Z M  426.79115 0.0  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,415.22873,-2.25)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(11.56242,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">11/21</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  367.21861 -34.1432 C  367.21861 -27.72787 362.07462 -22.58388 355.65929 -22.58388 C  349.24396 -22.58388 344.09996 -27.72787 344.09996 -34.1432 C  344.09996 -40.55853 349.24396 -45.70253 355.65929 -45.70253 C  362.07462 -45.70253 367.21861 -40.55853 367.21861 -34.1432 Z M  355.65929 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,346.40935,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(9.24994,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">7/10</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  436.42128 -34.1432 C  436.42128 -28.79857 432.13579 -24.51308 426.79115 -24.51308 C  421.44652 -24.51308 417.16103 -28.79857 417.16103 -34.1432 C  417.16103 -39.48784 421.44652 -43.77333 426.79115 -43.77333 C  432.13579 -43.77333 436.42128 -39.48784 436.42128 -34.1432 Z M  426.79115 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,419.8537,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">3/8</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  464.87402 -34.1432 C  464.87402 -28.79857 460.58853 -24.51308 455.2439 -24.51308 C  449.89926 -24.51308 445.61377 -28.79857 445.61377 -34.1432 C  445.61377 -39.48784 449.89926 -43.77333 455.2439 -43.77333 C  460.58853 -43.77333 464.87402 -39.48784 464.87402 -34.1432 Z M  455.2439 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,448.30644,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">0/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  351.06305 -68.2864 C  351.06305 -62.94177 346.77756 -58.65628 341.43292 -58.65628 C  336.08829 -58.65628 331.8028 -62.94177 331.8028 -68.2864 C  331.8028 -73.63104 336.08829 -77.91653 341.43292 -77.91653 C  346.77756 -77.91653 351.06305 -73.63104 351.06305 -68.2864 Z M  341.43292 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,334.49547,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/4</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  379.5158 -68.2864 C  379.5158 -62.94177 375.2303 -58.65628 369.88567 -58.65628 C  364.54103 -58.65628 360.25554 -62.94177 360.25554 -68.2864 C  360.25554 -73.63104 364.54103 -77.91653 369.88567 -77.91653 C  375.2303 -77.91653 379.5158 -73.63104 379.5158 -68.2864 Z M  369.88567 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,362.94821,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">1/6</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  407.96854 -68.2864 C  407.96854 -62.94177 403.68304 -58.65628 398.33841 -58.65628 C  392.99377 -58.65628 388.70828 -62.94177 388.70828 -68.2864 C  388.70828 -73.63104 392.99377 -77.91653 398.33841 -77.91653 C  403.68304 -77.91653 407.96854 -73.63104 407.96854 -68.2864 Z M  398.33841 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,391.40096,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">1/2</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  436.42128 -68.2864 C  436.42128 -62.94177 432.13579 -58.65628 426.79115 -58.65628 C  421.44652 -58.65628 417.16103 -62.94177 417.16103 -68.2864 C  417.16103 -73.63104 421.44652 -77.91653 426.79115 -77.91653 C  432.13579 -77.91653 436.42128 -73.63104 436.42128 -68.2864 Z M  426.79115 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,419.8537,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  464.87402 -68.2864 C  464.87402 -62.94177 460.58853 -58.65628 455.2439 -58.65628 C  449.89926 -58.65628 445.61377 -62.94177 445.61377 -68.2864 C  445.61377 -73.63104 449.89926 -77.91653 455.2439 -77.91653 C  460.58853 -77.91653 464.87402 -73.63104 464.87402 -68.2864 Z M  455.2439 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,448.30644,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  365.28941 -102.43004 C  365.28941 -97.0854 361.00392 -92.79991 355.65929 -92.79991 C  350.31465 -92.79991 346.02916 -97.0854 346.02916 -102.43004 C  346.02916 -107.77467 350.31465 -112.06017 355.65929 -112.06017 C  361.00392 -112.06017 365.28941 -107.77467 365.28941 -102.43004 Z M  355.65929 -102.43004  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,348.72183,-104.68004)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  393.74216 -102.43004 C  393.74216 -97.0854 389.45667 -92.79991 384.11203 -92.79991 C  378.7674 -92.79991 374.4819 -97.0854 374.4819 -102.43004 C  374.4819 -107.77467 378.7674 -112.06017 384.11203 -112.06017 C  389.45667 -112.06017 393.74216 -107.77467 393.74216 -102.43004 Z M  384.11203 -102.43004  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,377.17458,-104.68004)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">3/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  393.74216 -136.57324 C  393.74216 -131.2286 389.45667 -126.94312 384.11203 -126.94312 C  378.7674 -126.94312 374.4819 -131.2286 374.4819 -136.57324 C  374.4819 -141.91788 378.7674 -146.20337 384.11203 -146.20337 C  389.45667 -146.20337 393.74216 -141.91788 393.74216 -136.57324 Z M  384.11203 -136.57324  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,377.17458,-138.82324)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">0/0</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)">  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,378.20235,-179.30692)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(5.90968,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">0/1</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  414.09636 -6.09334 L  366.48282 -28.94806  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  426.79115 -14.02695 L  426.79115 -24.11308  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  435.78615 -10.79352 L  448.81194 -26.42519  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  351.04881 -45.20853 L  345.29967 -59.00607  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  360.26976 -45.20853 L  366.01892 -59.00607  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  420.35919 -41.86122 L  404.77037 -60.56839  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  426.79115 -44.17332 L  426.79115 -58.25629  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  433.22311 -41.86122 L  448.81194 -60.56839  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  366.01892 -77.56674 L  359.52603 -93.1497  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  373.75241 -77.56674 L  380.24529 -93.1497  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  384.11203 -112.46016 L  384.11203 -126.54312  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <path d=" M  384.11203 -146.60336 M  384.11203 -146.60336 C  384.11203 -147.85336 386.61203 -148.47836 386.61203 -149.72836 C  386.61203 -150.6408 385.36203 -151.43257 384.11203 -152.22836 C  382.86203 -153.02414 381.61203 -153.81592 381.61203 -154.72836 C  381.61203 -155.6408 382.86203 -156.43257 384.11203 -157.22836 C  385.36203 -158.02414 386.61203 -158.81592 386.61203 -159.72836 C  386.61203 -160.6408 385.36203 -161.43257 384.11203 -162.22836 C  382.86203 -163.02414 381.61203 -163.81592 381.61203 -164.72836 C  381.61203 -165.97836 384.11203 -166.60336 384.11203 -167.85336 L  384.11203 -171.39693  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(0.0,-1.0,1.0,0.0,384.11203,-171.39693)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt">  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,512.32391,24.93274)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(56.73096,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="12">Backpropagation</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  611.13457 0.0 C  611.13457 7.56285 605.07047 13.62695 597.50761 13.62695 C  589.94476 13.62695 583.88066 7.56285 583.88066 0.0 C  583.88066 -7.56285 589.94476 -13.62695 597.50761 -13.62695 C  605.07047 -13.62695 611.13457 -7.56285 611.13457 0.0 Z M  597.50761 0.0  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,585.94519,-2.25)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(11.56242,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">11/22</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  537.93507 -34.1432 C  537.93507 -27.72787 532.79108 -22.58388 526.37575 -22.58388 C  519.96042 -22.58388 514.81642 -27.72787 514.81642 -34.1432 C  514.81642 -40.55853 519.96042 -45.70253 526.37575 -45.70253 C  532.79108 -45.70253 537.93507 -40.55853 537.93507 -34.1432 Z M  526.37575 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,517.12581,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(9.24994,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">8/11</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  607.13774 -34.1432 C  607.13774 -28.79857 602.85225 -24.51308 597.50761 -24.51308 C  592.16298 -24.51308 587.87749 -28.79857 587.87749 -34.1432 C  587.87749 -39.48784 592.16298 -43.77333 597.50761 -43.77333 C  602.85225 -43.77333 607.13774 -39.48784 607.13774 -34.1432 Z M  597.50761 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,590.57016,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">3/8</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  635.59048 -34.1432 C  635.59048 -28.79857 631.305 -24.51308 625.96036 -24.51308 C  620.61572 -24.51308 616.33023 -28.79857 616.33023 -34.1432 C  616.33023 -39.48784 620.61572 -43.77333 625.96036 -43.77333 C  631.305 -43.77333 635.59048 -39.48784 635.59048 -34.1432 Z M  625.96036 -34.1432  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,619.0229,-36.3932)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">0/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  521.77951 -68.2864 C  521.77951 -62.94177 517.49402 -58.65628 512.14938 -58.65628 C  506.80475 -58.65628 502.51926 -62.94177 502.51926 -68.2864 C  502.51926 -73.63104 506.80475 -77.91653 512.14938 -77.91653 C  517.49402 -77.91653 521.77951 -73.63104 521.77951 -68.2864 Z M  512.14938 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,505.21193,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/4</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  550.23225 -68.2864 C  550.23225 -62.94177 545.94676 -58.65628 540.60213 -58.65628 C  535.25749 -58.65628 530.972 -62.94177 530.972 -68.2864 C  530.972 -73.63104 535.25749 -77.91653 540.60213 -77.91653 C  545.94676 -77.91653 550.23225 -73.63104 550.23225 -68.2864 Z M  540.60213 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,533.66467,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">1/7</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  578.685 -68.2864 C  578.685 -62.94177 574.3995 -58.65628 569.05487 -58.65628 C  563.71024 -58.65628 559.42474 -62.94177 559.42474 -68.2864 C  559.42474 -73.63104 563.71024 -77.91653 569.05487 -77.91653 C  574.3995 -77.91653 578.685 -73.63104 578.685 -68.2864 Z M  569.05487 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,562.11742,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">1/2</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  607.13774 -68.2864 C  607.13774 -62.94177 602.85225 -58.65628 597.50761 -58.65628 C  592.16298 -58.65628 587.87749 -62.94177 587.87749 -68.2864 C  587.87749 -73.63104 592.16298 -77.91653 597.50761 -77.91653 C  602.85225 -77.91653 607.13774 -73.63104 607.13774 -68.2864 Z M  597.50761 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,590.57016,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  635.59048 -68.2864 C  635.59048 -62.94177 631.305 -58.65628 625.96036 -58.65628 C  620.61572 -58.65628 616.33023 -62.94177 616.33023 -68.2864 C  616.33023 -73.63104 620.61572 -77.91653 625.96036 -77.91653 C  631.305 -77.91653 635.59048 -73.63104 635.59048 -68.2864 Z M  625.96036 -68.2864  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,619.0229,-70.5364)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  536.00587 -102.43004 C  536.00587 -97.0854 531.72038 -92.79991 526.37575 -92.79991 C  521.03111 -92.79991 516.74562 -97.0854 516.74562 -102.43004 C  516.74562 -107.77467 521.03111 -112.06017 526.37575 -112.06017 C  531.72038 -112.06017 536.00587 -107.77467 536.00587 -102.43004 Z M  526.37575 -102.43004  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,519.4383,-104.68004)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">2/3</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g fill="rgb(75.0%,75.0%,75.0%)"> 
+ <path d=" M  564.45862 -102.43004 C  564.45862 -97.0854 560.17313 -92.79991 554.82849 -92.79991 C  549.48386 -92.79991 545.19836 -97.0854 545.19836 -102.43004 C  545.19836 -107.77467 549.48386 -112.06017 554.82849 -112.06017 C  560.17313 -112.06017 564.45862 -107.77467 564.45862 -102.43004 Z M  554.82849 -102.43004  "/>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,547.89104,-104.68004)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">4/4</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  564.45862 -136.57324 C  564.45862 -131.2286 560.17313 -126.94312 554.82849 -126.94312 C  549.48386 -126.94312 545.19836 -131.2286 545.19836 -136.57324 C  545.19836 -141.91788 549.48386 -146.20337 554.82849 -146.20337 C  560.17313 -146.20337 564.45862 -141.91788 564.45862 -136.57324 Z M  554.82849 -136.57324  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,547.89104,-138.82324)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(6.93745,0)" text-anchor="middle" font-size="10"> 
+<tspan font-size="9">0/1</tspan></text> 
+</g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <path d=" M  584.17026 -6.4018 L  537.19928 -28.94806  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(0.90503,0.43445,-0.43445,0.90503,584.17026,-6.4018)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  597.50761 -14.02695 L  597.50761 -24.11308  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  606.50261 -10.79352 L  619.5284 -26.42519  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  521.76527 -45.20853 L  516.01613 -59.00607  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <path d=" M  531.25995 -45.86545 L  536.73538 -59.00607  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(-0.38553,0.92525,-0.92525,-0.38553,531.25995,-45.86545)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  591.07565 -41.86122 L  575.48683 -60.56839  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  597.50761 -44.17332 L  597.50761 -58.25629  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  603.93958 -41.86122 L  619.5284 -60.56839  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  536.73538 -77.56674 L  530.2425 -93.1497  " style="fill:none"/>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <path d=" M  544.74257 -78.22366 L  550.96175 -93.1497  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(-0.3855,0.92525,-0.92525,-0.3855,544.74257,-78.22366)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+ <g> 
+ <g stroke="rgb(50.0%,50.0%,50.0%)"> 
+ <g fill="rgb(50.0%,50.0%,50.0%)"> 
+ <g stroke-width="0.8pt"> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <path d=" M  554.82849 -113.17017 L  554.82849 -126.54312  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(0.0,1.0,-1.0,0.0,554.82849,-113.17017)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g>  </g> 
+                                                                                                                                                                    </g> 
+</svg>
+
+---
+
+# Selection
+
+  * Start at the root of the partial tree and select a child node 
+  
+  * Continue selecting child nodes until you reach a node that is not fully expanded
+  
+  * The selection is done using a *tree policy*
+  
+  * For example: With probability `\(1-\varepsilon\)` we pick the child with the highest expected value, otherwise we pick a child uniformly at random (epsilon greedy policy)
+  
+---
+
+# Expansion
+
+  * When we find a node with unexpanded children, we expand it 
+  
+  * Expansion also depends on the tree policy (we may want to revisit a child we've already expanded)
+  
+---
+
+# Simulation
+
+  * Using a *default policy*, the game is played until the end 
+  
+  * This default policy can be a simple AI agent, or just pure random moves 
+  
+  * The simulation is sometimes also called a "rollout"
+  
+  * At the end of the game, we obtain the score 
+
+---
+
+# Backpropagation 
+
+  * Record the score obtained from the simulation in the tree
+  
+  * For each node that was on the path to the end, update the expected value with the new score 
+  
+---
+
+class: middle, center
+
+# Example
+
+---
+
+class: medium
+
+# Features of Monte Carlo Tree Search
+
+  * No heuristic needed, only the game rules
+  
+  * Opponents can be modeled by policy or random moves
+  
+  * Hidden information (such as shuffled decks, die rolls, etc.) can be modeled as random moves
+  
+  * When you run the algorithm, you can stop it at *any* time and just pick the best move so far, giving you a trade-off between time needed and quality of the estimate
+
+---
+
+class: medium
+
+# How does this algorithm do?
+
+  * The good news: MCTS converges to minimax!
+  
+  * The bad news: It converges very slowly
+  
+  * Imagine a move like sacrificing a queen in chess: It may have a high reward in *some* scenarios, but most of the future results will be bad 
+  
+  * To actually find the "good" version, many different simulations have to be performed
+
+---
+
+# Exploration vs. Exploitation
+
+  * The epsilon greedy approach strongly prefers nodes with high scores
+  
+  * But what if we "missed" a better option?
+  
+  * Should we try to improve the most promising option (exploitation) or try to find a different, but potentially better move (exploration)?
+  
+  * The number of times a node is visited may give us an indication of how good the score estimate is
+  
+---
+
+# Upper Confidence Bound 1 applied to trees
+
+Use UCT1 value to determine which child to visit:
+
+$$
+X_j + c \sqrt{\frac{\ln N}{n_j}}
+$$
+
+Where `\(X_j\)` is the current estimate for the score of the jth child, `\(N\)` is the number of times the current node was visited and `\(n_j\)` is the number of times the jth child was visited. c determines the trade-off between exploitation and exploration.
+
+A high value for `\(X_j\)` makes nodes more likely to be visited (exploitation), as does a low value for `\(n_j\)` compared to the total N (exploration). If `\(n_j\)` is 0, the value is infinite, guaranteeing that unvisited children are visited.
+
+---
+
+class: small
+
+# What is MCTS good for?
+
+  * MCTS does extremly well on a wide variety of games, even those with a large branching factor (many possible actions), hidden information, and/or non-determinism
+  
+  * Has been successfully used for Go, Scrabble, Mancala, constructing crossword puzzles, PacMan, Poker, Magic: The Gathering, etc.
+  
+  * Also useful for non-games, such as the traveling salesman problem, scheduling, and vulnerability testing 
+  
+  * Challenges: 
+  
+      - Random rollouts may take a long time in many domains
+      - With a large branching factor a good tree policy can be helpful
+
+---
+
+class: center, middle
+
+# AlphaGo
+
+---
+
+class: medium
+
+# Go 
+
+.left-column[
+  <img src="/PF-3341/assets/img/go.JPG" width="100%"/>
+]
+
+.right-column[
+ 
+* Over 2500 years old 
+
+* 40 million active players 
+
+* Simple rules, but a lot of strategic depth
+
+* At least 10e170 different game states
+
+* Games can last hundreds of turns
+
+]
+
+---
+
+# Go 
+
+* Before MCTS, AI agents struggled with Go 
+
+* When MCTS was first developed (2006/2007), it was successfully applied to Go on a smaller (9x9) board
+
+* By 2012, Go programs could beat an international champion with a small handicap 
+
+* In 2016, AlphaGo by DeepMind beat the world champion 
+
+* How? 
+
+---
+
+# Go with MCTS 
+
+* Because of the large graph, standard MCTS runs into limitations 
+
+* AlphaGo uses two key techniques to overcome these:
+   - Better action selection in the tree policy 
+   - Limited rollouts
+   
+* Both of these were implemented using Neural Networks
+
+---
+
+class: medium
+
+# Better Action Selection
+
+* UCT1 uses the results obtained during sampling to determine which action to try next 
+
+* It actually guarantees that unvisited actions are visited first 
+
+* But what if we "knew" that some moves are definitely bad? We wouldn't need to visit them at all 
+
+* AlphaGo uses a Neural Network to estimate how likely a move is the best move 
+
+* Does not need to be perfect, a reasonable guess is enough
+
+---
+
+class: medium
+
+# Limited Rollouts
+
+* Instead of playing games to the end with random moves, we can use a "guess" for how the game will end at some point
+
+* AlphaGo trained a Neural Network to provide this "guess"
+
+* Both of these Neural Networks were trained with data from human expert players and then refined with data from AlphaGo playing against itself 
+
+* AlphaGo Zero (2017) then *only* used self-play data
+  
+---
+
+class: center, middle 
+
+# MCTS Variants
+
+---
+
+# Single-Player MCTS 
+
+* In Single Player games, there is no opponent that tries to minimize our score 
+
+* In addition to determining the "expected" reward, it may also be useful to store the maximum reward for each branch 
+
+* The "opponent" is usually some form of randomness, so additionally the variance of the results may be of interest
+
+* MCTS can then use these values in the tree policy (e.g. as an additional term in the UCT1 formula)
+
+---
+
+# Multi-Player MCTS
+
+* If there are more than two players (or the game isn't zero-sum), minimizing an opponent's score may not be the same as maximizing your own score anymore 
+
+* Instead, store a vector of rewards, one for each player, and maximize the appropriate one for each action 
+
+* Alternatively: pretend all other players are playing as a team against you ("Paranoid UCT")
+
+---
+
+# Multi-Agent MCTS 
+
+* During the rollouts, the default policy determines how the simulation is done 
+
+* Instead of a pure random selection, this may use some simple heuristic
+
+* Multi-Agent MCTS uses multiple different policies for the rollouts, to better predict interactions between agent types 
+
+* However, defining these different agents requires significant engineering effort for each game
+
+---
+
+class: medium
+
+# Information Set MCTS
+
+* Hidden information, such as a shuffled deck, can be accounted for by MCTS by sampling and pretending the game state is fully visible
+
+* Store a tree of information sets, pick one possible state and only follow actions compatible with this state (e.g. if the state picked has me holding the ace of spades, *any* state in which I am holding the ace of spades is compatible with that fact)
+
+* This avoids fully determinizing the state with information that is not relevant to the rollout, like cards at the bottom of the deck
+
+---
+
+# Forward-Search Sparse Sampling
+
+* MCTS can also be used for planning 
+
+* Instead of finding a winning move set, we are looking for a plan 
+
+* Challenge: How do you define the "score"? There are very few "wins" in planning
+
+---
+
+# Next Week 
+
+  * [Re-determinizing Information Set Monte Carlo Tree Search in Hanabi](https://arxiv.org/pdf/1902.06075.pdf)
+  
+---
+
+# Resources 
+
+  * [Chapter 2.3.4 in the Game AI Book](http://gameaibook.org)
+
+  * [A Survey of Monte Carlo Tree Search Methods](http://repository.essex.ac.uk/4117/1/MCTS-Survey.pdf)
+
+ 
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+
+    <script>
+      var slideshow = remark.create();
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

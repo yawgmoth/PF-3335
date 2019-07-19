@@ -1,0 +1,228 @@
+---
+permalink: /slides/lecture13a.html
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Procedural Modeling of Interconnected Structures</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .medium li {  font-size: 1.1em; }
+      
+      .mmedium li {  font-size: 1.05em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .left-column {
+        color: #777;
+        width: 25%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 70%;
+        float: right;
+        padding-top: 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Procedural Modeling of Interconnected Structures
+
+### Lars Krecklau and Leif Kobbelt
+### RWTH Aachen University, Germany
+
+#### Presentation by: Markus Eger
+
+---
+
+class: center, middle
+
+# Interconnected Structures 
+
+---
+
+# Shape Grammars
+
+* As we have heard last week, we can use grammars to generate 3D structures 
+
+* Start with a box with a label
+
+* A rule divides a box with a label into smaller boxes with potentially different labels 
+
+* These divisions are done by cuts along an axis
+
+---
+
+# Interconnected Structures 
+
+* Starting with a large box, and cutting out pieces mirrors starting at a coarse level and adding detail 
+
+* However, in many cases we want to retroactively add things, like connections between parts 
+
+* For example, we add houses along a street and then want to add overhead wiring/a catenary
+
+---
+
+class: medium
+
+# Challenges
+
+* If we just subdivide boxes, we would have to take the connections into account while we perform the cuts 
+
+* However, a more natural/intuitive way of defining such connections would be to do so after the connectors have been created 
+
+* Krecklau and Kobbelt describe a method to perform such retroactive connections
+
+* The challenges they address are how to find connectors, different types of connections, and avoiding obstacles while performing a connection
+ 
+---
+
+class: center,  middle 
+
+# Creating Connections 
+
+---
+
+class: small
+
+# Containers
+
+* The basic idea when connecting structures is that every connector defines connection points 
+
+* While the grammar is being expanded, these connection points can be collected in so-called containers 
+
+<img src="/PF-3341/assets/img/connectionpoints.png" width="80%"/>
+
+---
+
+class: small
+
+# Connections 
+
+* A grammar can contain an arbitrary number of containers 
+
+* Different parts of the geometry may populate the different containers 
+
+* When the evaluation of these parts is done, there may be extra rules that define how the containers are used to connect parts of the model 
+
+* These rules define two aspects: *Which* connection points are to be connected, and *how*
+
+---
+
+# Patterns 
+
+The simplest way of connecting parts of the model is by defining which connection points are to be connected in code 
+
+<img src="/PF-3341/assets/img/pattern.png" width="100%"/>
+
+---
+
+# Geometric Queries 
+
+Alternatively, a ray can be cast from a connection point to find a suitable surface to connect with.
+
+<img src="/PF-3341/assets/img/raycast.png" width="100%"/>
+
+---
+
+# FFDs
+
+Instead of working on boxes, the grammars generate and use trilinear freeform deformations (FFDs). It is possible to define a mapping from FFDs to boxes, making them well-suited for grammars with more flexibility.
+
+<img src="/PF-3341/assets/img/FFD.png" width="100%"/>
+
+---
+
+# Splines
+
+FFDs can be created along arbitrary splines. The rotation is defined by an additional normal vector on each control point.
+
+<img src="/PF-3341/assets/img/splines.png" width="100%"/>
+
+---
+
+# Inverse Kinematics
+
+Finally, two points may be connected with a given geometry that consists of rotational and translational joints. For example, to mount iron bars between two walls, we can define a connector with hinges and a bar of 
+arbitrary length in the center. 
+
+To calculate the angles and length of the joints, homogeneous coordinates are used, which result in a non-linear equation that is solved using standard methods.
+
+<img src="/PF-3341/assets/img/connector.png" width="70%"/>
+
+---
+
+class: center, middle
+
+# Use Cases 
+
+---
+
+# Sydney Harbor Bridge 
+
+<img src="/PF-3341/assets/img/sydney.png" width="100%"/>
+
+---
+
+# Catenary
+
+<img src="/PF-3341/assets/img/catenary.png" width="100%"/>
+
+---
+
+# Rollercoaster
+
+<img src="/PF-3341/assets/img/rollercoaster.png" width="100%"/>
+
+---
+
+class: center, middle
+
+# Discussion
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+    <script>
+      var slideshow = remark.create({"highlightStyle": "dark"});
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

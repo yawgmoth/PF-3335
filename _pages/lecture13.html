@@ -1,0 +1,569 @@
+---
+permalink: /slides/lecture13.html
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lecture 13: Logic-Based PCG</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .ssmall li {  font-size: 0.9em; }
+      
+      .oneline li { font-size: 1.25em; line-height: 1.25em; }
+      .oneline li p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline div { font-size: 1.25em; line-height: 1.25em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .medium li {  font-size: 1.1em; }
+     
+      .mmedium li {  font-size: 1.05em; }
+      
+        
+      .left-column {
+        color: #777;
+        width: 40%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 0.8em;
+      }
+      
+       .right-column1 {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 0.75em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# AI in Digital Entertainment
+
+### Logic-Based PCG
+
+---
+
+class: center, middle
+
+# Satisfiability
+
+---
+
+# Satisfiability
+
+* We will look at logical formulas `\(\phi\)` with free variables 
+
+* For example: `\(x \vee (y \wedge z)\)`
+
+* Such a formula is called *satisfiable* if we can assign truth values to the free variables such that the formula is true
+
+* There are solvers that can *find* such truth value assignments
+
+---
+
+# Logic-Based PCG
+
+* How do we use this for content generation?
+
+* We tell our system which properties a level/quest/story should have in terms of logical formulas 
+
+* Then we use a solver to find an assignment of truth values to the free variables
+
+* We then interpret these assignments as a generated level/quest/story 
+
+---
+
+class: small
+
+# Example: Enemy Generation
+
+* The enemy should have exactly one of 3 special abilities: a, b, and c 
+
+$$
+(a \wedge \neg b \wedge \neg c) \vee (b \wedge \neg a \wedge \neg c) \vee (c \wedge \neg a \wedge \neg b)
+$$
+
+* The enemy can be a goblin, orc, or warg
+
+$$
+(g \wedge \neg o \wedge \neg w) \vee (o \wedge \neg g \wedge \neg w) \vee (w \wedge \neg g \wedge \neg o)
+$$
+
+* Wargs can not use special ability c 
+
+$$
+(w \rightarrow \neg c)
+$$
+
+Any truth value assignment to g, o, w, a, b, c that satisfies these constraints will represents one possible enemy type and special attack we can generate.
+
+---
+
+# Challenges with Logic-Based PCG 
+
+* Checking if a formula is satisfiable is hard 
+
+* In fact, for first-order predicate logic it is undecidable :(
+
+* What can we do? We restrict the kinds of formulas you can write 
+
+* Anyone remember Prolog?
+
+---
+
+class: center, middle 
+
+# Answer-Set Programming
+
+---
+
+# Answer-Set Programming 
+
+* Answer-Set Programming (ASP) is a form of declarative programming 
+
+* Programs represent facts and rules 
+
+* A *solver* finds assignments to free variables that are consistent with the given facts and rules (i.e. that satisfy the corresponding formula)
+
+* A common language for ASP is AnsProlog
+
+---
+
+# AnsProlog 
+
+* Facts: `p(x)`
+
+* Rules: `p(x) :- q(x).`
+
+* Choice: `{p(x), q(x), r(x)}`
+
+* Restricted Choice: `1 {p(x), q(x), r(x)} 2`
+
+* Range: `p(1..4)` is the same as `p(1). p(2). p(3). p(4).`
+
+* Conditional literal: `p(X):q(X)` is the same as `p(x)` for all x for which `q(x)` holds
+
+---
+
+# AnsProlog 
+
+`c(1..n).`
+
+`1 {color(X,I) : c(I)} 1 :- v(X).`
+
+`:- color(X,I), color(Y,I), e(X,Y), c(I).`
+
+What is this?
+
+--
+
+Graph coloring!
+
+`c(1..n)` are n colors 
+
+`1 {color(X,I) : c(I)} 1 :- v(X).` Every vertex has exactly one color 
+
+`:- color(X,I), color(Y,I), e(X,Y), c(I).` Two neighbors can't have the same color
+
+---
+
+# A Maze
+
+* Now let's generate some game content!
+
+* How about mazes?
+
+* We want our maze to be contained in a grid, with connections between adjacent grid cells
+
+* Let's say there are no loops, and every location should be reachable from (1,1)
+
+* Basically, we want to build a tree that is embedded in the grid
+
+---
+
+# A Tree in AnsProlog 
+
+```
+#const width = 5.
+dim(1..width).
+
+1 { parent(X,Y, 0,-1),
+    parent(X,Y, 1, 0),
+    parent(X,Y,-1, 0),
+    parent(X,Y, 0, 1) } 1 
+    :-
+    dim(X), dim(Y), (X,Y) != (1,1).
+```
+
+Each cell should have exactly one parent (up, down, left or right). What mazes do we get now?
+
+---
+
+# Generated Mazes 
+
+<img src="/PF-3341/assets/img/maze.png" width="100%"/>
+
+Oops, our mazes are not connected.
+
+---
+
+# A Solvable Maze 
+
+How do we define that our maze should be connected?
+
+First, we say that (1,1) is connected. Then, every cell that has a parent that is connected is also connected.
+
+Then we need to require that all cells are connected.
+
+```
+linked(1,1).
+linked(X,Y) :- parent(X,Y,DX,DY), linked(X+DX,Y+DY).
+:- dim(X), dim(Y), not linked(X,Y).
+```
+
+---
+
+# Generated Mazes 
+
+<img src="/PF-3341/assets/img/solvablemaze.png" width="100%"/>
+
+If we leave the solver running, we will eventually get all possible solvable mazes in the 5x5 grid. There are many, but what if we have a way to define which ones we "prefer"?
+
+---
+
+# An "Interesting" Maze 
+
+* Say we want our mazes to have few vertical connections, in order to force the player to explore more horizontally 
+
+* AnsProlog actually allows you to specify an optimization constraint 
+
+```
+vertical(X,Y) :- parent(X,Y,0, 1).
+vertical(X,Y) :- parent(X,Y,0,-1).
+#minimize { vertical(X,Y) }.
+```
+
+Typically, the solver will emit answers it finds on the way to the optimal solution, so we can actually choose how "good" of a solution we want, versus how long we want to run the solver.
+
+---
+
+# Generated Mazes 
+
+<img src="/PF-3341/assets/img/minmaze.png" width="100%"/>
+
+---
+
+# A Dungeon
+
+* Mazes are a bit boring, let's make a more complicated level
+
+* Specificially, let's make a dungeon with an entrance, a gem, an altar and an exit
+
+* The idea is that the player has to find the gem and socket it into the altar to open the exit 
+
+* Let's start with defining what such a dungeon actually is in our logical formulation
+
+---
+
+# A Dungeon 
+
+```
+#const width=10.
+param("width",width).
+dim(1..width).
+tile((X,Y)) :- dim(X), dim(Y).
+adj((X1,Y1),(X2,Y2)) :-
+         tile((X1,Y1)),
+         tile((X2,Y2)),
+         #abs(X1-X2)+#abs(Y1-Y2) == 1.
+
+start((1,1)).
+finish((width,width)).
+
+% tiles have at most one named sprite
+0 { sprite(T,wall), sprite(T,gem), sprite(T,altar) } 1 :- tile(T).
+
+% there is exactly one altar and one gem in the whole level
+:- not 1 { sprite(T,altar) } 1.
+:- not 1 { sprite(T,gem) } 1.
+```
+
+---
+
+# Generated Dungeons
+
+<img src="/PF-3341/assets/img/dungeon.png" width="100%"/>
+
+---
+
+# Making the Dungeon Nicer 
+
+```
+% style : at least half of the map has wall sprites
+:- not (width*width)/2 { sprite(T,wall) }.
+
+% style : altars have no surrounding walls for two steps
+0 { sprite(T3,wall):adj(T1,T2):adj(T2,T3) } 0 :- sprite(T1,altar).
+
+% style : altars have four adjacent tiles (not up against edge of map)
+:- sprite(T1,altar), not 4 { adj(T1,T2) }.
+
+% style : every wall has at least two neighbouring walls 
+%         (no isolated rocks and spurs )
+2 { sprite(T2,wall):adj(T1,T2) } :- sprite(T1,wall).
+
+% style : gems have at least three surrounding walls 
+%         (they are stuck in a larger wall )
+3 { sprite(T2,wall):adj(T1,T2) } :- sprite(T1,gem).
+```
+
+---
+
+# Generated Dungeons
+
+<img src="/PF-3341/assets/img/styledungeon.png" width="100%"/>
+
+---
+
+# A Playable Dungeon 
+
+* Similar to the maze example, we need to make sure our dungeon is actually solvable 
+
+* How? Let's simulate a player!
+
+* Actually, we just encode what a player *could* do, and the solver will figure out how they can complete the dungeon 
+
+* Basically, we say a player touches the start, and on every step they can touch an adjacent tile if there's no wall 
+
+---
+
+# A Playable Dungeon 
+
+```
+% states:
+% 1: initial
+% 2: after picking up gem
+% 3: after putting gem in altar
+
+% you start in state 1
+touch(T,1) :- start(T).
+
+% possible navigation paths
+{ touch(T2,2):adj(T1,T2) } :- touch(T1,1), sprite(T1,gem).
+{ touch(T2,3):adj(T1,T2) } :- touch(T1,2), sprite(T1,altar).
+{ touch(T2,S):adj(T1,T2) } :- touch(T1,S).
+
+% you can’t touch a wall in any state
+:- sprite(T,wall), touch(T,S).
+
+% the finish tile must be touched in state 3
+completed :- finish(T), touch(T,3).
+
+:- not completed.
+```
+
+---
+
+# Generated Dungeons
+
+<img src="/PF-3341/assets/img/playabledungeon.png" width="100%"/>
+
+---
+
+# Interesting Dungeons
+
+* The dungeons we get may already be described as "reasonable"
+
+* However, they may be a bit too easy to solve sometimes, because the gem is right next to the altar 
+
+* What if we could define that the player actually has to "do some work" to solve the level?
+
+* Unfortunately, this is hard to do in standard AnsProlog 
+
+---
+
+class: medium
+
+# Concepts and Level Designs 
+
+Consider that a generated dungeon consists of two parts:
+
+* The level geometry 
+
+* The path a player uses to complete the level 
+
+What we want to describe is the fact that for a given **constant** level geometry, **all** possible paths have some interesting property. 
+
+Smith et al. describe an extension to AnsProlog that defines two new keywords:
+`__level_design` is used to describe what is part of the level geometry, and `__concept` is used to define constraints on **all** possible assignments to something (the player's solution).
+
+---
+
+# Interesting Dungeons 
+
+```
+% holding sprites constant , ensure every solution 
+% touches at least width tiles in each state
+__level_design(sprite(T,Name)) :- sprite(T,Name).
+
+__concept :-
+width { touch(T,1) },
+width { touch(T,2) },
+width { touch(T,3) }.
+```
+
+Now we can generate levels that are guaranteed to *require* at least `width` steps in each of the three states.
+
+---
+
+# Generated Dungeons
+
+<img src="/PF-3341/assets/img/interestingdungeon.png" width="100%"/>
+
+---
+
+# ASP in practice
+
+* One nice aspect of the ASP programs we discussed is that they are modular
+
+* For example, we can use the check for interesting dungeons on human designed levels, too
+
+* In practice, generating levels takes some time, and the ASP solver has to run as its own process, so levels may just be pre-generated when the game is developed
+
+---
+
+# CatSAT
+
+* Ian Horswill developed CatSAT as a small, fast ASP solver as a Unity plugin 
+
+* It is specifically meant to be used at *run time*
+
+* He also observed that for PCG the formulas typically have *many* satisfying variable assignments (because we want many different levels), so the challenge is not to find one, but to find several *different* ones 
+
+* CatSAT takes measures to ensure that subsequent runs produce substantially different results
+
+---
+
+class: small
+
+# CatSAT Example
+
+  * Say we want to generate a quest 
+  
+  * There are 3 types of quests: Retrieve, deliver, and kill 
+  
+  * There are 4 types of enemies: Bandits, another kingdom, orcs, and wolves
+  
+  * There are some constraints on the possible quests:
+       - You can't retrieve an item from the wolves
+       - No more than 2 types of enemies should be present in any quest 
+       - The bandits do not work together with the other kingdom 
+       - etc.
+
+---
+
+# CatSAT Example
+
+
+```C#
+var p = new Problem("quest");
+...
+var retrieve = (Proposition)"retrieve";
+...
+var wolves = (Proposition)"wolves";
+...
+p.Inconsistent(wolves, retrieve);
+...
+p.AtMost(2, bandits, others, orcs, wolves);
+...
+p.Solve();
+
+```
+
+---
+
+class: center, middle
+
+# Flashback Friday: L-Systems
+
+---
+
+# L-Systems
+
+Remember L-Systems?
+
+<img src="/CI-2700/assets/img/lsystem.svg" width="50%"/>
+
+You can play around with different rules <a href="http://lsystems.slothlab.info">here</a>
+
+---
+
+# Next Week 
+
+[A Logical Approach to Building Dungeons: Answer Set Programming for Hierarchical Procedural Content Generationin Roguelike Games](https://pdfs.semanticscholar.org/f69b/f76b77da89bfd7135b9c60d2b9b10fc1ac20.pdf)
+
+---
+
+class: small
+
+# References
+
+  * Chapter 8 of [Procedural Content Generation](http://pcgbook.com/) by Noor Shaker, Julian Togelius, and Mark J. Nelson (free PDF available)
+
+  * [Clingo and Gringo ASP solvers](https://potassco.org/clingo/)
+  
+  * [Quantifying over play: Constraining undesirable solutions in puzzle design.](https://adamsmith.as/papers/fdg2013_shortcuts.pdf)
+  
+  * [CatSAT](https://github.com/ianhorswill/CatSAT)
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+    <script>
+    
+      var slideshow = remark.create();
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

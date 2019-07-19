@@ -1,0 +1,558 @@
+---
+permalink: /slides/lecture9.html
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lecture 9: Vector Models</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .oneline li { font-size: 1.25em; line-height: 1.25em; }
+      .oneline li p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline div { font-size: 1.25em; line-height: 1.25em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .medium li {  font-size: 1.1em; }
+     
+      .mmedium li {  font-size: 1.05em; }
+      
+        
+      .left-column {
+        color: #777;
+        width: 40%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# AI in Digital Entertainment
+
+### Vector Models
+
+---
+
+class: center, middle 
+
+# Document Processing
+
+---
+
+# Documents 
+
+  * For our purposes, a *document* is a text of arbitrary length
+  
+  * Not all of our documents need to have the same length!
+  
+  * For example: A data set of emails, or stories
+  
+  * We want to determine "something interesting" from the data 
+  
+---
+
+# Examples 
+
+  * Emails: Find spam emails, group emails by topic
+  
+  * Tweets: Group tweets by mood/opinion
+  
+  * Stories: Find reoccuring themes, group similiar stories
+  
+  * Movie dialog: Group by character affiliation
+  
+---
+
+# Challenges
+
+  * Text can have a lot of nuance
+  
+  * While you may have "a lot" of data, any individual pattern may only show up once or twice 
+  
+  * And if you actually have enough data to cover all cases, you may not be able to process it in reasonable time 
+  
+---
+
+class: mmedium
+
+# Approaches 
+
+  * Text is messy, and of variable length
+
+  * Numbers are easier and faster to reason about
+  
+  * So we want to encode our documents in some numerical way
+  
+  * Basically, we will get a vector (of floating point numbers) that represents our documents 
+  
+  * It would be nice if numerical operations on these vectors would do "something useful"
+  
+  * For example, the distance between vectors should represent the similarity of the corresponding documents
+
+---
+
+class: center, middle
+
+# Topic Models
+
+---
+
+class: medium
+
+# Documents and Topics
+
+  * A document consists of sentences, which consist of words   
+  
+  * We assume all documents are in the same language
+  
+  * We don't know how long each document is
+  
+  * We also don't know the actual topics a priori
+  
+  * We may have to estimate/guess *how many* different topics there could be
+  
+---
+
+# The Bag-of-Words (BoW) Model 
+
+  * We can look at our document as a "bag of words"
+  
+  * This "bag" does not have grammar
+  
+  * Basically, for each word, we count how often it shows up in the document 
+  
+  * We may want to only count the "important" words, to get a fixed-length vector
+
+---
+
+class: medium
+
+# Preprocessing 
+
+  * In this simple model, "annoy", "annoyed", and "annoying" are all different words 
+  
+  * But since we ignore grammar, we might as well just count them together
+  
+  * The process to get the "root" (or stem) of a word is called stemming
+  
+  * While we are at it, we might also want to run a spellchecker and fix misspellings
+  
+  * Other preprocesing steps: remove punctuation, convert to lowercase, ignore common words that don't carry much information like "a", "to", "the"
+  
+---
+
+# Bag-of-Words Vector 
+
+<img src="/PF-3341/assets/img/bow.png" width="50%"/>
+  
+---
+
+class: medium
+
+# Word Importance
+
+  * So far, our vectors basically just consisted of word counts
+  
+  * However, not all words are equally important to a document 
+  
+  * For example, if only a 5 of 1000 emails mention "russia", this may be a more important term than "hack", which is mentioned in 700 of the emails 
+  
+  * Idea: Instead of just counting, put it in relation with how often it shows up overall 
+  
+---
+
+class: medium
+
+# Term-Frequency Inverse-Document-Frequency
+  
+  * Term-Frequency (TF): How often does the word show up in the current document 
+  
+  * Document-Frequency (DF): How often does the word show up over *all* documents 
+  
+  * Term-Frequency, **Inverse**-Document-Frequency (TF-IDF): Divide the number of occurrences in the current document by the number of occurrences in *all* documents
+  
+  * Gives a measure of "how unique" a word is to a document
+  
+---
+
+# Topic-Analysis
+
+  * Documents with similar BoW-vectors are likely about similar topics 
+  
+  * We may also want to put a higher weight on lower-frequency words (higher TF-IDF)
+  
+  * A common approach is Latent Dirichlet Allocation (LDA), where each document is described as a mixture of `k` topics
+  
+  * We will talk about more concrete clustering algorithms in 2 weeks
+  
+---
+
+# Limitations of BoW 
+
+  * Each document is just a count/frequency of words 
+  
+  * Order/grammar is lost 
+  
+  * But context often changes meanings (compare "(not eating the) cake" and "cake (eating contest)")
+  
+  * While the frequency vectors of similar documents have some overlap, vector operations are somewhat non-sensical
+
+---
+
+class: center, middle
+
+# Vector Models
+
+---
+
+# I Dreamed a Dream
+
+  * Let's start with words 
+  
+  * Imagine we could turn a word into a vector 
+  
+  * And then we can take vector differences to get the "relation" between words 
+  
+  * For example: Vienna - Austria + Costa Rica = San Jose
+  
+--
+
+  * Turns out, we can actually do that!
+  
+---
+
+# Vector Space Models 
+
+  * As before, we will have a representation in the form of vectors 
+  
+  * But now our vector elements don't have any clear interpretation anymore, they are just numbers 
+  
+  * The vectors are *learned* from a corpus
+  
+  * We can then compare vectors using algebra, for example calculate the cosine between to vectors to get their similiarity
+  
+---
+
+# The Distributional Hypothesis
+
+  * The reason this vector trick works is the Distributional Hypothesis 
+  
+  * It says that words that are used in the same **context** are semantically similar, too 
+  
+  * However, the actual relation between this hypothesis and the vectors has been called "very hand-wavy" by some authors
+  
+---
+
+class: medium
+
+# Context
+
+  * For each word, we use `k` words before and after as the "context"
+  
+  * For example: "Artificial Intelligence is a fascinating subject" with context 1 becomes:
+  
+      - [(artificial, is), intelligence]
+      - [(intelligence, a), is]
+      - [(is, fascinating), a]
+      - [(a, subject), fascinating]
+      
+  * What do we do with these? Learn the word from the context!
+
+---
+
+class: medium
+
+# Word2Vec 
+
+  * We use a neural network to learn the relationship between words and their context 
+  
+  * Because this relationship has to be calculated by the neural network, the values of one of the hidden layers have to encode it 
+  
+  * We can use these values as a vector representation for a word!
+  
+  * Two approaches:
+      - Context is the input, word is the output (Continuous Bag-of-Words)
+      - Word is the input, context is the output (skip-gram)
+      
+---
+
+class: medium
+
+# Word2Vec 
+
+<img src="/PF-3341/assets/img/word2vec_diagrams.png" width="100%"/>
+
+---
+
+# Word2Vec Results 
+
+<img src="/PF-3341/assets/img/countries_capitals.png" width="80%"/>
+
+---
+
+class: medium
+
+# Doc2Vec
+
+  * It may seem tricky to go from learning a representation for single words, to a representation for entire documents 
+  
+  * But it is actually not!
+  
+  * Here is the trick: For each word that we learn, we provide the document ID *in addition* to the context 
+  
+  * This means that the network will have to learn some vector representation for the document while training as well 
+  
+  * Note: The "documents" are sometimes also called "paragraphs" in the literature
+  
+---
+
+# Distributed Memory version of Paragraph Vector
+
+<img src="/PF-3341/assets/img/pvdm.png" width="100%"/>
+
+---
+
+# Distributed Bag of Words version of Paragraph Vector
+
+<img src="/PF-3341/assets/img/pvdbow.png" width="100%"/>
+
+---
+
+class: center, middle
+
+# Applications
+
+---
+
+class: small
+
+# Useful Properties 
+
+  * Vector operations can be used to find analogies
+  
+     - Answer the query: Corn is to Tortilla like Flour is to ?
+     - Calculate the vector from the embedding of `corn` to the embedding of `tortilla` and add it to the vector embedding of `flour`
+     - Convert the result back to a word by using it as input to the corresponding hidden layer of the ANN 
+     
+  * Vector distance can be used to find similarities:
+  
+     - `corn`, `wheat`, `barley` all have less distance from each other than from `house`, or `airport`
+     - Distance measure: Usually cosine distance (angle between the vectors)
+     - For document vectors similar documents have a lower distance (e.g. all emails from foreign royalty offering lucrative opportunities have a low distance from each other)
+     
+  * Word model can predict words from context
+
+---
+
+class: medium
+
+# What can this be used for?
+
+  * Narrative Generation: Find analogues
+  
+  * Machine Translation: Train on known translations, *and* other text in both languages, can yield *unknown* translations
+  
+  * Speech Recognition: Predict words that were hard to hear/understand
+  
+  * Movie/book/product recommendations based on similarity of descriptions 
+  
+  * Spotify uses songs in a playlist as "words", and uses the vectors to find new songs the user might like
+
+---
+
+# Circular Mayan Narrative Art Pieces
+
+<img src="/PF-3341/assets/img/circularstory.png" width="50%"/>
+
+[*The Shape of Story: A Semiotic Artistic Visualization of a Communal Storytelling Experience*](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE17/paper/viewPDFInterstitial/15876/15243) by Long et al.
+
+---
+
+# Other Data 
+
+  * What else could we convert to vectors?
+  
+  * The sky is the limit!
+  
+  * Sounds, to find [similar sounds for poems](https://aaai.org/ocs/index.php/AIIDE/AIIDE17/paper/view/15879/15227)
+  
+  * Maybe story or game characters?
+  
+  * Levels?
+  
+---
+
+class: medium
+
+# GPT-2
+ 
+  * OpenAI trained a language model on 40GB of internet text 
+  
+  * It is **very** good at "predicting" a word from context
+  
+  * What do we mean by "good"? It will predict a word that is close to what a human might have written
+  
+  * But note: These words are not actually part of the training set, the "prediction" is actually a generation of text
+  
+  * This can be used to generate text: Write the start of a sentence, and ask it to predict the next word, then the next, etc.
+   
+---
+
+class: small
+
+# GPT-2 example
+
+*In a shocking finding, scientist discovered a herd of unicorns living in a remote, previously unexplored valley, in the Andes Mountains. Even more surprising to the researchers was the fact that the unicorns spoke perfect English.*
+
+The scientist named the population, after their distinctive horn, Ovid’s Unicorn. These four-horned, silver-white unicorns were previously unknown to science.
+
+Now, after almost two centuries, the mystery of what sparked this odd phenomenon is finally solved.
+
+Dr. Jorge Pérez, an evolutionary biologist from the University of La Paz, and several companions, were exploring the Andes Mountains when they found a small valley, with no other animals or humans. Pérez noticed that the valley had what appeared to be a natural fountain, surrounded by two peaks of rock and silver snow.
+
+---
+
+class: medium
+
+# GPT-2: Weaknesses
+
+  * The text is mostly topic-consistent, but not always sensical
+  
+  * For example: "four-horned unicorns", or "fire under water"
+  
+  * It can also be repetitive
+  
+  * Note how it says that the phenomenon is "finally solved", but doesn't actually explain how
+  
+  * The good texts are hand-picked (the authors report that it produces reasonable text in 50% of the cases for popular topics)
+  
+---
+
+# GPT-2: Risks
+
+  * Automated text generation can also be used for bad purposes: Generating fake news articles, facebook posts, scam emails, or even impersonation of other's writing style 
+  
+  * Therefore, OpenAI has decided **not** to release the model publicly
+  
+  * You can download a smaller, worse version, though
+  
+  * [Better Language Models and Their Implications](https://openai.com/blog/better-language-models/)
+  
+---
+
+# My Opinion
+
+  * Personally, I believe the downsides of not releasing the model outweigh the advantages 
+  * The advantage is that not every random mae can generate fake text  
+  * One downside is that researchers can not easily work on e.g. classifiers to determine fake text from legitimate one (OpenAI now has a "partners program" where they give a medium-sized model to partner researchers; and they released a bunch of sample output)
+  * Another downside is that the public can't *really* learn what the model is capable of, only the reported, best-case scenarios 
+  * And the actors I am actually concerned about have enough resources to just reproduce the model themselves, leaving the general public at a disadvantage
+
+---
+
+# My Opinion 
+
+I also believe that headlines like this are not helpful for anyone:
+
+<img src="/PF-3341/assets/img/gpt2.png" width="100%"/>
+
+---
+
+# Discussion
+
+  * Do you think GPT-2 should have been released?
+  
+  * What are your concerns?
+  
+  * How should AI research handle potentially dangerous technologies?
+
+---
+
+# Next Week 
+
+  * [dAIrector: Automatic Story Beat Generation through Knowledge Synthesis](http://ceur-ws.org/Vol-2321/paper8.pdf)
+  
+  * How to use vector models in improv theater!
+  
+---
+
+class: medium
+
+# Prototype Submission
+
+  * Due 3/6, AoE
+  
+  * Send me code via email or add me (yawgmoth) to a github repository
+  
+  * Write *short* readme explaining what already works and what is missing 
+  
+  * Goal: Convince me that you'll be able to finish by the end of the semester
+  
+  * This would also be a good time to tell me if you have to cut/change something
+
+---
+
+# References 
+
+  * [A Gentle Introduction to the Bag-of-Words Model](https://machinelearningmastery.com/gentle-introduction-bag-words-model/)
+  
+  * [How does LDA work](https://medium.com/@lettier/how-does-lda-work-ill-explain-using-emoji-108abf40fa7d)
+  
+  * [Word2Vec](https://skymind.ai/wiki/word2vec)
+  
+  * [A Gentle Introduction to Doc2Vec](https://medium.com/scaleabout/a-gentle-introduction-to-doc2vec-db3e8c0cce5e)
+  
+  * [GenSim (Python Library for Topic Modeling)](https://radimrehurek.com/gensim/)
+  
+  
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+
+    <script>
+      var slideshow = remark.create();
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

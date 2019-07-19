@@ -1,0 +1,614 @@
+---
+permalink: /slides/lecture4.html
+---
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lecture 4: Narrative Generation</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .medium li {  font-size: 1.1em; }
+      
+      .mmedium li {  font-size: 1.05em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .left-column {
+        color: #777;
+        width: 25%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 70%;
+        float: right;
+        padding-top: 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# AI in Digital Entertainment
+
+### Narrative Generation
+
+---
+
+class: center, middle
+
+# Narratives
+
+---
+
+class: center, middle
+
+# What is a Narrative?
+  
+---
+
+# What is a Narrative
+
+In narratology, the study of narratives, a narrative is often divided into two parts:
+
+  * The **story**, which contains all events/actions that happen in the world in chronological order 
+  
+  * The **discourse**, which describes how the story is told. This telling may (and usually does) omit parts of the story, tell them out of order, 
+
+---
+
+# What is a Story?
+
+  * As mentioned, there is a (story) world 
+  
+  * In this story world, different characters perform actions 
+  
+  * The (partially) ordered list of actions comprise the story 
+  
+--
+
+  * A (partial-order, causal link/POCL) plan can serve nicely as a formal representation for a story
+
+---
+
+class: medium
+
+# What is Discourse?
+
+  * Once we have a story, we need to tell it 
+  
+  * The *discourse* consists of **discourse actions**
+  
+  * The types of discourse actions depend on the medium:
+     - Text/Sentences
+     - Animations/Camera shots
+     - Comic panels, maps, etc.
+     
+  * [Some people](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE15/paper/view/11612) argue that discourse (what to tell) and realization (how to tell it) can/should be separated
+
+---
+
+class: center, middle 
+
+# Plan-Based Story Generation
+
+---
+
+# Plan-Based Story Generation 
+
+What do we need for planning?
+
+--
+  
+  * An initial state of the world 
+  
+  * A goal 
+  
+  * And some actions 
+  
+What's the goal?!
+
+---
+
+# Character Goals 
+
+  * Let's say we give every character some goal to pursue
+  
+  * They form plans, and pursue them
+
+  * When two plans interfere with each other there is a conflict and the characters have to come up with new plans 
+
+  * So, what can happen?
+
+---
+
+class: small
+
+# Talespin
+
+  * Talespin was one of the first story-generators
+  
+  * It used character-goals to generate fables
+  
+  * For example: "Once upon a time, there was a dishonest fox named Henry who lived in a cave, and a vain and trusting crow named Joe who lived in an elm tree. Joe had gotten a piece of cheese and was holding it in his mouth. One day, Henry walked from his cave, across the meadow to the elm tree. He saw Joe Crow and the cheese and became hungry. He decided that he might get the cheese if Joe Crow spoke, so he told Joe that he liked his singing very much and wanted to hear him sing. Joe was very pleased with Henry and began to sing. The cheese fell out of his mouth, down to the ground. Henry picked up the cheese and told Joe Crow that he was stupid. Joe was angry, and didn't trust Henrey anymore. Henry returned to his cave. The end."
+  
+---
+
+# The Fox and the Crow 
+<center>
+<img src="/PF-3341/assets/img/foxcrow.jpg" width="50%"/>
+</center>
+
+---
+
+class: medium
+
+# Misspun Tales
+  
+  * "Once upon a time, there was a dishonest fox named Henry who lived in a cave, and a vain and trusting crow named Joe who lived in an elm tree. Joe had gotten a piece of cheese and was holding it in his mouth. He noticed that he was holding a piece of cheese in his mouth. He became hungry and swallowed the cheese. Henry walked to the elm tree. The end."
+  
+  * "One Day Joe Bear was hungry. He asked his friend Irving Bird where some honey was. Irving told him there was a beehive in the oak tree. Joe Bear
+  walked to the oak tree. He ate the beehive. The end."
+
+---
+
+class: medium
+
+# Lessons
+
+  * Character goals make the characters pursue goals, but assigning them properly is tricky. Dynamic adoption of goals needs to be tightly controlled.
+  
+  * Planners have **no** concept of reality. Any assumption we have about the real world needs to be encoded, or the bear will eat the beehive.
+  
+  * Finally, the character goals have to be chosen very carefully to actually result in a story. 
+  
+  * How do humans write stories?
+
+---
+
+# Authorial Goals 
+
+  * To tell a story, the **author** decides what they want the goal to be 
+  
+  * For example: The goal of a detective story is that the detective identifies the murderer 
+
+  * The planner can then find one (or more!) plans that makes the characters take actions to achieve the goal
+
+  * Any problems with this?
+  
+---
+
+# A Misspun Tale
+
+  * Moriarty murders Irene Adler
+  
+  * Sherlock Holmes goes to investigate 
+  
+  * Moriarty confesses to the murder 
+  
+  * The end.
+  
+---
+
+# Story Planning
+
+  * Planners are very good at finding efficient solutions, by having characters kidnap themselves, the abducted child eat his abductor, the murderer just confessing their crimes, etc.
+  
+  * Stories are, almost by definition, not efficient 
+  
+  * The planner just wants to achieve the goal 
+  
+  * But (believable) characters will not always cooperate if the story goal goes against their own goal
+  
+---
+
+# Intentional Planning
+
+  * We can combine both approaches!
+  
+  * Each character has (character) goals, and the story has an overall (authorial) goal 
+  
+  * The planner can only make characters perform actions that help that character achieve their own goal
+  
+  * [IPOCL](https://www.cc.gatech.edu/~riedl/pubs/jair.pdf)
+  
+---
+
+class: small
+
+# Other Extensions 
+
+  * Conflict: One problem of planning is that the planner assumes that all actions are actually executed, but that might not be the case if there are two conflicting goals.
+  
+  * Beliefs: The planner is omniscient, and plans the character's actions that way. There have been some developments to include a model of belief for the characters (including [work by me](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE17/paper/viewPaper/15852))
+  
+  * Emotions: Have characters with emotions, opinions, etc., and actions that change them.
+  
+  * The story can also be guided by using "landmarks", i.e. plot points the story has to pass through (for example: First there has to be a murder, then there has to be an investigation, and then there has to be the part where the detective explains how they came to the conclusion).
+
+---
+
+class: center, middle
+
+# Plan-Based Discourse Generation
+
+---
+
+# Discourse Planning 
+
+   * Since stories are (partially ordered) sequences of actions, plans were a good fit 
+   
+   * However, we can also view the discourse as a sequence of actions, with preconditions and effects
+   
+   * What are the preconditions and effects of these actions?  
+--
+What the audience knows about the story!
+
+---
+
+class: medium
+
+# Discourse Actions
+
+   * Let's say we want to tell the audience about an action that is happening in the story, such as a murder 
+   
+   * Our *discourse action* has as preconditions that the audience knows the character, and the effect that the audience knows that they are dead 
+   
+   * We may also have the requirement that the audience does **not** know who the murderer is 
+   
+   * Depending on the medium, the discourse action can thus take the *story action* and translate it into text ("Then John was shot"), or a camera shot that carefully reveals exactly what we want the audience to know "and nothing more"
+   
+---
+
+class: medium
+
+# Challenges
+
+   * People are very good at inference!
+   
+   * Some discourse actions also reveal more than they intend to, like camera shots that show things in the background 
+   
+   * In actual movies, (almost) every detail is decided on intentionally by the director and/or cinematographer 
+   
+   * Good discourse planning models such effects
+   
+---
+
+class: mmedium
+
+# Narrative Generation
+
+  * Pipeline approach: Generate a story, then use the story as input to a discourse generator
+  
+  * Integrated approach: Sometimes telling the story might require changes to it (for example, move a character to a different room so that they are not in the camera shot)
+  
+--
+
+Other options:
+  
+  * Simulation approach: Don't actually generate a story, but let narrative "emerge" from a simulation 
+  
+  * Pattern-based approaches: Instead of generating a narrative from whole cloth, we can use existing narratives as a basis
+  
+---
+
+class: center, middle 
+
+# Emergent Narrative 
+
+---
+
+# Simulation-based approaches 
+
+  * What is a story?
+  
+--
+
+  * Many stories are the result of authors pretending that characters pursue their lives
+  
+  * So why not just simulate "the world", and see what happens?
+  
+  * With the proper world, a story will be generated
+  
+---
+
+# Dwarf Fortress
+
+<img src="/CI-2700/assets/img/dwarffortress.png" width="100%"/>
+
+---
+
+# Challenges 
+
+  * Just sit in the hallway/somewhere on campus and watch 
+  
+  * Sure, you'll see a "story", but is it an interesting story?
+  
+  * Interesting stories usually require some impetus, like a conflict, grand goals (save the universe!), or interesting/odd characters 
+  
+  * That doesn't mean a simulation will not contain *any* interesting stories, they might just be hard to find
+  
+---
+
+class: center, middle 
+
+# Pattern-Based Approaches 
+
+---
+
+# Propp's Morphology of the Tale 
+
+  * Vladimir Propp analyzed Russian folk tales to find commonalities
+  
+  * He identified 31 "narrative functions" and 7 "character functions"
+  
+  * The tales he analyzed contained subsets of these functions 
+  
+  * A story generator could be based on selecting appropriate subsets and instantiating them properly 
+  
+---
+
+class: small
+
+# Some of Propp's Narrative Functions
+
+* 2 Interdiction: The Hero is warned 
+
+* 8 Villainy and Lack: The need is identified
+
+* 11 Departure: Hero leaves on mission
+
+* 12 Testing: Hero is challenged to prove heroic qualities
+
+* 14 Acquisition: Hero gains magical item
+
+* 18 Victory: Villain is defeated 
+
+* 20 Return: Hero sets out for home
+
+* 23 Arrival: Hero arrives unrecognized
+
+---
+
+class: medium
+
+# Plotto: The Master Book of All Plots 
+
+  * William Wallace Cook, "the man who deforested Canada", wrote hundreds of pulp fiction novels in the early 1900s
+  
+  * At some point he employed *three* stenographers to dictate his books to
+  
+  * He then spent five years to categorize and organize "all" plots in a book, "Plotto, A New Method of Plot Suggestion for Writers of Creative Fiction (1928)", also known as "Plotto: The Master Book of All Plots (2011)"
+  
+  * The book contains "master plots", and plot fragments, with instructions on how to combine them
+  
+---
+
+class: medium
+
+# Some Plot Fragments
+
+<img src="/PF-3341/assets/img/fragments.png" width="100%"/>
+
+---
+
+class: small
+
+# Story Generation with Plotto
+
+  * The plot fragments are essentially a graph 
+  
+  * To generate a story, we can just walk around randomly on this graph 
+  
+(1247) A seeks craftily to keep the good opinion of the public. <br/>
+(658) A, a man of high standing in his community, 
+fears that through unusual conditions his 
+character will be discredited. A seeks 
+to safeguard his reputation, which is 
+threatened by unusual conditions.<br/>
+(652b) A, the idol of his people, is about to 
+lose a wrestling match to A-3, his rival. 
+A, wrestling in the open with A-3, a 
+rival wrestler, prevents A-3 from winning 
+a victory by falling from a cliff, 
+apparently by accident, and losing his life.
+
+---
+
+class: small
+
+# Challenges with Plotto
+
+  * The plot fragments range from very specific ("A is a performer whose specialty is a dare-devil act of great danger: A is a "human fly" who climbs the walls of tall buildings") to very abstract ("A seeks to free himself from certain meddlesome influences that interfere seriously with the practice of his profession")
+  
+  * Following plot fragments may just repeat/refine previous ones, or they may introduce entirely new characters 
+  
+  * The "random walk" approach has no memory, the end of the story may be completely disconnected from the start 
+  
+  * Published in 1928, some of the contents are questionable (generously speaking)
+  
+---
+
+class: small
+
+# Crowdsourcing Storytelling
+
+  * Another approach is to ask people to write stories 
+  
+  * If we collect enough different variations of the same story idea, we can draw inferences about what is important for these stories
+  
+  * Better yet, we can use machine learning to learn similarities
+  
+  * What do we need to learn? A suitable *representation*
+  
+---
+
+class: small
+
+# Plot Graphs
+
+  * Graphs are a nice, formal representation for stories/plans
+  
+  * Each node is an action 
+  
+  * Two nodes are connected if the actions directly follow each other in the story 
+  
+  * By combining multiple *different* stories into one larger graph, commonalities can be found, and *new* paths through the graph can be explored
+
+---
+
+# Plot Graphs
+
+<img src="/PF-3341/assets/img/plotgraph.png" width="80%"/>
+  
+---
+
+class: center, middle 
+
+# Interactive Narrative 
+
+---
+
+class: small
+
+# Why Narrative Generation?
+
+  * We have talked about *how* computers can generate stories
+  
+  * But why would we want that?
+  
+  * The most obvious reason is: People enjoy consuming narratives 
+  
+  * But we can also use them in interactive contexts 
+  
+  * And I don't mean just as the backstory for a game 
+  
+---
+
+# Westworld 
+
+<img src="/PF-3341/assets/img/westworld.png" width="100%"/>
+
+---
+
+# Westworld: Narrative Loops 
+
+<img src="/PF-3341/assets/img/westworldloop.png" width="100%"/>
+
+---
+
+class: small
+
+# Interactivity
+
+  * Just as the guests in Westworld, players want to be able to interact with the narratives in games 
+  
+  * They want their actions to matter (or at least feel like they do)
+  
+  * To support that, we need to account for the user's actions 
+  
+  * "Easiest" way: Just generate a new story every time the user interferes 
+  
+---
+
+class: small
+
+# Mediation
+
+  * Sometimes the user may "destroy" our carefully crafted story 
+  
+  * In such cases, the game needs to "fix" the story 
+  
+  * Several methods:
+     - Don't allow the user to take actions that break the story 
+     - Magically fix problems (revive necessary characters)
+     - Change the game world (for example in rooms the player hasn't seen yet)
+     
+---
+
+# Why Narrative Generation?
+
+  * To consume stories, or as the story for a game
+  
+  * But for that we need *different* stories 
+  
+  * And we want them quickly
+  
+  * For next week: Read [Fast and Diverse Narrative Planning through Novelty Pruning](https://nil.cs.uno.edu/publications/papers/farrell2016fast.pdf)
+  
+---
+
+# Announcement
+
+  * The week after easter is Semana Universitaria
+  
+  * The university is basically closed on Friday afternoon
+  
+  * There will be **no class** on 26/4
+  
+  * I will talk about intentions *and* beliefs next week 
+  
+  * We will hear *both* presentations on 3/5
+  
+---
+
+class: small
+
+# Resources 
+
+  * [The Story of Meehan's TaleSpin](https://grandtextauto.soe.ucsc.edu/2006/09/13/the-story-of-meehans-tale-spin/)
+  
+  * [TaleSpin - An Interactive Program that Writes Stories](https://www.cs.utah.edu/nlp/papers/talespin-ijcai77.pdf)
+  
+  * [Narrative Planning: Balancing Plot and Character](https://www.cc.gatech.edu/~riedl/pubs/jair.pdf)
+  
+  * [Morphology of the Tale](https://monoskop.org/images/f/f3/Propp_Vladimir_Morphology_of_the_Folktale_2nd_ed.pdf)
+  
+  * [Interactive Version of Plotto](https://garykac.github.io/plotto/plotto-mf.html#1)
+  
+  * [Plans and Planning in Narrative Generation: A Review of Plan-Based Approaches to the Generation of Story, Discourse and Interactivity in Narratives](https://nil.cs.uno.edu/publications/papers/young2013plans.pdf)
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+    <script>
+      var slideshow = remark.create({"highlightStyle": "dark"});
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

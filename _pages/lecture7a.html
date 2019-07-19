@@ -1,0 +1,319 @@
+---
+permalink: /slides/lecture7a.html
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Re-determinizing Information Set Monte Carlo Tree Search in Hanabi</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .oneline li { font-size: 1.25em; line-height: 1.25em; }
+      .oneline li p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline div { font-size: 1.25em; line-height: 1.25em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .medium li {  font-size: 1.1em; }
+     
+      .mmedium li {  font-size: 1.05em; }
+      
+        
+      .left-column {
+        color: #777;
+        width: 40%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Re-determinizing Information Set Monte Carlo Tree Search in Hanabi
+
+### James Goodman
+
+#### Presentation by: Markus Eger
+
+---
+
+# Hanabi 
+
+<img src="hanabiboard.jpg" width="70%"/>
+
+---
+
+# Challenges in Hanabi 
+
+  * Players can not see their own cards 
+  
+  * Need to reason about what the other player already knows 
+  
+  * Determine which actions have the highest expected score 
+  
+  * Use Monte Carlo Tree Search (for agent-agent games)
+  
+---
+
+# Monte Carlo Tree Search with Hidden Information 
+
+  * In order to cope with the unknown information, Monte Carlo Tree Search typically "determinizes" the game state before each rollout 
+  
+  * This means that one random shuffle of the deck is performed, and *that* order is assumed to be fixed and known to everyone
+  
+  * By doing a large number of simulations, the best move on average should emerge
+
+---
+
+# Monte Carlo Tree Search for Hanabi 
+
+  * The problem with determinization is that it does not actually model the players' knowledge
+  
+  * Actions that only/mostly have epistemic effects (like hint-giving) are therefore considered "useless"
+  
+  * For example: We shuffle the deck, the other player has the red 2, with the red 1 already being on the board. But since they know the order of the cards, during the simulation their best move is to play the red 2, regardless of any hints that are given.
+  
+---
+
+# Re-determinizing Information Set Monte Carlo Tree Search
+
+  * Idea: Keep track of what every player knows about their cards
+  
+  * Instead of determinizing the game state only once, determinize it for each player 
+  
+  * In other words: Determinize the game state for the player performing the action, and *then* **re-determinize** for every other agent that performs an action in the tree
+  
+---
+
+class: medium
+
+# RIS-MTCS in Hanabi
+
+  * For example: The other player has the red 2 
+  
+  * The current player determinizes the game state using the knowledge that they have 
+  
+  * During the rollouts, the game state is redeterminized in each child with the information that the other player has 
+  
+  * If the first action the current player performs is giving a hint, the information of the other player changes in this child node
+  
+---
+
+class: medium
+
+# Inconsistencies 
+
+  * Now, if the other player decides to play their second card because they think it is e.g. the green 3 (even though it is the yellow 5), *their* imagined game state will have the green 3 in play, but the *actual* game state (that our agent knows) will be that the yellow 5 is in the discard pile 
+  
+  * Such inconsistencies are fixed/removed for the subsequent child nodes, and the game state as known by the original agent restored
+  
+  * With this fixed state, a random or heuristic-guided rollout can then be performed 
+  
+---
+
+class: mmedium
+
+# Performance considerations 
+
+  * As described, an agent using this approach can score up to 18.48 points on average, if they are given 3s per turn 
+  
+  * The CIG competition for Hanabi gave agents 40ms/turn 
+  
+  * With 100ms, the agent reaches 11.9 points on average, well below what other, much simpler agents can achieve in much less time 
+  
+  * Players have 4 cards to play, discard or 12 color- and 12 rank-hints (4 per other player) in a 4-player game 
+  
+  * In 100ms, the agent only explores to an average depth of 3.2
+  
+---
+
+# Improvements
+  
+  * Many actions are usually not worth considering, like blindly playing cards 
+  
+  * Using expert knowledge, the actions that are considered can be reduced dramatically
+  
+  * The author only considers 9, in four "categories": Giving hints that are "useful", complete information that is required, play cards that are probably playable, or discard the card most likely to be useless
+  
+---
+
+# Convention
+  
+  * Remember last week? Human players expect hints to be immediately useful 
+  
+  * The author uses a similar convention to interpret hints for playable cards: If a single card was hinted to the *next* player, they assume that it is playable 
+  
+  * The agents with this convention achieve up to 19.4 points on average with 100ms/turn, and up to 20.81 points on average with 3000ms/turn
+  
+---
+
+# The CIG Hanabi Competition
+  
+  * As noted, the CIG Hanabi competition gives agents 40ms/turn 
+  
+  * The results for 100ms/turn were decent, but not spectacular 
+  
+  * Less time will not improve the score 
+  
+  * The agent needs to be even faster
+  
+---
+
+class: medium
+
+# Playing Hanabi in 40ms
+
+  * Idea: Play games with RIS-MCTS, and record them
+  
+  * Then use a machine learning algorithm to learn which actions should be performed in which situation 
+  
+  * To actually play the game, instead of using RIS-MCTS directly use the *learned* actions 
+  
+  * What do we need for this? Inputs and Outputs
+  
+  * The inputs are *features* of the game state
+  
+---
+
+# Features
+
+  * 10 features represent the public game state: Score, hint tokens, lives, number of cards left in the deck, moves left, points lost, 5s, 4s, 3s, 2s played
+  
+  * Another 4 features represent the players' knowledge: The maximum probability that a card is playable, or discardable, the maximum probability that a card will be playable soon (one card is missing), and the number of pieces of information the player got
+  
+---
+
+# Machine Learning
+  
+Two variants:
+ 
+  * Use features as inputs, and actions performed by the agent as outputs to train a neural network 
+  
+  * Use features *and* an action encoding as inputs, and the *value* of performing that action in the given state as output, and learn an approximation to this action value function
+  
+For training, the features and values for the current game state *as well as* for nodes deeper in the tree are used (if they are visited sufficiently often)  
+
+---
+
+# Using action selection for playing Hanabi
+  
+  * The Neural Networks can be used to play Hanabi directly 
+  
+  * When it is the agent's turn, they turn the game state into a feature vector and use the output of the neural network as their action (or to evaluate their best action)
+  
+  * But this is very fast, so there is time for some additional decisions 
+  
+---
+
+# Alpha Hanabi 
+
+  * AlphaGo Zero uses MCTS and a learned evaluation function to avoid lengthy rollouts
+  
+  * We now have a learned evaluation function ... 
+  
+  * Perform a shallow MCTS search, and evaluate leaf nodes with the learned evaluation function 
+  
+---
+
+class: medium
+
+# Another idea 
+
+  * To use MCTS, we need to perform game rollouts 
+  
+  * Usually these are done randomly or using some heuristic because the actions need to be determined quickly
+  
+  * But now we have a way to determine actions quickly: Our neural networks 
+  
+  * Process: Run MCTS with random rollouts, learn an evaluation function, run MCTS with rollouts guided by the learned evaluation function, learn a new evaluation function, etc.
+
+---
+
+# Results
+
+Putting it all together:
+  
+   * 2 players: 21 points on average using the 2nd level evaluation function 
+   
+   * 3 players: 21 points on average using the 3rd level evaluation function 
+   
+   * 4 players: 20.9 points on average using the 3rd level evaluation function 
+   
+   * 5 players: 19.7 points on average using the 3rd level evaluation function
+
+---
+
+# Mixed Track
+
+  * The CIG Hanabi competition also has a mixed track 
+  
+  * In this variant, the agent players with *other* agents, and needs to be able to adapt to their behavior 
+  
+  * However, it is not known which the possible allies are a priori
+  
+---
+
+# Mixed Track: Approach
+
+  * Assume only 10 predefined agent types exist 
+  
+  * Assign a probability to each of them, and use this probability for sampling in the MCTS process 
+  
+  * When the other player performs an action, update the probability according to how likely each agent type would perform the same action
+
+---
+
+class: center, middle
+
+# Discussion
+
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+
+    <script>
+      var slideshow = remark.create();
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

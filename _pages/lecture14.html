@@ -1,0 +1,581 @@
+---
+permalink: /slides/lecture14.html
+---
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lecture 14: Terrain Generation</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .ssmall li {  font-size: 0.9em; }
+      
+      .oneline li { font-size: 1.25em; line-height: 1.25em; }
+      .oneline li p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline div { font-size: 1.25em; line-height: 1.25em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .medium li {  font-size: 1.1em; }
+     
+      .mmedium li {  font-size: 1.05em; }
+      
+        
+      .left-column {
+        color: #777;
+        width: 40%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 0.8em;
+      }
+      
+       .right-column1 {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 0.75em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# AI in Digital Entertainment
+
+### Terrain Generation
+
+---
+
+class: center, middle
+
+# Terrains
+
+---
+
+# Terrain Generation 
+
+* Say we have a 3D game where you visit a variety of islands
+
+* We want to generate each island procedurally
+
+* How do we do that?
+
+---
+
+# Terrain Representation 
+
+* For now, let's ignore caves
+
+* Each island is a 2D surface in 3D space 
+
+* We can "just" store (and generate) the height value for each point
+
+* However, that will still be way too many values, so we use a grid instead
+
+---
+
+# Grid-based Heightmap
+
+<img src="/PF-3341/assets/img/interpolation.gif" width="100%"/>
+
+---
+
+# Bilinear Interpolation Artifacts
+
+<img src="/PF-3341/assets/img/linearinterpolation.jpg" width="100%"/>
+
+---
+
+# Bicubic Interpolation
+
+<img src="/PF-3341/assets/img/bicubic.png" width="100%"/>
+
+---
+
+# Bicubic Interpolation
+
+<img src="/PF-3341/assets/img/bicubicinterpolation.jpg" width="100%"/>
+
+---
+
+# Spline Interpolation
+
+<img src="/PF-3341/assets/img/splines.jpg" width="100%"/>
+
+---
+
+class: center, middle 
+
+# Noise-Based Terrain Generation 
+
+---
+
+# Noise-Based Terrain Generation 
+
+* What is noise? Random numbers (more or less)
+
+* So, let's generate a terrain by picking height values at random 
+
+* What could possibly go wrong?
+
+---
+
+# Random Terrain 
+
+<img src="/PF-3341/assets/img/randomterrain.png" width="100%"/>
+
+---
+
+# Difference-Based Terrain Generation 
+
+* When we just pick random numbers, adjacent grid cells may have very different values 
+
+* This will lead to a very rugged looking terrain
+
+* What would be more realistic? Don't let the height values *change* between adjacent vertices arbitrarily
+
+* Instead, use the existing values of the neighbors, and *add* a small difference value 
+
+---
+
+# Difference-Based Terrain 
+
+<img src="/PF-3341/assets/img/differenceterrain.png" width="100%"/>
+
+---
+
+# Perlin Noise Terrain Generation 
+
+* The terrain already looks a lot better, and we may control how rugged it looks by controlling how much the difference can be at most 
+
+* It could be smoother, though!
+
+* Idea: Instead of controlling the difference between heights, we control the difference of the difference in height, or rather: We generate a smooth derivative
+
+* Perlin Noise uses this idea!
+
+---
+
+# Perlin Noise Terrain
+
+<img src="/PF-3341/assets/img/perlin.jpg" width="100%"/>
+
+---
+
+class: center, middle 
+
+# Agent-Based Terrain Generation 
+
+---
+
+class: medium
+
+# Agent-Based Terrain Generation 
+
+* Instead of generating the entire terrain at once, it may be worthwhile to divide the task into smaller subtasks 
+
+* We can then implement an agent for each subtask 
+
+* What is the general process of creating landscapes?
+   - Coastline generation 
+   - Landform generation 
+   - Erosion
+   
+---
+
+class: medium
+
+# Coastline Generation 
+
+* Coastline agents draw the outline of the landscape
+
+* Generation starts with one agent that splits until each agent is responsible for a small enough part of the map 
+
+* Within this part, the agent determines random points, using attractors and repulsor points for the coast line 
+
+* The agents work concurrently on different parts of the map
+
+* When the agents finish, smoothing agents wander around and change the elevation of nodes according to their neighbors
+
+---
+
+# Coastlines
+
+<img src="/PF-3341/assets/img/coastlines.png" width="100%"/>
+
+---
+
+class: medium
+
+# Beaches and Mountains 
+
+* Beach agents wander around the parts of the map that are close to sea level
+
+* They may create beaches by flattening the land 
+
+* Likewise, mountain agents wander the parts of the map that are above a certain height level
+
+* When they find such spots, they may increase the height to create mountains 
+
+* They will wander in a certain direction to create a ridge, with a chance to turn
+
+* After beaches and mountains are created, the landscape is smoothed again
+
+---
+
+# Beaches and Mountains
+
+<img src="/PF-3341/assets/img/beachmountain.png" width="100%"/>
+
+---
+
+# Rivers 
+
+* After beaches and mountains are created, it is time to make rivers 
+
+* For each river, a start-point in the mountains, and an end point on the coast are determined 
+
+* An agent starts at the end-point and tries to wander uphill towards the start-point 
+
+* If they succeed, they then go back downhill and dig a bed for the river 
+
+---
+
+# Rivers
+
+<img src="/PF-3341/assets/img/rivers.png" width="100%"/>
+
+---
+
+# Agent-Based Terrain Generation 
+
+* Each agent has several parameters that determine how it generates "its" feature 
+
+* By varying these parameters, different types of landscapes can be generated 
+
+* For example, the mountain agent creates ridges, but turns with a certain probability. Changing this probability controls how straight mountain-ridges will be 
+
+* The number of agents of each type also dictates how prevalent each feature is
+
+---
+
+class: center, middle 
+
+# Cellular Automata-Based Terrain Generation
+
+---
+
+class: small
+
+# Cellular Automata 
+
+  * Cellular Automata are zero-player games on a grid 
+  
+  * The basic idea is: Every cell has some states (sometimes just "on" and "off"), and there are rules for how to update the grid 
+  
+  * Most famous Cellular Automaton rules: Conway's Game of Life
+  
+     - If a cell is "on" and has two or three (of its eight) neighbors that are also "on", it will continue being "on", otherwise it is turned "off"
+     - If a cell is "off" and has exactly three (of its eight) neighbors that are "on", it will turn "on", otherwise it stays turned "off"
+  
+---
+
+# Cellular Automata 
+
+<canvas id="c" width="800" height="600"></canvas>
+
+---
+
+class: small
+
+# Cellular Automata 
+
+  * How is this useful?
+  
+  * Different rules make different shapes!
+  
+  * Let's say we want to generate caves:
+      - Fill the grid randomly with "on" and "off" cells 
+      - A cell is turned "on" if five or more of its neighbors are "on"
+      - Run for a number of generations
+      
+---
+
+# Cellular Automata 
+
+<img src="/CI-2700/assets/img/cavegen.png" width="100%"/>
+
+---
+
+# Cellular Automata Terrain Generation
+
+  * We can also interpret our states as "lower" and "raise" terrain 
+  
+  * The rules determine how much raised/lowered neighbors influence a cell to be raised/lowered 
+  
+  * The terrain output also depends on how many generations we run 
+  
+  * Alternatively: Each state determines the "type" of terrain of a larger map fragment (beach, mountain, plains, etc.)
+  
+---
+
+# Cellular Automata Terrain
+
+<img src="/PF-3341/assets/img/cellautomata.png" width="80%"/>
+
+---
+
+# Next Week 
+
+* Project Presentations 
+
+* Keep your presentation to about 15-20 minutes
+
+---
+
+class: center, middle 
+
+# Conclusion
+
+---
+
+# Conclusion 
+
+  - It was the first time I taught this class, I enjoyed it a lot!
+  
+  - I hope you enjoyed taking it, too
+  
+  - Y'all were a great audience!
+  
+  - I hope you all had fun with your projects 
+  
+  - If you are interested in pursuing research around game AI (in Costa Rica or elsewhere), come talk to me!
+  
+---
+
+class: small
+
+# My Research
+
+  - I am currently working on non-verbal communication in video games 
+  
+  - For example, how can an AI agent use facial expression analysis to understand a human player better 
+  
+  - We're also looking at the timing of actions, and eye tracking
+  
+  - Currently our applications are cooperative games, such as Hanabi or Pandemic 
+  
+  - I'm interested in AI for games that plays with human players
+  
+  - If you're interested in working with me, come talk to me!
+
+---
+
+# My previous research: One Night Ultimate Werewolf
+
+<img src="/CI-2700/assets/img/onuwscreen.png" width="90%"/>
+
+---
+
+# My research: Hanabi
+
+<img src="/CI-2700/assets/img/screenshot.png" width="100%"/>
+
+---
+
+# My student's research: Pandemic 
+
+<img src="/PF-3341/assets/img/pandemic.jpeg" width="100%"/>
+
+---
+
+# Feedback 
+
+  
+  - If there is an official evaluation, please participate
+  
+  - You can also let me know if there is anything you particularly liked/disliked (for example by posting anonymously and/or privately on Piazza)
+  
+  - What was your favorite/least favorite part of the class (if you want to share)?
+
+
+ 
+---
+
+class: center, middle
+
+##  Thank you all for your participation!
+
+---
+
+class: small
+
+# References
+
+  * Chapter 4 of [Procedural Content Generation](http://pcgbook.com/) by Noor Shaker, Julian Togelius, and Mark J. Nelson (free PDF available)
+  
+  * [Controlled Procedural Terrain Generation Using Software Agents](http://larc.unt.edu/ian/pubs/terrain.pdf), by Jonathon Doran and Ian Parberry
+  
+  * [Cave Generation with Cellular Automata](https://www.raywenderlich.com/2425-procedural-level-generation-in-games-using-a-cellular-automaton-part-1)
+  
+  * [Algorithmic Terrain with Cellular Automata](https://demonstrations.wolfram.com/AlgorithmicTerrainWithCellularAutomata/) Wolfram Alpha Demonstration Project
+
+  * [Generating Terrain with Cellular Automata](http://ideabyre.com/world-building/erosion/erosion_model)
+  
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+    <script>
+    
+      var slideshow = remark.create();
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+       var canvas = document.getElementById('c').getContext('2d'),
+    cells = [];
+canvas.strokeStyle = '#e1e1e1';
+canvas.fillStyle = 'cadetblue';
+      golinit();
+
+/**
+ * Initialize game.
+ *
+ * Will place a Gosper glider gun in the world and start simulation.
+ */
+function golinit() {
+    for (var i=0; i<64; i++) {
+        cells[i] = [];
+        for (var j=0; j<64; j++) {
+            cells[i][j] = 0;
+        }
+    }
+    
+    // Prefilled cells
+    [
+        // Gosper glider gun
+        [1, 5],[1, 6],[2, 5],[2, 6],[11, 5],[11, 6],[11, 7],[12, 4],[12, 8],[13, 3],[13, 9],[14, 3],[14, 9],[15, 6],[16, 4],[16, 8],[17, 5],[17, 6],[17, 7],[18, 6],[21, 3],[21, 4],[21, 5],[22, 3],[22, 4],[22, 5],[23, 2],[23, 6],[25, 1],[25, 2],[25, 6],[25, 7],[35, 3],[35, 4],[36, 3],[36, 4],
+        
+        // Random cells
+        // If you wait enough time these will eventually take part
+        // in destroying the glider gun, and the simulation will be in a "static" state.
+     //   [60, 47],[61,47],[62,47],
+     //   [60, 48],[61,48],[62,48],
+      //  [60, 49],[61,49],[62,49],
+        [60, 51],[61,51],[62,51],
+    ]
+    .forEach(function(point) {
+        cells[point[0]][point[1]] = 1;
+    });
+    
+    golupdate();
+}
+
+/**
+ * Check which cells are still alive.
+ */
+function golupdate() {
+    
+    var result = [];
+    
+    /**
+     * Return amount of alive neighbours for a cell
+     */
+    function _countNeighbours(x, y) {
+        var amount = 0;
+        
+        function _isFilled(x, y) {
+            return cells[x] && cells[x][y];
+        }
+        
+        if (_isFilled(x-1, y-1)) amount++;
+        if (_isFilled(x,   y-1)) amount++;
+        if (_isFilled(x+1, y-1)) amount++;
+        if (_isFilled(x-1, y  )) amount++;
+        if (_isFilled(x+1, y  )) amount++;
+        if (_isFilled(x-1, y+1)) amount++;
+        if (_isFilled(x,   y+1)) amount++;
+        if (_isFilled(x+1, y+1)) amount++;
+        
+        return amount;
+    }
+    
+    cells.forEach(function(row, x) {
+        result[x] = [];
+        row.forEach(function(cell, y) {
+            var alive = 0,
+                count = _countNeighbours(x, y);
+            
+            if (cell > 0) {
+                alive = count === 2 || count === 3 ? 1 : 0;
+            } else {
+                alive = count === 3 ? 1 : 0;
+            }
+            
+            result[x][y] = alive;
+        });
+    });
+    
+    cells = result;
+    
+    goldraw();
+}
+
+/**
+ * Draw cells on canvas
+ */
+function goldraw() {
+    canvas.clearRect(0, 0, 1512, 512);
+    cells.forEach(function(row, x) {
+        row.forEach(function(cell, y) {
+            canvas.beginPath();
+            canvas.rect(x*8, y*8, 8, 8);
+            if (cell) {
+                canvas.fill();
+            } else {
+                canvas.stroke();
+            }
+        });
+    });
+    setTimeout(function() {golupdate();}, 70);
+    }
+    </script>
+  </body>
+</html>

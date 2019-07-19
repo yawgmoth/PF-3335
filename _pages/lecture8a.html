@@ -1,0 +1,285 @@
+---
+permalink: /slides/lecture8a.html
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Build Order Optimization in StarCraft</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .oneline li { font-size: 1.25em; line-height: 1.25em; }
+      .oneline li p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline div { font-size: 1.25em; line-height: 1.25em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .medium li {  font-size: 1.1em; }
+     
+      .mmedium li {  font-size: 1.05em; }
+      
+        
+      .left-column {
+        color: #777;
+        width: 40%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Build Order Optimization in StarCraft
+
+### David Churchill, Michael Buro 
+### University of Alberta, Canada
+
+#### Presentation by: Markus Eger
+
+---
+
+# StarCraft 
+
+<img src="/PF-3341/assets/img/broodwar.jpg" width="100%"/>
+
+---
+
+class: medium
+
+# StarCraft 
+
+  * Real-time strategy game 
+  
+  * Gameplay consists of gathering resources, constructing buildings, training units, and combat 
+  
+  * Actions are performed by in-game units, e.g. workers construct buildings, buildings train units, units fight 
+  
+  * With multiple units, multiple actions can be performed in parallel
+  
+  * Many challenges for AI research!
+  
+---
+
+class: medium
+
+# StarCraft AI competition
+
+  * There are several AI competitions for StarCraft (and for StarCraft II)
+  
+  * One is held every year at AIIDE
+  
+  * David Churchill is the main organizer
+  
+  * Recently, AlphaStar has actually beat top human players at StarCraft II
+  
+  * To be successful in the game, there are many sub-problems that need to be considered
+  
+---
+
+class: medium
+
+# Build Orders 
+
+  * One sub-problem is concerned with the construction of units 
+  
+  * Say you decide that your strategy needs 25 space marines 
+  
+  * What is the best way to get them?
+  
+  * What is "best"?
+  
+---
+
+class: medium
+
+# Build Order Optimization
+  
+  * The *makespan* of a project is the time from start to end, i.e. from the start of the earliest task to the end of the latest task; several tasks may run in parallel
+  
+  * In our scenario the "project" is the construction of units 
+  
+  * If we build the same units, taking a shorter time is preferable, so our goal is to *minimize the makespan*
+  
+  * To solve this optimization problem, we need a representation of states and actions 
+  
+---
+
+class: medium
+
+# State Representation 
+
+  * The game is simulated one frame at a time
+
+  * There is a set of resources: minerals, vespene gas, supply, but also buildings and units
+  
+  * Resources can be "borrowed" by actions 
+  
+  * In each state, a number of actions can be in progress
+  
+  * Additionally, the resource production is present in the state as an abstraction
+  
+---
+
+class: small 
+
+# Action Representation 
+
+  * An action has preconditions and effects
+  
+  * Preconditions can be:
+  
+     - Consumption of resources (e.g. minerals, gas, supply)
+     
+     - Requiring the presence of resources (prerequisite buildings)
+     
+     - Borrowing resources (e.g. using a building or worker to construct a unit)
+     
+  * The effects represent the resources that are produced by the action 
+  
+  * Additionally, each action has a duration (with an extra 4 seconds added to construction actions)
+
+---
+  
+# Depth-First Branch and Bound 
+
+  * Depth-First search can be used to find *a* solution 
+  
+  * The cost of this solution is remembered (as a bound), and Depth-First search continues
+  
+  * When a lower cost solution is found, the bound is updated 
+
+  * Additionally, heuristic information can be used to *exclude* branches from being explored
+  
+---
+
+# Heuristic 
+
+  * Landmarks: The cost to build certain units is *at least* the cost to build the prerequisites
+  
+  * Resources: The cost to create resources is *at least* the cost of gathering the necessary minerals and gas 
+  
+  * Use the higher of these two values as the actual heuristic value
+  
+---
+
+class: medium
+
+# Fast-Forwarding 
+
+  * The simulation runs at 24 frames per second
+  
+  * In many frames, all the player will do is wait for more resources to be collected
+  
+  * It is possible to create a "do nothing" action that just forwards one frame, but doing so is inefficient, since most actions will be "do nothing"
+  
+  * Instead, let's time travel!
+  
+  * If the search wants to execute an action for which there currently are not enough resources, it instead fast-forwards in time until the preconditions are met 
+  
+---
+
+class: medium
+
+# Concurrency
+
+  * Multiple actions can be executed at the same time 
+  
+  * However, if we can execute two actions in parallel (i.e. we have the resources for both), it does not matter if we actually do that, or if we start them in sequence 
+  
+  * We just have to make sure that we don't advance simulation time in the meanwhile 
+  
+  * Effect: Actions are actually listed as being executed sequentially (but during the same simulation frame)
+  
+---
+
+class: medium
+
+# Macro Actions
+
+  * Imagine our resulting plan has 40 actions 
+  
+  * If we know that all actions always happen in pair, we would only have 20 such actions 
+  
+  * This greatly speeds up the search for plans, and thus also the search for optimal plans
+  
+  * The authors included some expert-informed macros in the form of actions being repeated k times 
+  
+---
+
+class: medium
+
+# Experiment Design
+
+  * There is no good way to evaluate a build order
+  
+  * Idea: Look at games from expert players and see what they build 
+  
+  * Then compare with the generated build order that produces the same units 
+  
+  * Obviously biased: Expert players change their plans
+  
+---
+
+class: medium
+
+# Experiment Results
+
+<img src="/PF-3341/assets/img/starcraftresults.png" width="100%"/>
+
+(Graphs from *Build Order Optimization in StarCraft*, by Churchill and Buro)
+
+---
+
+class: center, middle
+
+# Discussion
+
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+
+    <script>
+      var slideshow = remark.create();
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

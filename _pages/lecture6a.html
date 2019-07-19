@@ -1,0 +1,190 @@
+---
+permalink: /slides/lecture6a.html
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Toward Characters Who Observe, Tell, Misremember, and Lie</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .oneline li { font-size: 1.25em; line-height: 1.25em; }
+      .oneline li p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline div { font-size: 1.25em; line-height: 1.25em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .medium li {  font-size: 1.1em; }
+     
+      .mmedium li {  font-size: 1.05em; }
+      
+        
+      .left-column {
+        color: #777;
+        width: 40%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Toward Characters Who Observe, Tell, Misremember, and Lie
+
+### James Owen Ryan, Adam Summerville, Michael Mateas, and NoahWardrip-Fruin
+### University of California, Santa Cruz
+
+#### Presentation by: Markus Eger
+
+---
+
+# The Problem
+
+  * Many stories rely on lies, knowledge propagation or revelation, and forgetting
+  
+  * Modeling such phenomena is rare in existing games 
+  
+  * Omniscient characters are often not very believable
+  
+---
+
+# Goals
+
+  * Characters obtain and propagate knowledge
+  
+  * Knowledge can be wrong for several reasons: misremembering, lieing, fabrication of information, etc.
+  
+  * It is possible to trace where knowledge comes from
+  
+---
+
+class: center, middle
+
+# Talk of the Town
+
+---
+
+# Talk of the Town 
+
+  * Talk of the town is a game with a procedurally generated town 
+  
+  * The game initializes the town and then simulates seventy years of events, places being built, families growing, etc.
+  
+  * The story of the game involves determining the identity of the secret lover of an important, deceased person 
+
+---
+
+# Knowledge
+
+  * During the simulation, characters obtain knowledge by observation and interaction with other agents 
+  
+  * Characters may be told wrong information 
+  
+  * The knowledge of characters may also deteriorate or terminate over time 
+  
+---
+
+# Mental Model
+
+  * Each object in a character's mental model is represented with the same attributes as that object in the game 
+  
+  * Knowledge about an object may link to knowledge about another object (e.g. the belief about a character's occupation links to the belief about that place of work)
+  
+  * Each part of the knowledge base (called a "belief facet") also links to previously held beliefs about that facet, and evidence for the change
+  
+---
+
+class: medium
+
+# Evidence
+
+  * Characters can only form/change knowledge with "evidence"
+  
+  * Evidence may be:
+      - Reflection
+      - Observation
+      - Transference ("confusion")
+      - Confabulation ("hallucination")
+      - Lie
+      - Communication (Statements and Eavesdropping)
+      - Mutation
+      - Forgetting
+      
+  * The characters themselves of course don't know exactly which kind of evidence the knowledge came from
+  
+---
+
+class: mmedium
+
+# Salience
+
+  * Different types of knowledge have different salience
+  
+  * Salience determines how "easy" it is for the character to remember something
+  
+  * For example, a romantic partner is easier to remember details about than a stranger
+  
+  * It also determines what characters talk about (characters are not likely to say something like "That stranger in the park had blue eyes", and more likely to say "My friend's name is Jen")
+  
+  * The characters will bring up the n most salient entities, depending on salience, extroversion and relationship
+  
+---
+
+# Status 
+
+  * The belief propagation system satisfies the stated goals 
+  
+  * Gameplay is not implemented 
+  
+  * The project is also listed as "abandoned" on the author's website
+  
+  * There's source code on [github](https://github.com/james-owen-ryan/talktown)
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+
+    <script>
+      var slideshow = remark.create();
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,608 @@
+---
+permalink: /slides/lecture12.html
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lecture 12: Rewriting Systems</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; font-size: 2em; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      p { font-size: 1.25em; }
+      div { font-size: 1.25em; }
+      li { font-size: 1.25em; }
+      li p { line-height: 1.25em; font-size: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      
+      .small li {  font-size: 1em; }
+      
+      .ssmall li {  font-size: 0.9em; }
+      
+      .oneline li { font-size: 1.25em; line-height: 1.25em; }
+      .oneline li p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline p { font-size: 1.25em; line-height: 1.25em; }
+      .oneline div { font-size: 1.25em; line-height: 1.25em; }
+      
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      .medium li {  font-size: 1.1em; }
+     
+      .mmedium li {  font-size: 1.05em; }
+      
+        
+      .left-column {
+        color: #777;
+        width: 40%;
+        height: 92%;
+        float: left;
+      }
+        .left-column h2:last-of-type, .left-column h3:last-child {
+          color: #000;
+        }
+      .right-column {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 0.8em;
+      }
+      
+       .right-column1 {
+        width: 60%;
+        float: right;
+        padding-top: 1em;
+        font-size: 0.75em;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# AI in Digital Entertainment
+
+### Rewriting Systems
+
+---
+
+class: center, middle
+
+# Procedural Content Generation
+
+---
+
+# The cost of making games 
+
+<img src="/CI-2700/assets/img/gamecost.png" width="100%"/>
+
+---
+
+class: small
+
+# Procedural Content Generation
+
+  * Making games requires a lot of effort 
+  
+  * Apart from coding, there are also art assets, music, a story, etc. that need to be created 
+  
+  * Some of these creation processes can be (partially) automated, or assisted: Procedural Content Generation (PCG)
+  
+  * Two problems
+  
+     - Generating content is not always easy
+     - Generating *good* content is usually even harder
+     
+---
+
+class: small
+
+# What can we generate?
+
+  * Levels
+  
+  * Enemies 
+  
+  * Quests 
+  
+  * Dialog
+  
+  * Narrative 
+  
+  * Plants 
+  
+  * 3D objects
+  
+  * Rules 
+  
+  * Games 
+  
+---
+
+class: medium
+
+# PCG Approaches
+
+* Template-based: (More or less) randomly assemble preconstructed pieces
+
+* Search-based: Define a start-state and a goal, find a solution 
+
+* Logic-based: Define logical formulas, find satisfying assignments
+
+* Noise-based: Define a structure, add noise, refine 
+
+* Rewriting-based: Start with a generic item, split into parts, and resolve the parts
+
+---
+
+class: medium
+
+# Example: Diablo 3 Map Generation
+
+* In Diablo 3, the maps are randomly assembled from templates 
+
+* Each map has predefined entry (and exit) points
+
+* The interior is filled in with three kinds of blocks:
+
+   - Large blocks containing epic events 
+   - Medium sized blocks which make up the majority of the map
+   - Small blocks to fill up
+   
+* Events that are necessary to progress the story are always placed as blocks
+
+---
+
+# Diablo 3: Westmarch Heights 
+
+<img src="/PF-3341/assets/img/Westmarch-heights-map.jpg" width="80%"/>
+
+---
+
+# Diablo 3: Westmarch Heights 
+
+<img src="/PF-3341/assets/img/Westmarch-heights-map2.jpg" width="80%"/>
+
+---
+
+class: center, middle
+
+# Rewriting Systems 
+
+---
+
+# Grammar-based PCG
+
+Remember grammars?
+  
+$$
+A \rightarrow B A C\\\\
+A \rightarrow \varepsilon\\\\
+B \rightarrow b\\\\
+C \rightarrow c
+$$
+
+---
+
+class: medium
+
+# Grammars
+
+* A (formal) consists of terminal symbols, non-terminal symbols, and rules 
+
+* One of the non-terminal symbols is designated as the starting symbol 
+
+* A grammar defines a language
+
+* To determine if a word is an element of the language, we need to find a derivation for it, starting with the start symbol, and replacing it with further non-terminal symbols 
+
+---
+
+# Grammar Example
+
+$$
+A \rightarrow B A C\\\\
+A \rightarrow \varepsilon\\\\
+B \rightarrow b\\\\
+C \rightarrow c
+$$
+
+To confirm that `bbcc` is part of our language, we can do:
+$$
+A \rightarrow B A C \rightarrow B B A C C \rightarrow b b \varepsilon c c \rightarrow bbcc
+$$
+
+---
+
+# Grammar-Based Generation 
+
+* However, instead of parsing/checking words, we can also use a grammar to *generate* them 
+
+* Start with the start symbol, and apply rules until only non-terminal symbols are left 
+
+* By choosing rules "at random", we can generate different words
+
+---
+
+# How does that help us?
+
+* We can generate text! 
+
+* For example: The "words" are actually sentences, our terminal symbols are words, the non-terminal symbols are clauses, etc. 
+
+* Of course the grammar does not know anything about *semantics*
+
+---
+
+# Generated Text
+
+$$
+\text{Sentence} \rightarrow  \text{Name}\:\text{Verb}\:\text{Profession}\\\\
+\text{Name} \rightarrow  \mathit{Ana} | \mathit{Brian} | \mathit{Cristina} | \mathit{Diego}\\\\
+\text{Verb} \rightarrow  \mathit{is} | \mathit{works}\:\mathit{as}\\\\
+\text{Profession} \rightarrow  \mathit{a\:carpenter} | \mathit{a\:firefighter} | \\\\
+                               \mathit{a\:nurse} | \mathit{a\:lawyer}\\\\
+$$
+--
+Example outputs:
+
+Ana works as a lawyer.<br/>
+Diego works as a nurse.
+
+---
+
+# Tracery
+
+* Tracery is a JavaScript library for grammar-based "text"-generation 
+
+* Tracery input files are in JSON, consisting of one top-level dictionary where each entry is a rule
+
+* The key of each entry is the left hand side, and the value is a list of possible expansions
+
+* To call another rule, enclose it in #
+
+---
+
+# Tracery
+
+```JS
+{
+  "origin": "#greeting#, #noun#!",
+  
+  "greeting": ["Howdy", "Hello", 
+               "Greetings", "What's up", 
+               "Hey", "Hi"],
+  
+  "noun": ["world", "solar system", 
+           "galaxy", "local cluster", 
+           "universe"]
+}
+```
+
+---
+
+class: medium
+
+# Tracery
+
+* Tracery has several other features to make text-generation easier 
+
+* It can automatically pluralize words, put the appropriate a/an before a noun, put verbs in past tense, etc. 
+
+* There is also syntax to store "variables" that you can reuse, for example to have a consistent, but random, name for the hero of a story 
+
+* George Buckenham is running "Cheap Bots, Done Quick" which allows anyone to write a Twitter bot using Tracery
+
+---
+
+# Cheap Bots, Done Quick 
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Germans even have a word for worrying about cats:  Katzensorge</p>&mdash; GermanWords (@words_german) <a href="https://twitter.com/words_german/status/1069297382268067841?ref_src=twsrc%5Etfw">December 2, 2018</a></blockquote>
+
+---
+
+class: center, middle
+
+# Other Kinds of Grammars
+
+---
+
+class: medium
+
+# Other Kinds of Grammars 
+
+* Instead of limiting ourselves to text, we can use grammars to describe anything that can be described by rewriting/subdivision
+
+* A sentence consists of words 
+
+* A level consists of screens or missions
+
+* A song consists of verses and a chorus 
+
+* A tree consists of branches and leaves
+
+* A house consists of floors and rooms
+
+---
+
+class: medium
+
+# Grammar-Based Level Generation 
+
+* A designer provides some input on the structure of the level (e.g. difficulty curve)
+
+* The grammar consists of subdivision rules (how to split the level into smaller parts), and terminal symbols (individual screens, missions, rooms, etc.) annotated with their difficulty 
+
+* To generate a level, apply the subdivision rules, and use terminal symbols until you get a "good" match with the desired structure 
+
+* Some approaches use optimization methods to vary which rules are applied to better approximate the desired structure
+
+---
+
+class: medium
+
+# Grammar-Based Music Generation 
+
+* Music has some similarities with text: It is one-dimensional (or may consists of multiple one-dimensional tracks in parallel), and consists of clearly defined words/notes
+
+* However, for music you usually want self-similarity across different "phrases"
+
+* Johann Sebastian Bach wrote about music theory, and describes common chords and note patterns that can be used to achieve self-similarity
+
+---
+
+# Grammar-Based Music Generation
+
+<img src="/PF-3341/assets/img/sugerencia.png" width="80%"/>
+
+<a href="#26" onClick="p()">Play</a> <a href="#26" onClick="MIDIjs.stop();">Stop</a>
+
+---
+
+# Graph-Grammars
+
+* Instead of having something linear, we can also apply grammars to other structures, such as graphs 
+
+* Take a graph where each vertex has a label/tag 
+
+* A grammar then describes how to replace a node with a particular tag with a graph consisting of multiple nodes with different tags 
+
+* This can be used to generate dungeons for RPGs!
+
+---
+
+# Graph Grammars 
+
+<img src="/PF-3341/assets/img/graphgrammar.png" width="100%"/>
+
+---
+
+# L-Systems 
+
+  * Named after the Hungarian theoretical biologist and botanist Aristid Lindenmayer
+  
+  * Idea: Use a grammar to simulate plant growth
+  
+  * For example: F draws a line "forward", - turns left, + turns right, the brackets store and retrieve the current drawing position
+  
+
+$$
+X \rightarrow F+[[X]-X]-F[-FX]+X\\\\
+F \rightarrow FF
+$$
+
+---
+
+# L-Systems
+
+<img src="/CI-2700/assets/img/lsystem.svg" width="70%"/>
+
+---
+
+class: small
+
+# Shape Grammars
+
+  * We can use a similar idea as L-Systems for 3D geometry 
+  
+  * Start with a block, and divide it into parts with meaning 
+  
+  * For example: 
+     - Start with a cylinder, cut it into n slices radially
+     - For each of the slices you cut out a part in the center and decorate the edges 
+     - You now have a gothic window 
+     
+  * Note: If you do this well, you can change n, the cutout shape, and the decoration arbitrarily
+
+---
+
+# Shape Grammars
+
+<img src="/CI-2700/assets/img/gothic.jpg" width="100%"/>
+
+---
+
+class: small
+
+# Split Grammar Rules 
+
+Rules in our grammars looked like: 
+  
+$$
+A \rightarrow C\:B\:C 
+$$
+
+How do we write rules for Shape Grammars?
+
+$$
+A \rightarrow[\text{split}\:x\:5\%\:90\%\:5\%] C\:B\:C
+$$ 
+
+<img src="/PF-3341/assets/img/splitappl.png" width="100%"/>
+
+---
+
+class: small
+
+# Recursion
+
+
+<img src="/PF-3341/assets/img/cubeception.png" width="60%"/>
+
+---
+
+class: medium 
+
+# Other Applications for Shape Grammars
+
+  * Shape Grammars are great for any structure with a lot of self-similarity 
+  
+  * Most houses have a similar layout on each floor 
+  
+  * Cut a block into floors, then divide each floor into a hallway and rooms 
+  
+  * For each room, we may want multiple windows, each with the same decoration, etc.
+  
+---
+
+# Another Shape Grammar Example 
+
+.left-column[
+<img src="/PF-3341/assets/img/eiffel.png" width="100%"/>
+]
+.right-column[
+* The Eiffel Tower consists of 4 main columns that are the same 
+
+* Each column consists of 4 segments 
+
+* Each segment consists of 4-8 frames, etc.
+
+Why bother?
+]
+
+---
+
+# Variations!
+
+.left-column[
+<img src="/PF-3341/assets/img/eiffel_alternative2.png" width="100%"/>
+]
+.right-column[
+<img src="/PF-3341/assets/img/eiffel_alternative3.png" width="66%"/>
+]
+
+---
+
+# Challenges
+
+.left-column[
+<img src="/PF-3341/assets/img/rivets_treillis.png" width="100%"/>
+]
+.right-column1[
+* We basically only talked about context-free grammars (replacing a single non-terminal symbol with a sequence of terminal/non-terminal symbols)
+
+* However, 3D structures often need *context*
+
+* For example, once we cut a building into two floors, we need to connect them with stairs 
+
+* Of if we have multiple metal bars in the Eiffel Tower, we want to place rivets and connecting struts
+
+]
+
+
+---
+
+class: center, middle 
+
+# An Update on GPT-2
+
+---
+
+# GPT-2
+
+* A few weeks ago we talked about the language model GPT-2 by OpenAI 
+
+* OpenAI has decided not to release the full model because they deemed it "too dangerous"
+
+* We discussed advantages and drawbacks of that approach
+
+---
+
+# GPT-2 Replicated
+
+<blockquote class="twitter-tweet" data-theme="dark"><p lang="en" dir="ltr">Hey <a href="https://twitter.com/OpenAI?ref_src=twsrc%5Etfw">@OpenAI</a>, I&#39;ve replicated GPT2-1.5B in full and plan on releasing it to the public on July 1st. I sent you an email with the model. For my reasoning why, please read my post: <a href="https://t.co/UEPEgIuS4j">https://t.co/UEPEgIuS4j</a><a href="https://twitter.com/hashtag/machinelearning?src=hash&amp;ref_src=twsrc%5Etfw">#machinelearning</a> <a href="https://twitter.com/hashtag/gpt2?src=hash&amp;ref_src=twsrc%5Etfw">#gpt2</a> <a href="https://twitter.com/hashtag/aisafety?src=hash&amp;ref_src=twsrc%5Etfw">#aisafety</a></p>&mdash; Connor Leahy (@NPCollapse) <a href="https://twitter.com/NPCollapse/status/1136559379602427904?ref_src=twsrc%5Etfw">June 6, 2019</a></blockquote> 
+
+---
+
+# GPT-2 Replicated 
+
+* Connor Leahy, an undergraduate student, replicated GPT-2 with an estimated 100h of effort using about $40 000 in cloud computing infrastructure 
+
+* With no disrespect to his efforts, but that basically means that "anyone" (or at least any non-trivially sized organization) can do it, the only question is the cost/reward ratio
+
+* Connor said he plans on publishing the model in July
+
+---
+
+# Next Week 
+
+  * [Procedural Modeling of Interconnected Structures](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.682.2517&rep=rep1&type=pdf)
+  
+  
+---
+
+class: small
+
+# References
+
+  * [Procedural Content Generation](http://pcgbook.com/) by Noor Shaker, Julian Togelius, and Mark J. Nelson (free PDF available)
+
+  * [Analysis of Diablo 3 Block Types](https://www.diablofans.com/forums/diablo-iii-general-forums/diablo-iii-general-discussion/24505-a-full-guide-to-the-first-4-overworld-maps)
+  
+  * [Official Tracery Tutorial](http://www.crystalcodepalace.com/traceryTut.html)
+  
+  * [Another Tracery Tutorial](http://air.decontextualize.com/tracery/)
+  
+  * [Cheap Bots, Done Quick](https://cheapbotsdonequick.com/)
+  
+  * [Automatic Music Generation by Context-Free Grammars](https://members.loria.fr/sperchy/software/)
+  
+  * [Grammar-based Procedural Content Generation from Designer-provided Difficulty Curves](http://sander.landofsand.com/publications/paper_fdg2015_mircea-short.pdf)
+  
+  * [Locally Context-Sensitive Shape Grammars](https://diglib.tugraz.at/locally-context-sensitive-shape-grammars-2013)
+  
+  
+
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+    <script type='text/javascript' src='https://kitchwww.github.io/midi/midi.js'></script>
+    <script>
+      function p(){
+        MIDIjs.initAll();
+        MIDIjs.play('/PF-3341/assets/img/sugerencia.midi');
+        }
+    
+      var slideshow = remark.create();
+      
+      // Setup MathJax
+      MathJax.Hub.Config({
+          tex2jax: {
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+          }
+      });
+
+      MathJax.Hub.Configured();
+    </script>
+  </body>
+</html>
