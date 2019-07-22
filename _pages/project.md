@@ -8,7 +8,8 @@ frontpageorder: 2
 categories: [frontpage]
 ---
 
-Note: Work in Progress.
+* TOC
+{:toc}
 
 Overview
 --------
