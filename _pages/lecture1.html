@@ -1,6 +1,3 @@
----
-permalink: /slides/lecture1.html
----
 
 <!DOCTYPE html>
 <html>
@@ -22,6 +19,7 @@ permalink: /slides/lecture1.html
       .large { font-size: 2em; }
       
       .small li {  font-size: 0.8em; }
+      .medium li {  font-size: 0.9em; }
       
       .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
     </style>
@@ -31,9 +29,9 @@ permalink: /slides/lecture1.html
 
 class: center, middle
 
-# AI in Digital Entertainment
+# Artificial Intelligence: Planning
 
-### I Ciclo 2019
+### II Ciclo 2019
 
 ---
 # Instructor and Schedule
@@ -68,9 +66,7 @@ class: center, middle
  
  * PhD in Computer Science from NC State University, USA
  
- * Hablo un poco de Espa&ntilde;ol
- 
- * Games: Smite, Guild Wars 2, Incremental Games 
+ * Games: Overwatch, Smite, Guild Wars 2, Incremental Games 
  
  * I also like board games (Dominion, Pandemic, Ricochet Robots, ...)
 
@@ -92,7 +88,7 @@ class: center, middle
   
   - I also worked on narrative generation for a bit, particularly detective stories 
   
-  - The basis for my work were Dynamic Epistemic Logic, Planning, and Intentionality
+  - The basis for my work were Dynamic Epistemic Logic, *Planning*, and Intentionality
  
 ---
  
@@ -110,426 +106,118 @@ class: center, middle
 
 # Class Resources
 
-  * Website: <a href="http://bit.ly/PF-3341">http://bit.ly/PF-3341</a>
+  * Website: <a href="http://bit.ly/PF-3335">http://bit.ly/PF-3335</a>
   
-  * Piazza: <a href="http://piazza.com/ucr.ac.cr/spring2019/pf3341">http://piazza.com/ucr.ac.cr/spring2019/pf3341</a>
+  * Piazza: <a href="http://piazza.com/ucr.ac.cr/fall2019/pf3335">http://piazza.com/ucr.ac.cr/fall2019/pf3335</a>
   
 ---
   
 # Class contents
   
-  * Basic AI techniques
+  * Logic
   
-  * Planning, Search
+  * Pathfinding 
   
-  * Beliefs, Desires, and Intentions
+  * Classical Planning 
+     
+     - State-Space Planning 
+     - Plan-Space Planning 
+     - Planning Graphs
+     - Planning Heuristics 
+     
+  * Dynamic Epistemic Logic and Planning 
   
-  * Machine Learning: Neural Networks, Vector Models, Reinforcement Learning
-  
-  * Procedural Content Generation
+  * Advanced Planning
   
 ---
 
 # Textbook
 
-  * I will (loosely) follow *Artificial Intelligence and Games* by Georgios N. Yannakakis and Julian Togelius
+  * There is no single textbook that covers everything in this class
+ 
+  * *[Artificial Intelligence: A Modern Approach](http://aima.cs.berkeley.edu/)* by Stuart Russell and Peter Norvig, chapters 10 and 11 is a good start 
   
-  * There is a free PDF available on the [website](http://gameaibook.org/)
+  * *[An introduction to least commitment planning](https://homes.cs.washington.edu/~weld/papers/pi.pdf) by Daniel S. Weld 
   
-  * Another helpful reference for some parts is the *Procedural Content Generation* textbook by Noor Shaker, Julian Togelius, and Mark J. Nelson (also available 
-  as a free PDF from the [website](http://pcgbook.com/))
-  
-  * Not free, but highly recommended is also *[Artificial Intelligence: A Modern Approach](http://aima.cs.berkeley.edu/)* by Stuart Russell and Peter Norvig
+  * *[A Logic for Suspicious Players: Epistemic Actions and Belief-Updates in Games](https://www.vub.be/CLWF/SS/BER.pdf) by Alexandru Baltag
   
 ---
-  
-# Class structure
-  
-  * Lectures introduce basic concepts
-  
-  * We will also read and discuss papers about particular applications for the concepts 
-  
-  * Each student has to present one of these papers in class, and lead a discussion
-  
-  * You are all expected to read the papers *before class* to be able to discuss them in class
-  
-  * There will also be a project, in which you implement an AI technique of your choice
+
+# Homework 
+
+  * (Almost) every week there will be homework
     
+  * In the following week we discuss the homework:
+     
+     - For each problem, you indicate if you solved it or not 
+     
+     - Then I will (semi-randomly) choose someone to present each problem on the board 
+     
+     - In addition to your solution, I will also grade how well you present it
+     
+---
+
+# Selection Algorithm
+
+  - Order problems by how many students solved them
+  
+  - Assign each student a number depending on how often they've already presented this semester
+  
+  - For each problem, in order, choose a student at random, biased by this number (higher = less likely to be chosen)
+  
+  - Remove chosen student from the list of all other problems
+  
+  - May need to backtrack/manually fix assignments in rare cases 
+  
+  - If no one solves a problem, I'll present it
+  
+---
+
+# Selection Algorithm: Effects
+
+  - If you solved a harder problem, you are more likely to present that
+  
+  - You should not have to present more than once per class (unless you are the only one to solve 2 or more of the problems)
+  
+  - Everyone should present about an equal number of times over the course of the semester 
+  
+  - Presentation scores are additive, so a good presentation can make up for a less good one
+
+---
+
+class: small
+
+# Project
+
+  * In addition to the homeworks (which are basically math problems), you will complete a project 
+  
+  * The project consists of the implementation of a simplified planner in python 3
+  
+  * You will implement this in four parts:
+  
+     - Data structures representing logical formulas, due Sep 19
+     - The A* pathfinding algorithm, due Sep 27
+     - A parser for Planning Domain Definition Language (PDDL) files, and connecting everything, due Nov 8
+     - A planning heuristic to improve performance, due Nov 22
+     
+  * At the end of the semester we'll also have a small competition between all of your planners
+
+  * If you want to submit a version with some experimental optimizations, you can also do that on Nov 22
+
 ---
     
 # Grading
   
-  * 30%: Paper presentation
+  * 60%: Project, consisting of 4 tasks worth 15% each
   
-  * 20%: Quizzes about the paper contents and discussion participation
+  * 40%: Homework
   
-  * 50%: Project, consisting of:
-      - 10%: Project proposal with background, due 31/3 AoE.
-      - 10%: Prototype/milestone submission, due 3/6 AoE.
-      - 20%: Final submission, due 4/7 AoE.
-      - 10%: Project presentation, 5/7 in class.
+     - 20% for problems solved 
+     - 20% for presentations
   
   * If you are signed up for the lab: Your project counts as the lab
-      
----
 
-# Project
-  
-For the project you can choose one of four (five) options:
-
-  - Implement an AI technique from a paper (published at CIG, AIIDE, or similar)
-  
-  - Implement an agent for a (popular) game 
-  
-  - Implement/improve an agent for a competition held at a conference
-  
-  - Implement procedural content generation modules
-  
-  - Make a suggestion
-  
----
-
-# Project: Papers 
-
-  - Implement an AI technique from a paper 
-  
-  - Published at a (game) AI conference or workshop, such as
-     * [Artificial Intelligence in Interactive Digital Entertainment (AIIDE)](http://aiide.org)
-     * [Computational Intelligence in Games (CIG)](http://www.ieee-cig.org/)
-     * [Foundations of Digital Games (FDG)](http://www.foundationsofdigitalgames.org/)
-     * [Experimental AI in Games (EXAG)](http://exag.org)
-     * [Procedural Content Generation Workshop (PCG)](https://www.pcgworkshop.com/)
-     
-  - You can also pick a paper and apply the technique it describes to another domain
-     
-  - I have some suggestions, but feel free to propose something else 
-  
----
-
-# Project: Papers 
-
-  * [Procedural Generation of Roads](https://www.researchgate.net/publication/229707505_Procedural_Generation_of_Roads): Use A* and a custom cost function to 
-  determine where to place roads to connect two points in a 3D landscape 
-  
-  * [A semantic approach to patch-based procedural generationof urban road networks](https://www.researchgate.net/profile/Rafael_Bidarra/publication/319370642_A_semantic_approach_to_patch-based_procedural_generation_of_urban_road_networks/links/59c185fca6fdcc69b92bc55a/A-semantic-approach-to-patch-based-procedural-generation-of-urban-road-networks.pdf): Generate roads to build a city environment based on 
-  predefined parts ("patches")
-  
-  * [Desire Path-Inspired Procedural Placement of Coins in a Platformer Game](http://www.exag.org/wp-content/uploads/2018/10/AIIDE-18_Upload_117.pdf): Figure out
-  where to place coins in a platformer game depending on where players are more likely to go.
-  
----
-
-# Project: Papers
-  
-  * [Poetic sound similarity vectors using phonetic features](https://aaai.org/ocs/index.php/AIIDE/AIIDE17/paper/view/15879/15227): Convert words into vectors
-  representing how they sound in order to be able to compute similarity, e.g. for computational poetry
-  
-  * [Addressing the Elephant in the Room: Opinionated Virtual Characters](http://www.exag.org/wp-content/uploads/2018/10/AIIDE-18_Upload_123.pdf): Build a social
-  simulation in which virtual characters form and exchange opinions on topics.
-  
-  * [Social Simulation for Social Justice](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE17/paper/viewFile/15917/15221): Build a social simulation with agents 
-  that discuss social issues, such as privilege and power dynamics
-  
-  * [POMCP with Human Preferences in Settlers of Catan](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE18/paper/viewFile/18091/17217): Build AI agents for Hanabi
-  that use Partially Observable Monte Carlo Planning.
-  
----
-
-# Project: Papers
-  
-  * [ProcDefense — A Game Framework for Procedural Player Skill Training](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE17/paper/viewFile/15904/15232): Build a 
-  small game with several parameters to tweak difficulty that can dynamically adapt to the player's performance.
-
-  * [Generating Levels That Teach Mechanics](https://arxiv.org/pdf/1807.06734.pdf): Generate levels for Super Mario that support the player in learning mechanics
-  
-  * [Tarot-based narrative generation](https://dl.acm.org/citation.cfm?id=3235819): Use Tarot cards to generate stories.
-  
-  * [TaleSpin: An Interactive Program that Writes Stories](https://www.cs.utah.edu/nlp/papers/talespin-ijcai77.pdf): Build a system that uses character goals 
-  to tell fables.
-  
----
-
-# Project: Papers
-
-These two papers are slightly different: You can use them as the basis for *your own* ideas.
-  
-  * [Glaive: A State-Space Narrative Planner Supporting Intentionality and Conflict](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE14/paper/viewFile/8991/8931): 
-  Generate stories using a planner.
-    
-  * [Exhaustive and Semi-Exhaustive Procedural Content Generation](https://www.cs.du.edu/~sturtevant/papers/sturtevant18epcg.pdf): Make something that makes
-  something (like levels, buildings, trees, ...)
-
----
-
-# Project: Competitions
-
-  * Some of the game AI conferences also host competitions (like [CIG](https://project.dke.maastrichtuniversity.nl/cig2018/competitions/)) using different games 
-  
-  * For the project you may choose to build or improve an AI agent according to the competition rules 
-  
-  * If the timing works out, I would also encourage you to submit them
-  
-  * It is completely OK to use a previous winner (if it is open source) as the basis and improve it 
-  
-  * Make sure to report your improvements and their effect on the agent's performance!
-  
----
-
-# Project: Competitions 
-
-  * [Hearthstone AI Competition](http://www.is.ovgu.de/Research/HearthstoneAI.html)
-  
-  * [The Ms. Pac-Man Vs Ghost Team Competition](http://www.pacmanvghosts.co.uk/)
-  
-  * [StarCraft Competition](https://www.cs.mun.ca/~dchurchill/starcraftaicomp/)
-  
-  * [microRTS Competition](https://sites.google.com/site/micrortsaicompetition/home)
-  
-  * [Hanabi Competition](http://hanabi.fosslab.uk/description.html)
-  
-  * [Angry Birds Competition](https://aibirds.org/)
-  
-  * [Unity Obstacle Tower Challenge](https://www.aicrowd.com/challenges/unity-obstacle-tower-challenge)
-
----
-
-# Project: AI Agents 
-
-  - Another option for the project is to implement AI agents for a game of your choice 
-  
-  - I would suggest a game that has an open source implementation (e.g. [Quake 3](https://github.com/id-Software/Quake-III-Arena)), or that is not too difficult 
-  to implement (e.g. a board game)
-  
-  - The *project* consists of implementing the AI agents, so if there is no implementation and you spend weeks building a nice user interface that's on you 
-  
-  - To build the AI agents you should choose the appropriate techniques (we can discuss your options), and report how well they work
-
----
-
-# Project: Procedural Content Generation
-
-  - Make something that makes something!
-  
-  - [Generominos](http://www.galaxykate.com/generominos/) can serve as guidelines/ideas 
-  
-  - Implement several different inputs, transformers and blocks 
-  
-  - Assemble into a pipeline 
-  
-  - If multiple students want to work on this: agree on a common API for the modules (but everyone creates their own modules), so you can mix and match
-  
----
-
-# Project: Procedural Content Generation 
-
-<img src="/PF-3341/assets/img/gen1.jpg" width="45%"/><img src="/PF-3341/assets/img/gen2.jpg" width="45%"/>
-
----
-
-# An Example: Idle Hands (by [Kate Compton](www.galaxykate.com/))
-
-<img src="/PF-3341/assets/img/idlehandsdiagram.png" width="45%"/>
-
----
-
-class: center, middle 
-
-# Idle Hands (by [Kate Compton](www.galaxykate.com/))
-
-<img src="/PF-3341/assets/img/idlehands-adult.gif" width="60%"/>
-
-  
----
-  
-# Lectures
-  
-  * 22/3: Behavior Trees, FSMs, etc.
-  * 29/3: Planning
-  * 5/4: Narrative
-  * 12/4: Intentionality
-  * 26/4: Belief Modeling
-  * 3/5: Game Trees and Uncertainty
-  * 10/5: Machine Learning
-  * 17/5: Neural Networks
-  * 24/5: Vector Models
-  * 31/5: Reinforcement Learning
-  * 7/6: Clustering
-  * 14/6: Grammars
-  * 21/6: ASP/CSP
-  * 28/6: Noise and Fractals
-  * 5/7: Project Presentations
-  
----
-  
-# Paper Presentations
-  
-  * 29/3: Behavior Trees, FSMs, etc.
-  
-  * [Handling Complexity in the Halo 2 AI](https://www.gamasutra.com/view/feature/130663/gdc_2005_proceeding_handling_.php?page=1), by Damian Isla, presented at GDC 2005
-  
-  * Explains how Behavior Trees were used in Halo 2 to make editable, composable AI behaviors.
-  
-  * Industry paper!
-  
----
-
-# Paper Presentations 
-
-  * 5/4: Planning
-  
-  * [Three States and a Plan: The A.I. of F.E.A.R.](http://alumni.media.mit.edu/~jorkin/gdc2006_orkin_jeff_fear.pdf), by Jeff Orkin, presented at GDC 2006
-  
-  * The AI in F.E.A.R. uses a Finite State Machine with only 3 states, and relies on planning for more complex behaviors.
-  
-  * Also an industry paper!
-
----
-
-# Paper Presentations 
-
-  * 12/4: Narrative
-  
-  * [Fast and Diverse Narrative Planning through Novelty Pruning](http://nil.cs.uno.edu/publications/papers/farrell2016fast.pdf), by Rachelyn Farrel, Stephen G. Ware, presented at AIIDE 2016
-  
-  * One goal of content generation is to create a large set of different content. For narrative, measuring "different", and creating a large variety of different 
-  narratives is challenging. This paper presents one approach to diversify solutions based on planning.
-  
----
-
-# Paper Presentations 
-
-  * 26/4: Intentionality
-  
-  * [An Intentional AI for Hanabi](http://www.cig2017.com/wp-content/uploads/2017/08/paper_24.pdf), by Markus Eger, Chris Martens, and Marcela Alfaro C&oacute;rdoba, presented at CIG 2017
-  
-  * AI agents can play games involving communication, such as Hanabi, well with human players by utilizing intentionality.
-  
-  * Part of my dissertation work
-  
-  
----
-
-# Paper Presentations 
-
-  * 3/5: Belief Modeling
-  
-  * [Toward Characters Who Observe, Tell, Misremember, and Lie](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE15/paper/viewFile/11667/11394), by James Owen Ryan, Adam Summerville, Michael Mateas, and Noah Wardrip-Fruin, presented at EXAG 2015
-  
-  * Talk of the Town is a game in which knowledge gathering of non-player characters plays an important role. The paper describes how they simulate deception and 
-  forgetting in their virtual characters.
-  
----
-
-# Paper Presentations 
-
-  * 10/5: Game Trees and Uncertainty
-  
-  * [Re-determinizing Information Set Monte Carlo Tree Search in Hanabi](https://arxiv.org/pdf/1902.06075.pdf), by James Goodman, arXiv preprint 2019
-  
-  * Monte Carlo Tree Search is often used for games with hidden information (such as shuffled cards), and there are several extensions. This paper presents one such improvement with an application to Hanabi.
-  
-  * Description of the winner of the Hanabi competition at CIG 2018
-  
-  
----
-
-# Paper Presentations 
-
-  * 17/5: Machine Learning
-  
-  * [Build order optimization in Starcraft](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE11/paper/viewFile/4078/4407), by David Churchill and Michael Buro, presented at AIIDE 2011
-  
-  * Describes abstractions and heuristics that can be used to define and approach the build order optimization problem in StarCraft.  
-  
----
-
-# Paper Presentations 
-
-  * 24/5: Neural Networks
-  
-  * [Super Mario as a String: Platformer Level Generation Via LSTMs](https://arxiv.org/pdf/1603.00930.pdf), by Adam Summerville and Michael Mateas, presented at DiGRA and FDG 2016
-
-or 
-
-  * [Mystical Tutor: A Magic: The Gathering Design Assistant via Denoising Sequence-to-Sequence Learning](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE16/paper/viewFile/13980/13599) by Adam Summerville and Michael Mateas, presented at AIIDE 2016
-  
-  * Both use Long-Short Term Memory Recurrent Neural Networks to generate content, one levels for Super Mario, the other Magic cards 
-  
-  
----
-
-# Paper Presentations 
-
-  * 31/5: Vector Models
-  
-  * [dAIrector: Automatic Story Beat Generation through Knowledge Synthesis](http://ceur-ws.org/Vol-2321/paper8.pdf) by Markus Eger and Kory Mathewson, presented
-  at INT 2018
-  
-  * We describe a system that can be used as a director in an improv theater setting, generating prompts for the actors and giving them hints on how to proceed with a scene, based on the already presented prompts.
-  
-  * I'm probably biased, but I think this is a really neat application of vector models.
-  
-  
----
-
-# Paper Presentations 
-
-  * 7/6: Reinforcement Learning
-  
-  * [Improving Generalization Ability in a Puzzle Game Using Reinforcement Learning](http://www.cig2017.com/wp-content/uploads/2017/08/paper_71.pdf) by Hiroya 
-  Oonishi and Hitoshi Iima, presented CIG 2017
-  
-  * Shows work on a game called Geometry Friends, in which two different shapes have to collaborate to solve puzzles, and how reinforcement learning can be 
-  applied to the game to better solve unseen levels.
-  
----
-
-# Paper Presentations 
-
-  * 14/6: Clustering
  
-  * [A Recommender System for Hero Line-Ups in MOBA Games](https://www.aaai.org/ocs/index.php/AIIDE/AIIDE17/paper/viewFile/15902/15164) by Lucas Hanke and Luiz Chaimowicz, presented AIIDE 2017
-  
-  * Presents a system that suggests which heroes players should pick in DOTA2 to increase their chances of winning, based on which heroes have already been picked.
-  
----
-
-# Paper Presentations 
-
-  * 21/6: Grammars
-  
-  * [Procedural Modeling of Interconnected Structures](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.682.2517&rep=rep1&type=pdf) by 
-  Lars Krecklau and Leif Kobbelt, presented at Computer Graphics Forum 2011
-  
-  * As we will see, Grammars can be used to generate 3D structures. In this paper, the authors describe a method to add connections to such structures, such
-  as supports for a rollercoaster that should be placed such that they don't intersect other parts of the geometry.
- 
-  
----
-
-# Paper Presentations 
-
-  * 28/6: ASP/CSP
-  
-  * [A Logical Approach to Building Dungeons: Answer Set Programming for Hierarchical Procedural Content Generation in Roguelike Games](https://pdfs.semanticscholar.org/f69b/f76b77da89bfd7135b9c60d2b9b10fc1ac20.pdf) by 
-  Anthony J. Smith and Joanna J. Bryson, presented at the 50th Anniversary Convention of the AISB, 2014
-  
-  * Describes how to generate dungeons using Answer Set Programming to ensure that the generated levels have the desired properties.
-  
----
-
-# Paper Presentations 
-
-  * Pick your three (or more) favorite papers and send me an ordered list *by next Friday*
-  
-  * I will do my best to accommodate your preferences, but in case of a tie I will give preference to whoever sent their requests first 
-  
-  * However: Even if you send your email *right now* that does not mean you are guaranteed to get your top pick 
-  
-  * It helps if you know the games the papers are talking about, but is generally not necessary
-  
-  * If you have a paper you think is a better fit for some topic (or if you find one while preparing your presentation), please let me know 
-  
 ---
 
 class: middle, center
@@ -551,231 +239,30 @@ class: middle, center
   * Or, as Douglas R. Hofstadter said "AI is whatever hasn't been done yet"
   
   * "Everything in AI is either representation or search"
-
----
-
-class: middle, center
-
-# What are games?
-
----
-
-# What are games?
-
-  * Just as with AI, there is no agreed upon definition of "game"
-  
-  * Commonly: There are goals and rules 
-  
-  * Bernard Suits (Philosopher): "Playing a game is the voluntary effort to overcome unnecessary obstacles"
-  
-  * But there are certainly games that don't have goals?
   
 ---
 
-class: center, middle
+# AI vs. Machine Learning 
 
-<img src="/CI-2700/assets/img/minecraft.jpg" width="95%"/>
-
-(Minecraft)
-
----
-
-# What about this one?
-
-<img src="/CI-2700/assets/img/bandersnatch.jpg" width="90%"/>
-
-(Bandersnatch)
-
----
-
-# Digital Entertainment 
-
-  * The reason this class is not called "game AI" is because I want to make it clear that we're also talking about things that may or may not be games (depending
-  on your definition)
+  * There is a great deal of disagreement about the distinction between AI and Machine Learning (ML)
   
-  * Another example would be computer-generated stories, or improv theater 
+  * Some people say ML is a part of AI
   
-  * "Games", classical or experimental, are an important part of Digital Entertainment, though
+  * Some people view them as different things: ML deals with deriving information from data, AI with formulating intelligence explicitly (mostly through logic)
+  
+  * I will use the term *symbolic AI* to refer to the field of study of solving problems through logic-based representations
   
 ---
 
-class: center, middle 
+# What is Planning?
 
-# Some Basics 
-
----
-
-# Game AI 
-
-  - In a (classical) game, AI can be used for many different purposes 
+  * Planning is one of the central topics in symbolic AI
   
-  - NPC behaviors are usually AI driven (with various complexity)
+  * It is the idea that we want to tell an AI agent to "solve a problem" by itself
   
-  - You can generate content (names, trees, buildings, stories, mechanics, entire games, ...) using AI 
+  * The general formulation involves actions that the agent can perform, and a definition of a goal 
   
-  - If you want to know what your players are doing you can use AI techniques for player analytics 
-  
-  - We will mostly cover NPC behavior and procedural content generation in this class 
-  
----
-
-class: center, middle
-
-# An example 
-
-## Let's talk about the oldest survival game in which you have to escape from the Undead 
-
---
-
-## Pacman!
-
----
-
-# Pacman 
-
-<img src="/CI-2700/assets/img/pacman.png" width="50%"/>
-
----
-
-# Pacman Ghost AI 
-
-  * There are four ghosts: Blinky, Pinky, Inky, and Clyde
-
-  * They chase Pacman 
-  
-  * But they all have different "personalities"
-  
-  * How?
-  
-  * What are they actually doing?
-  
----
-
-class: small
-
-# Example: Pacman Ghost AI 
-
-Some disclaimers:
-
-  * The ghosts actually have three modes: scatter, chase and frightened 
-  
-  * In scatter mode each of them tries to get to his own corner 
-  
-  * In frightened mode, they move randomly and can be eaten 
-  
-  * Scatter and chase modes alternate temporally; frightened mode is triggered by eating a power-up
-  
-  * We will only be talking about chase mode 
-  
----
-
-# Example: Pacman Ghost AI: The maze 
-
-<img src="/CI-2700/assets/img/pacmanmaze.png" width="50%"/>
-
----
-
-# Example: Pacman Ghost AI
-
-  * Each ghost has a current position/cell and a target position/cell 
-  
-  * Ghosts can not turn around
-  
-  * Whenever a ghost comes to an intersection, it has to decide where to go 
-  
-  * This decision is based on what their target is 
-  
----
-
-# Example: Pacman Ghost AI
-
-  * Only Blinky is actually "chasing" Pacman
-
-  * Pinky is trying to get to where Pacman "will be"
-
-  * Inky does something weird, his target depends on Pacman's position *and* Blinky's position
-  
-  * Clyde tries to chase Pacman if he is far away, but if he gets too close he will try to go back to his own corner
-
----
-
-# Example: Pacman Ghost AI: Pathfinding
-
-  * How do the ghosts calculate the path to their target cell?
-  
-  * They don't!
-  
-  * Instead, before an intersection, they look at the next cell in each direction, and pick the direction that is closest to the target
-  
-<img src="/CI-2700/assets/img/ghostdecision.png" width="80%"/>
-
----
-
-# Example: Pacman Ghost AI
-
-What is the problem with this approach?
-
---
-
-<img src="/CI-2700/assets/img/cantreach.png" width="80%"/>
-
----
-
-# NPC Behavior
-
-  - The first rule of game AI (in the industry): It does not matter how smart/dumb your NPCs are, as long as the game plays well 
-  
-  - We will discuss academic approaches to AI that may have their own goals
-  
-  - There are really two very different criteria to optimize for: 
-  
-       * Human perception
-       * Win rate
-  
-  - These two may not always align (imagine bots in a shooter that have perfect aim)
-
----
-
-class: middle, center
-
-# Procedural Content Generation
-
----
-
-class: medium
-
-# Procedural Content Generation
-
-  * Making games requires a lot of effort 
-  
-  * Apart from coding, there are also art assets, music, a story, etc. that need to be created 
-  
-  * Some of these creation processes can be (partially) automated, or assisted: Procedural Content Generation (PCG)
-  
-  * Two problems
-  
-     - Generating content is not always easy
-     - Generating *good* content is usually even harder
-     
----
-
-# Procedural Content Generation
-
-  * Procedural Content Generation is widely used in the industry
-  
-  * For example: Diablo 3 generates dungeons, weapons, even names for the enemies
-  
-  * Usually this is done by combining predefined patterns in a structured way
-  
-  * We will also discuss more experimental ways to generate content
-  
----
-
-# Overenthusiastic generation
-
-<img src="/CI-2700/assets/img/keyforge.png" width="100%"/>
-
-(Keyforge)
+  * The agent will then automatically determine a sequence of actions that allows it to reach the goal
   
 ---
 
@@ -789,7 +276,7 @@ class: center, middle
 
   * As mentioned earlier, everything in AI is either representation or search 
   
-  * Logical formulas are often a very convenient representation 
+  * Logical formulas are often a very convenient representation
   
   * Why convenient?
      
@@ -807,21 +294,21 @@ class: center, middle
   
   * `\(a \wedge b\)`, `\(a \vee b\)`, `\(\neg a\)`
   
-  * If we have some interpretation S of a and b, we can determine truth values
+  * If we have some "interpretation" W of a and b, we can determine truth values
   
-  * `\( S \models  a \wedge b \)` iff a and b are both true in S 
+  * `\( W \models  a \wedge b \)` iff a and b are both true in W, i.e. `\( W \models a \)` **and** `\(W \models b \)`
   
-  * So what is S?
+  * So what is W?
   
 ---
 
 # Interpretations
 
-  * S is an *interpretation*, which assigns truth values to every constant
+  * W is an *interpretation* (also called *state* or *world*), which assigns truth values to every constant
 
-  * Sometimes it is convenient to represent S as a set that contains everything that is true 
+  * Sometimes it is convenient to just represent W as a set that contains everything that is true 
   
-  * Conversely, everything that is not in the set is false
+  * Conversely, everything that is not in the set is false ("closed world assumption")
   
   * You may have heard the term *model*: An interpretation under which a formula is satisfied 
   
@@ -865,16 +352,142 @@ In fact, that's how our interpretations work.
 
 ---
 
+class: small
+
 # Predicate Logic: Interpretations 
 
-  * Technically, an interpretation has to assign values to all our constants, since Socrates and Plato could be the same person in an interpretation! We 
-  will typically use the *unique-names assumption* to avoid such problems.
+  * We start with a *domain*, the set of all objects we can talk about
+
+  * Technically, an interpretation has to assign objects to all our constants, since Socrates and Plato could be the same person in an interpretation! We 
+  will use the *unique-names assumption* to avoid such problems and will just assume that the constants are the same as the objects.
   
   * Then, the interpretation has to contain definitions for every predicate, in the form of a set of tuples.
   
   * The *closed world assumption* states that everything we don't know to be true (i.e. everything not in the set representing a predicate) is in fact false.
   
-  * Using these assumptions, we can represent our interpretation as a collection of sets, one for each predicate. 
+  * Using these assumptions, we can represent our interpretation as a set of true atoms, or as a collection of sets, one for each predicate. 
+  
+---
+
+# Predicate Logic: Syntax
+
+  * A predicate name with parameters is called an *Atom* or *atomic formula*, e.g. `\(\mathit{human}(h)\)`
+  
+  * The `h` can either be a constant or a variable 
+  
+  * If `h` is part of our *domain*, it is a constant 
+  
+  * If `h` does not refer to any concrete object, it is a variable. A variable can be *bound* by a quantifier, or it can be *unbound*/*free*
+  
+  * A formula with no free variables is called *ground*
+  
+---
+
+# Predicate Logic: Syntax
+
+  * Given two predicate logic formulas `\(\phi\)` and `\(\psi\)`, we can use the usual logical connectives `\(\wedge, \vee, \rightarrow, \neg \)` to construct more complex formulas 
+
+  * Conceptually, this will result in a (syntax) tree, where each interior node is an operator, and the leaves are atoms
+  
+  * If we have a formula `\(\phi\)` that contains a free variable `x`, we can *substitute* that variable with a value t, written `\(\phi[t/x]\)`
+  
+---
+
+# Predicate Logic: Semantics
+
+  * Given a (ground) formula `\(\phi\)` and an interpretation/world `\(W\)`, we want to know if the formula holds in that world, i.e. if the world is a model for the formula
+  
+  * We write this as `\(W \models \phi\)` ("W models phi")
+  
+  * How do we determine that? 
+  
+     - If `\(\phi\)` is an atom, it is true iff `\(\phi \in W\)`
+     - If `\(\phi\)` is a more complex formula, use the syntax tree to determine the truth value
+     
+---
+
+# Predicate Logic: Semantics
+
+$$
+W \models \neg \phi \:\:\text{iff}\:\:W \not\models \phi\\\\
+W \models \phi \wedge \psi\:\:\text{iff}\:\:W \models \phi\:\:\text{and}\:\:W \models \psi\\\\
+W \models \phi \vee \psi\:\:\text{iff}\:\:W \models \phi\:\:\text{or}\:\:W \models \psi\\\\
+W \models \phi \rightarrow \psi\:\:\text{iff}\:\:W \not\models \phi\:\:\text{or}\:\:W \models \psi\\\\
+W \models \forall x \in X: \phi\:\:\text{iff}\:\:W \models \phi[t/x]\:\:\text{for all}t \in X\\\\
+W \models \exists x \in X: \phi\:\:\text{iff}\:\:W \models \phi[t/x]\:\:\text{for any}t \in X
+$$
+
+How would we actually use this in an implementation?
+
+---
+
+class: small
+
+# Data Structures 
+
+  * First we need to represent atoms, maybe just as tuples: `\(human(h)\)` becomes `("human", "h")` or `("human", ("h",))`
+  
+  * Then we can store the atoms in a suitable data structure, e.g. a python set, to get our world 
+  
+  * We represent our syntax tree using a data structure, e.g. 
+  
+```
+class LogicalFormula:
+    def isModeledBy(self, world):
+        return False
+```
+  
+  * We subclass this for each syntactic element, overriding `isModeledBy` accordingly
+  
+  * For example, the subclass `Atom`, will do `return self.atom in world.atoms` (and store `self.atom` appropriately)
+  
+  * The subclass `And` needs to call `isModeledBy` for all its children, and return `True` iff all of them return `True` 
+  
+---
+
+class: small
+
+# Data Structures 
+
+  * Note that I said "all its children" for `And`: It can be beneficial if "and" can connect more than two operators
+  
+  * For the quantifiers `\(\forall\)` and `\(\exists\)` we need to be able to substitute variables in formulas, so we need to add another method to our base class:
+  
+```
+def substitute(self, variable, value):
+    return self
+```
+
+  * This method should replace the given variable with the given value in *all* children, or parameters (in the case of atoms), and return a **copy** of itself with the substitution performed
+  
+  * `Forall` can then use this in its `isModeledBy` method
+  
+```
+def isModeledBy(self, world):
+    values = world.getValues(self.variable)
+    for value in values:
+        if not isModeledBy(self.child.substitute(self.variable, value): return False 
+    return True
+```
+
+---
+
+class: medium
+
+# Data Structures 
+
+  * In task 1, you will implement these data structures 
+  
+  * Start with the code on the previous slides as guidelines 
+  
+  * There are ways to make this less tedious: `And` and `Or` are almost identical, so they could share a lot of code, or just be modeled as one class 
+  
+  * You will need to implement some high level function: 
+      - `make_expression`, which gets a syntax tree and produces a python object representing the formula
+      - `make_world`, which gets a set of atoms and returns a python object representing the world
+      - `models`, which gets a world and a formula (as returned by `make_expression` and `make_world`) and determines if the formula holds 
+      - `substitute`, which gets a formula, a variable and a value, and has to produce a new formula with the substitution performed 
+      - `apply`, which we will talk about now
   
 ---
 
@@ -946,7 +559,7 @@ The turkey could still die at time step 1 and stay dead ...
 
 # Transition System Approach 
 
-  - We start with a state `\(s_0 = \{\mathit{alive}(\mathit{Fred}), \neg \mathit{loaded}(\mathit{Gun}) \}\)`, which we can use for logical queries such as
+  - We start with an initial state `\(s_0 = \{\mathit{alive}(\mathit{Fred}), \neg \mathit{loaded}(\mathit{Gun}) \}\)` (or, using the closed-world assumption simply `\(s_0 = \{\mathit{alive}(\mathit{Fred})\}\)`, which we can use for logical queries such as
   `\(s_0 \models \mathit{alive}(\mathit{Fred}) \)`
   
   - We have an action `load(Gun)` which turns a state into another state:
@@ -962,23 +575,96 @@ The turkey could still die at time step 1 and stay dead ...
 
 # Transition System Approach
 
-  - This approach forms the basis for many of the techniques we are going to discuss, especially the planning-based ones 
+  - This forms the basis for the planning problem, which we will discuss for the rest of the semester
+  
+  - We can express many interesting problems this way, such as how to distribute packages using trucks and airplanes, determine a robot's actions to perform a task, play games, etc.
   
   - However, it also has drawbacks: If our states only represent individual time steps, we can't (easily) query things like "how long was Fred alive"
   
+  - As another part of task 1 you will implement a way to apply actions to worlds/states
+  
+---
+
+# What is an action?
+
+  * We consider our actions to consist of two parts: a precondition and an effect
+  
+  * The precondition tells us when we can use an action (e.g. we can only shoot if we even have the gun)
+  
+  * The effect tells us what happens (if the gun is loaded, we kill the turkey, otherwise nothing happens)
+  
+  * We can determine if a precondition holds in a world with our `models` function 
+  
+  * We also need to be able to apply an effect, which is where `apply` comes in 
+  
+---
+
+# What is an effect 
+
+  * For simplicity, we will assume our effects are also represented as a logical formula, which tells us what is true after the action 
+  
+  * However, we will only support a subset of formulas as possible effects 
+  
+  * For example, what would a formula like `\(a \vee b\)` mean as an effect?
+  
+--
+
+  * We'll call the subset of formulas we allow the *effect formulas*
+  
+  * An effect formula can be a conjunction of:
+     - Literals (atoms and negated atoms)
+     - Forall-quantifiers where the inner formula is also an effect formula
+     - `when` expressions
+     
+---
+
+# When Expressions 
+
+  * Some actions have different effects, depending on what is already true in the world, like firing the gun which as a different effect when the gun is loaded 
+  
+  * We could make two actions: `fire-gun-if-loaded` and `fire-gun-if-not-loaded`, but this becomes cumbersome to write 
+  
+  * Instead we allow conditional effects `("when", "x", "y")`, where x is *any* formula, and *y* is an effect formula
+  
+  * When we apply a when-expression to a world, we apply the y-part iff the x-part holds, e.g.
+  
+```
+class When:
+   def apply(self, world):
+       if self.condition.isModeledBy(world):
+           return self.effect.apply(world)
+       return world
+```
+  
+---
+
+# Implementing Action Application
+
+  * There are several ways to implement action application
+  
+  * One is with an `apply` method in all `LogicalFormula` subclasses 
+  
+  * Another is to determine the additions and deletions a formula causes and use set operations on the set of atoms 
+  
+```
+class LogicalFormula
+   def getChanges(self, world):
+       return (self.getAdditions(world),self.getDeletions(world))
+```
+  
+  * The latter is probably (depending on the exact implementation, and the rest of the code) slightly faster, because it makes fewer copies of the atom set, and you could precompute a lot (minus conditional expressions)
+  
+  * My solution uses add/delete lists
+  
+---
+
+# References
+
   - [Logic and AI](https://plato.stanford.edu/entries/logic-ai/)
   
   - [The Frame Problem](https://plato.stanford.edu/entries/frame-problem/) 
   
----
-  
-# To Dos
-  
-  * Come up with project suggestions, deadline for the proposal: 31/3 AoE. I encourage you to discuss your ideas with me beforehand.
-  
-  * Decide which paper you want to present, and send me an email with your top three (or more) choices by *next Friday 22/3*.
-  
-  * Sign up for Piazza: <a href="http://piazza.com/ucr.ac.cr/spring2019/pf3341">http://piazza.com/ucr.ac.cr/spring2019/pf3341</a>
+  - Sign up for Piazza: <a href="http://piazza.com/ucr.ac.cr/spring2019/pf3341">http://piazza.com/ucr.ac.cr/spring2019/pf3341</a>
   
 
     </textarea>
