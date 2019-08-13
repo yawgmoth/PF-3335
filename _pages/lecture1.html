@@ -141,9 +141,9 @@ class: center, middle
  
   * *[Artificial Intelligence: A Modern Approach](http://aima.cs.berkeley.edu/)* by Stuart Russell and Peter Norvig, chapters 10 and 11 is a good start 
   
-  * *[An introduction to least commitment planning](https://homes.cs.washington.edu/~weld/papers/pi.pdf) by Daniel S. Weld 
+  * *[An introduction to least commitment planning](https://homes.cs.washington.edu/~weld/papers/pi.pdf)* by Daniel S. Weld 
   
-  * *[A Logic for Suspicious Players: Epistemic Actions and Belief-Updates in Games](https://www.vub.be/CLWF/SS/BER.pdf) by Alexandru Baltag
+  * *[A Logic for Suspicious Players: Epistemic Actions and Belief-Updates in Games](https://www.vub.be/CLWF/SS/BER.pdf)* by Alexandru Baltag
   
 ---
 
@@ -317,6 +317,22 @@ class: center, middle
   * You may have heard the term *model*: An interpretation under which a formula is satisfied 
   
   * A formula is a tautology if *all* interpretations are models
+  
+---
+
+# Interpretations
+
+$$
+W = \\{a, b, c\\}
+$$
+
+$$
+W \models a \wedge b \\\\
+W \models a \vee d \\\\
+W \not\models a \wedge d\\\\
+W \models d \rightarrow a\\\\
+\ldots
+$$
 
 ---
 
@@ -352,25 +368,8 @@ $$
 --
 Using set-operators, we could also write `\((\mathit{socrates}, \mathit{plato}) \in \mathit{friends}\)`
 
-In fact, that's how our interpretations work.
+In fact, as we will see, that's how our interpretations work.
 
----
-
-class: small
-
-# Predicate Logic: Interpretations 
-
-  * We start with a *domain*, the set of all objects we can talk about
-
-  * Technically, an interpretation has to assign objects to all our constants, since Socrates and Plato could be the same person in an interpretation! We 
-  will use the *unique-names assumption* to avoid such problems and will just assume that the constants are the same as the objects.
-  
-  * Then, the interpretation has to contain definitions for every predicate, in the form of a set of tuples.
-  
-  * The *closed world assumption* states that everything we don't know to be true (i.e. everything not in the set representing a predicate) is in fact false.
-  
-  * Using these assumptions, we can represent our interpretation as a set of true atoms, or as a collection of sets, one for each predicate. 
-  
 ---
 
 # Predicate Logic: Syntax
@@ -417,11 +416,63 @@ W \models \neg \phi \:\:\text{iff}\:\:W \not\models \phi\\\\
 W \models \phi \wedge \psi\:\:\text{iff}\:\:W \models \phi\:\:\text{and}\:\:W \models \psi\\\\
 W \models \phi \vee \psi\:\:\text{iff}\:\:W \models \phi\:\:\text{or}\:\:W \models \psi\\\\
 W \models \phi \rightarrow \psi\:\:\text{iff}\:\:W \not\models \phi\:\:\text{or}\:\:W \models \psi\\\\
-W \models \forall x \in X: \phi\:\:\text{iff}\:\:W \models \phi[t/x]\:\:\text{for all}t \in X\\\\
-W \models \exists x \in X: \phi\:\:\text{iff}\:\:W \models \phi[t/x]\:\:\text{for any}t \in X
+W \models \forall x \in X: \phi\:\:\text{iff}\:\:W \models \phi[t/x]\:\:\text{for all}\:t \in X\\\\
+W \models \exists x \in X: \phi\:\:\text{iff}\:\:W \models \phi[t/x]\:\:\text{for any}\:t \in X
 $$
 
-How would we actually use this in an implementation?
+---
+
+class: small
+
+# Predicate Logic: Interpretations 
+
+  * We start with a *domain*, the set of all objects we can talk about
+
+  * Technically, an interpretation has to assign objects to all our constants, since Socrates and Plato could be the same person in an interpretation! We 
+  will use the *unique-names assumption* to avoid such problems and will just assume that the constants are the same as the objects.
+  
+  * Then, the interpretation has to contain definitions for every predicate, in the form of a set of tuples.
+  
+  * The *closed world assumption* states that everything we don't know to be true (i.e. everything not in the set representing a predicate) is in fact false.
+  
+  * Using these assumptions, we can represent our interpretation as a set of true atoms, or as a collection of sets, one for each predicate. 
+  
+---
+
+# Predicate Logic: Interpretations 
+
+W:
+$$
+\mathit{human} = \\{\mathit{socrates}, \mathit{plato}, \mathit{aristotle}\\}\\\\
+\mathit{mortal} = \\{\mathit{socrates}, \mathit{plato}, \mathit{aristotle}, \mathit{DonaldDuck}\\}\\\\
+\mathit{friends} = \\{(\mathit{socrates}, \mathit{plato}), (\mathit{socrates}, \mathit{DonaldDuck})\\}\\\\
+$$
+
+$$
+W \models \mathit{human}(\mathit{socrates}) \\\\
+W \models \forall h: \mathit{human}(h) \rightarrow \mathit{mortal}(h) \\\\
+W \models \mathit{friends}(\mathit{socrates}, \mathit{plato})\\\\
+W \not\models \mathit{friends}(\mathit{socrates}, \mathit{socrates})\\\\
+\ldots
+$$
+
+---
+
+# Predicate Logic: Interpretations 
+
+$$
+W = \\{\mathit{human}(\mathit{socrates}), \mathit{human}(\mathit{plato}), \mathit{human}(\mathit{aristotle}), \\\\
+\mathit{mortal}(\mathit{socrates}), \mathit{mortal}(\mathit{plato}), \mathit{mortal}(\mathit{aristotle}), \mathit{mortal}(\mathit{DonaldDuck}),\\\\
+\mathit{friends}(\mathit{socrates}, \mathit{plato}), \mathit{friends}(\mathit{socrates}, \mathit{DonaldDuck})\\}\\\\
+$$
+
+$$
+W \models \mathit{human}(\mathit{socrates}) \\\\
+W \models \forall h: \mathit{human}(h) \rightarrow \mathit{mortal}(h) \\\\
+W \models \mathit{friends}(\mathit{socrates}, \mathit{plato})\\\\
+W \not\models \mathit{friends}(\mathit{socrates}, \mathit{socrates})\\\\
+\ldots
+$$
 
 ---
 

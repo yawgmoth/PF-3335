@@ -16,7 +16,7 @@ minimal_mistakes_skin    : "dark" # "air", "aqua", "contrast", "dark", "dirt", "
 
 # Site Settings
 locale                   : "en-US"
-title                    : "PF-3341"
+title                    : "Artificial Intelligence"
 title_separator          : "-"
 name                     : "Markus Eger"
 description              : "PF-3335 - AI Planning - course website"
