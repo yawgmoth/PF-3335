@@ -614,7 +614,7 @@ The turkey could still die at time step 1 and stay dead ...
 
 # Transition System Approach 
 
-  - We start with an initial state `\(s_0 = \{\mathit{alive}(\mathit{Fred}), \neg \mathit{loaded}(\mathit{Gun}) \}\)` (or, using the closed-world assumption simply `\(s_0 = \{\mathit{alive}(\mathit{Fred})\}\)`, which we can use for logical queries such as
+  - We start with an initial state `\(s_0 = \{\mathit{alive}(\mathit{Fred}), \neg \mathit{loaded}(\mathit{Gun}) \}\)` (or, using the closed-world assumption simply `\(s_0 = \{\mathit{alive}(\mathit{Fred})\}\)`), which we can use for logical queries such as
   `\(s_0 \models \mathit{alive}(\mathit{Fred}) \)`
   
   - We have an action `load(Gun)` which turns a state into another state:
@@ -670,21 +670,80 @@ The turkey could still die at time step 1 and stay dead ...
      - Literals (atoms and negated atoms)
      - Forall-quantifiers where the inner formula is also an effect formula
      - `when` expressions
-     
+	 
 ---
 
-# When Expressions 
+# Effect Application
+
+   * Since an effect is just a formula, we could add a method to our base class:
+   
+```
+def apply(self, world):
+    return world
+```
+
+   * Depending on the formula, we can then override this method and apply the changes of the subformulas
+   
+   * This may be tricky to get right (particularly negated literals), I'll show you another way later
+   
+   * For `And` you can do something like:
+
+```
+def apply(self, world):
+    result = world 
+	for c in self.children:
+	    result = c.apply(result)
+    return result
+```
+
+---
+
+# When-Expressions 
 
   * Some actions have different effects, depending on what is already true in the world, like firing the gun which as a different effect when the gun is loaded 
   
   * We could make two actions: `fire-gun-if-loaded` and `fire-gun-if-not-loaded`, but this becomes cumbersome to write 
   
-  * Instead we allow conditional effects `("when", "x", "y")`, where x is *any* formula, and *y* is an effect formula
+  * Instead we allow conditional effects that are only applied when a condition holds:
   
-  * When we apply a when-expression to a world, we apply the y-part iff the x-part holds, e.g.
+$$
+\operatorname{when}\:(\phi)\:(\psi)
+$$
+
+  * Note that the condition can be *any* logical formula, but the conditional effect has to be an effect formula
+  
+---
+
+# When-Expressions Example
+
+Say we have the worlds 
+
+$$
+s_0 = \\{\mathit{alive}(\mathit{Fred})\\}\\\\
+s_1 = \\{ \mathit{alive}(\mathit{Fred}), \mathit{loaded}(\mathit{Gun}) \\}
+$$
+
+And the effect of the shoot action:
+
+$$
+e = \operatorname{when}\:(\mathit{loaded}(\mathit{Gun}))\:(\neg \mathit{alive}(\mathit{Fred}) \wedge \neg \mathit{loaded}(\mathit{Gun})
+$$
+
+What happens when we apply e to `\(s_0\)`?<br/>
+What happens when we apply it to `\(s_1\)`?
+  
+---
+
+# When-Expressions, Implementation
+
+  * We can represent a when-expression as a tuple in the Abstract Syntax Tree `("when", x, y)`, where x is the condition and y is the conditional effect
+  
+  * Just like with the logical connectives, we introduce a subclass of `LogicalFormula` that represents a when-expression
+  
+  * When we apply the when-expression to a world, we apply the y-part iff the x-part holds, e.g.
   
 ```
-class When:
+class When(LogicalFormula):
    def apply(self, world):
        if self.condition.isModeledBy(world):
            return self.effect.apply(world)
@@ -693,11 +752,13 @@ class When:
   
 ---
 
+class: medium
+
 # Implementing Action Application
 
   * There are several ways to implement action application
   
-  * One is with an `apply` method in all `LogicalFormula` subclasses 
+  * One is with the `apply` method in all `LogicalFormula` subclasses 
   
   * Another is to determine the additions and deletions a formula causes and use set operations on the set of atoms 
   
