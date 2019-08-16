@@ -4,6 +4,8 @@ main:
     url: /
   - title: "Lecture Notes"
     url: /slides
+  - title: "Homework"
+    url: /homework
   - title: "Project"
     url: /project
   # - title: "Sample Collections"
