@@ -23,9 +23,7 @@ In the project for the class you will develop a simple planner in python. To do 
  5. A separate submission to our own internal planning competition (optional), also due November 22, 2019
 
 All due dates are given as anywhere-on-earth, i.e. 23:59 UCT-12. See below for the penalty for late submissions.
-Submissions should be made by email, and can come in one of two forms:
-  - (Preferred) You store your code in a github repository (e.g. by cloning the framework), add me as a contributor, and email me the **hash** of the commit to use for your submission
-  - Email me a zip file containing all source code **in the root directory**, named `carne_n.zip`, where `carne` should be replaced with your Carn&eacute;, and `n` should be replaced with 1,2,3, or 4, depending on which submission it is (e.g. `A12345_3.zip` would be the PDDL parser and planner of the student with the Carn&eacute; A12345).
+Submissions should be made by email as a zip file containing all source code **in the root directory**, named `carne_n.zip`, where `carne` should be replaced with your Carn&eacute;, and `n` should be replaced with 1,2,3, or 4, depending on which submission it is (e.g. `A12345_3.zip` would be the PDDL parser and planner of the student with the Carn&eacute; A12345).
   
 Failure to comply with these instructions may result in point deductions.
 
@@ -136,7 +134,7 @@ In this task, you will first parse PDDL files and extract formulas as abstract s
 will use the search algorithm developed in task 2 to find a sequence of actions that transforms the initial state into a state that satisfies the goal condition.
 
 The first step will be to parse PDDL files, which follow a LISP-inspired syntax, also known as (space-separated, list-supporting) [S-Expressions](https://en.wikipedia.org/wiki/S-expression). The easiest way to parse 
-S-expressions is to fist tokenize the input, splitting at spaces, and ensuring that the opening and closing parenthesis are their own tokens (note that the comment character is ; and all lines starting with that character 
+S-expressions is to first tokenize the input, splitting at spaces, and ensuring that the opening and closing parenthesis are their own tokens (note that the comment character is ; and all lines starting with that character 
 should be ignored). It is also recommended to convert all input to lower case, since PDDL is not case-sensitive, and you may encounter domains with capitalized operator names.
 
 Parsing itself uses a stack: Tokens are consumed in sequence, and pushed onto the stack. When a closing parenthesis is encountered, elements are popped from the stack and accumulated in a list until 
