@@ -96,7 +96,7 @@ class: medium
 
 # Uninformed Search
 
-  - The simplest pathfinding algorithm works like this:
+  - The simplest pathfinding algorithm(s) works like this:
   
       - Keep track of which nodes are candidates for expansion (starting with the start node)
       - Take one of these nodes and expand it 
@@ -145,7 +145,7 @@ class: small
 
 # Greedy Search
 
-  * Let's use our heuristic!
+  * Let's just use our heuristic!
   
   * We order the nodes in the priority queue by heuristic value
   
@@ -549,20 +549,181 @@ class: small
 
 ---
 
-class: small
-
 # Search Graphs
 
-  * 
+  * What if we have infinite (or at least very large) graphs?
+  
+  * We can't really store the entire graph in memory 
+  
+  * But do we need to?
   
 ---
 
-class: small
+# Lazy Evaluation
 
-# Heuristics
+  * Some programming languages (like Haskell) use something called *lazy evaluation*
+  
+  * This means a value is only evaluated when it is needed 
+  
+  * For example `[1..]` is an infinite list of integers in Haskell 
+  
+  * But as long as you don't try to access *all* elements, it does not need to generate them 
+  
+  * We can "simulate" this behavior in other languages using functions
+  
+---
 
-  * 
- 
+# Lazy Evaluation for Graphs 
+
+  * Instead of representing an entire graph in memory, let's say we just store one node 
+  
+  * Each node can, when requested, give us its neighbors
+  
+  * We can then even "forget" the original node, if we want to
+  
+  * The only requirement is that each node only has finitely many neighbors (and preferably not too many)
+  
+---
+
+# An Infinite Graph
+
+* Let's say we have a graph with one node for each integer 
+
+* Each node has 2 to 4 neighbors: The predecessor and successor, twice its value, and half its value (if it is even). All distances are 1
+
+* "1" has the neighbors "0" and "2"
+
+* "3" has the neighbors "2", "4", and "6"
+
+* "4" has the neighbors "3", "5", "8", and "2"
+
+* "16" has the neighbors "15", "17", "32", and "8"
+
+---
+
+# Goal Conditions
+
+* We often also don't want to look for one specific (of our infinitely many) nodes, but rather a node that satisfies some condition
+
+* For example, what if we want a node that is greater than 1000 and a power of 2? 
+
+* Each of the nodes "1024", "2048", "4096", etc. would be a valid solution 
+
+* Let's use A* starting from "127" to find such a goal node
+
+* We need a heuristic!
+
+---
+
+# Integer graph heuristic
+
+
+Let's use the following heuristic:
+$$
+h(n) = \lvert \lfloor \log_2(n) \rfloor - \lfloor \log_2(1024)\rfloor \rvert
+$$
+
+What does it do? Look for the next lowest power of two of the current node and the lowest valued goal node and calculate the difference.
+
+Now let's do A*!
+
+---
+
+class: medium
+
+# Why are we doing this?
+
+* (Almost) anything can be described as a graph
+
+* As long as we have a representation of a "node", a way to get "neighbors", a predicate that tells us what is a "goal" and a heuristic, we can do A*
+
+* In some cases, we can just use a constant 0 for the heuristic (what happens then?)
+
+* In *planning* our nodes will be logical states, the neighbors will be produced by actions and we will be given a logical goal condition 
+
+* There has been quite some research in different planning heuristics
+
+---
+
+# For the Project
+
+* For the project, the framework contains a definition of a graph that makes use of this lazy evaluation scheme
+
+```python
+class Node:
+    def get_neighbors(self):
+        # returns a list of edges to neighbors
+        return []
+        
+        
+# Each edge contains the target node, the cost of taking 
+# that path and a name (particularly useful for planning)
+class Edge:
+    def __init__(self, target, cost, name):
+        self.target = target 
+        self.cost = cost
+        self.name = name
+```
+
+---
+
+# For the Project
+
+* Take a look at `graph.py` to see how these classes are used to set up a finite graph (of Austria), as well as an infinite graph (the integer graph we discussed earlier).
+
+* You do not have to change anything in `graph.py`, but you are encouraged to come up with more examples to test your implementation 
+
+---
+
+class: medium
+
+# For the Project 
+
+The actual task is to complete `pathfinding.py` by implementing `astar`:
+
+```python
+def astar(start, heuristic, goal):
+    # returns: 
+    #    path (list of edges)
+    #    cost of path (sum of cost of the edges)
+    #    number of nodes visited (added to the search frontier)
+    #    number of nodes expanded (removed from the search
+    #                              frontier, with its neighbors 
+    #                              added instead)
+    return [],0,0,0
+```
+
+Note that the goal and heuristic are functions!
+
+```python
+def atgoal(n):
+    return n.get_id() == target
+```
+
+---
+
+# For the Project
+
+* You can implement A* independently from the logical formula representation 
+
+* The deadline for this task is September 27
+
+* The deadline for task 1 is September **20** (one day later than originally stated, to also be on a Friday)
+  
+---
+
+# Homework
+
+  * [Homework 2](/PF-3335/assets/pdf/homework2.pdf) has been posted on the class website
+  
+  * There are 4 problems involving A*
+  
+  * There is also a bonus problem involving a (short) proof
+  
+  * Homework is due **in two weeks**, on Sep 6
+  
+  * No class next week, because I will be at a conference!
+
 ---
 
 class: small
@@ -573,13 +734,8 @@ class: small
   
   * [Sliding puzzle using A*](https://blog.goodaudience.com/solving-8-puzzle-using-a-algorithm-7b509c331288)
   
-  * [Potential Fields for RTS Games](http://bth.diva-portal.org/smash/get/diva2:835046/FULLTEXT01.pdf)
-  
-  * [Building a Chess AI with Minimax](https://medium.freecodecamp.org/simple-chess-ai-step-by-step-1d55a9266977)
-  
-  * [The Art of Dissecting Journal Articles](https://phdlife.warwick.ac.uk/2015/03/09/the-art-of-dissecting-journal-articles/)
-  
-  * [How to Read a Paper](https://web.stanford.edu/class/ee384m/Handouts/HowtoReadPaper.pdf)
+  * [JavaScript visualization of several search algorithms on a grid](https://qiao.github.io/PathFinding.js/visual/)
+
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
