@@ -115,7 +115,7 @@ Mandatory functions in `expressions.py`, following the API described there:
 Task 2: Search Algorithm
 ------------------------
 
-For this task, you will implement a (directed) graph search algorithm, A &ast;, in python. The input to this algorithm is a graph, consisting of nodes/vertices and edges. However, in order to be able to use this search 
+For this task, you will implement a (directed) graph search algorithm, A &ast; in python. The input to this algorithm is a graph, consisting of nodes/vertices and edges. However, in order to be able to use this search 
 algorithm for the planner later, our graphs will not be represented in their entirety in memory, but rather use a [lazy](https://en.wikipedia.org/wiki/Lazy_evaluation) representation. What this means is that our graph 
 will be represented by **one** node, which can generate neighboring nodes as needed. This representation is implemented in `graph.py`, and does not have to be modified. If you want to modify `graph.py`, please do not 
 change `Node` and `Edge` and their interfaces. When in doubt what you can change, ask. For this task, you only have to implement one function: `astar(start, heuristic, goal)`. This function takes a graph, represented 
