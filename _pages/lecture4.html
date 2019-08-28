@@ -56,7 +56,7 @@ class: center, middle
 
 ---
 
-# Planning 
+# Planning
 
 ---
 
@@ -64,9 +64,9 @@ class: medium
 
 # The Planning Domain Definition Language (PDDL)
 
-  * In The Olden Days every planner used their own input format 
+  * In The Olden Days every planner used their own input format
   
-  * The formats not only differed in syntax, but also in capabilities 
+  * The formats not only differed in syntax, but also in capabilities
   
   * In 1998 Drew McDermott and colleagues developed a standardized language for planning problems: PDDL
   
@@ -75,36 +75,36 @@ class: medium
 ---
 class: medium
 
-# PDDL Influences 
+# PDDL Influences
 
   * STRIPS, as we have heard, represented operators as additions and deletions
   
   * Other languages, such as ADL, supported a wider variety of formulas as preconditions and effects
 
-  * The idea of actions having "preconditions", that describe when they are applicable, and "effects" that describe what is changed, was common to many of them  
+  * The idea of actions having "preconditions", that describe when they are applicable, and "effects" that describe what is changed, was common to many of them
   
-  * The "core" of PDDL is therefore the definition of actions 
+  * The "core" of PDDL is therefore the definition of actions
   
 ---
 
 class: medium
 
-# PDDL Layout 
+# PDDL Layout
 
   * PDDL separates a planning problem into two files
   
-     - The domain, which defines how the actions operate 
+     - The domain, which defines how the actions operate
      - The problem, which defines the initial state and the goal
   
-  * The idea is that the domain can be reused for many different problems 
+  * The idea is that the domain can be reused for many different problems
   
   * Since historically many planners were written in LISP, PDDL uses the same basic syntax: S-Expressions
   
 ---
 
-# S-Expressions 
+# S-Expressions
 
- * Simply put, an S-Expression consists of parenthesized list, where each element can be either a literal string or another S-Expression 
+ * Simply put, an S-Expression consists of parenthesized list, where each element can be either a literal string or another S-Expression
  
  * (Classically S-Expressions are defined as having two elements, which are concatenated with a period `.`, but this is not commonly explicitly used anymore)
  
@@ -118,29 +118,29 @@ class: medium
 
 ---
 
-# S-Expressions 
+# S-Expressions
 
   * Why are S-Expressions useful?
   
-  * They are very simple to parse, and we can use them to represent syntax trees 
+  * They are very simple to parse, and we can use them to represent syntax trees
   
   * That's exactly what you will do in task 3 of the project
   
-  * Let's look into how we'd parse them 
+  * Let's look into how we'd parse them
 
 ---
 
 class: medium
 
-# Parsing S-Expressions 
+# Parsing S-Expressions
 
-  * Tokenize the input 
+  * Tokenize the input
   
   * Consume tokens one at a time, and push them onto a stack, until you encounter a closing parenthesis
   
-  * When you encounter a closing parenthesis, pop items from the stack until you find the *first* opening parenthesis on the stack 
+  * When you encounter a closing parenthesis, pop items from the stack until you find the *first* opening parenthesis on the stack
   
-  * Push a list containing all popped items onto the stack 
+  * Push a list containing all popped items onto the stack
   
   * Continue consuming tokens
   
@@ -148,7 +148,7 @@ class: medium
   
 ---
 
-# Parsing S-Expressions: An Example 
+# Parsing S-Expressions: An Example
 
 ```
 (and (or (not a) b) e)
@@ -160,7 +160,7 @@ not
 (
 or
 (
-and 
+and
 (
 ```
 Pop `a`, `not` and `(`, and push the list containing them:
@@ -168,14 +168,14 @@ Pop `a`, `not` and `(`, and push the list containing them:
 [not, a]
 or
 (
-and 
+and
 (
 ```
 
 
 ---
 
-# Parsing S-Expressions: An Example 
+# Parsing S-Expressions: An Example
 
 ```
 (and (or (not a) b) e)
@@ -187,19 +187,19 @@ b
 [not, a]
 or
 (
-and 
+and
 (
 ```
 Pop `b`, `[not, a]`, `or`, and `(` and push the list containing them:
 ```
 [or, [not, a], b]
-and 
+and
 (
 ```
 
 ---
 
-# Parsing S-Expressions: An Example 
+# Parsing S-Expressions: An Example
 
 ```
 (and (or (not a) b) e)
@@ -209,7 +209,7 @@ Push tokens until we encounter the next closing parenthesis
 ```
 e
 [or, [not, a], b]
-and 
+and
 (
 ```
 Pop `and`, `[or, [not, a], b]`, `and`, and `(` and push the list containing them:
@@ -222,57 +222,271 @@ We have reached the end of the tokens, and the only item on our stack is the lis
 
 # Practical considerations
 
-  * We need to tokenize our input: The list elements are separated by spaces, but we have to ensure the parentheses are too 
+  * We need to tokenize our input: The list elements are separated by spaces, but we have to ensure the parentheses are too
   
-  * If we ever try to pop from an empty stack, or if there is more than one element on the stack at the end, there was a syntax error 
+  * If we ever try to pop from an empty stack, or if there is more than one element on the stack at the end, there was a syntax error
   
   * The literal strings can contain pretty much any character except for parenthesis and spaces (we saw `-` earlier as a literal string)
 
 ---
 
-# Types
+# Structure of a PDDL Domain File
+
+.left-column[
+
+]
+
+.right-column[
+
+* Now we have our PDDL domain file as a parse-tree
+
+* Let's extract the individual parts
+
+* For each part we have to do some processing
+
+* After all processing, we have our domain
+
+]
 
 ---
+
+# Types
+
+* Objects and variables in PDDL can have types
+
+* Types form a hierarchy, with a root type containing *all* objects
+
+* We need to store these types so we can expand variables in e.g. forall expressions
+
+---
+
+# Types
+
+* Types are written *after* objects
+
+* A type can be applied to multiple objects at the same time
+
+```
+p3 p6 - going_up
+p5 p3 p6 p2 p9 p1 - attendant
+p7 - never_alone
+p2 p7 - conflict_A
+p0 p9 p3 p6 p1 p8 p5 p4 - conflict_B
+f0 f1 f2 f3 f4 f5 f6 f7 f8 f9
+f10 f11 f12 f13 f14 f15 f16 f17 f18 f19 - floor
+```
+
+---
+
+# Type Hierarchy
+
+* Similar to giving types to objects, types can also be "applied" to other types
+
+* This is used to create a type hierarchy, by saying "everything that has type X or Y also has type Z" by writing `X Y - Z`
+
+```
+passenger - object
+going_up going_down vip
+going_nonstop attendant never_alone
+conflict_A conflict_B - passenger
+floor - object
+
+```
+
+---
+
+class: medium
+
 
 # Parsing Types
 
----
+* As usual, tokenize the input
 
-# Structure of a PDDL Domain File
+* Store types as a dictionary of sets
 
----
+* Process token by token, collecting items in a accumulator set
 
-# Actions 
+* When you encounter a `-`, interpret the next token as a type
 
----
-
-# ADL
+* Add all objects from the accumulator set to that type's set in the dictionary
 
 ---
 
-# Structure of a PDDL Problem File
+# Type Hierarchy
+
+* You can use the same approach to process the type hierarchy
+
+* Then you need to perform a post-processing step
+
+* For each type, add all objects of each of its subtypes
+
+* Either do this from the bottom up, or just repeat it n times
 
 ---
 
-# An Example
+# Actions
+
+* Actions in PDDL are actually action schemata/*operators*
+
+* That means they contain free variables
+
+* Each operator may represent multiple actions
+
+* Additionally, each operator contains a precondition and an effect
+
+---
+
+# Action Example
+
+```
+(:action up
+  :parameters (?f1 - floor
+               ?f2 - floor)
+  :precondition (and (lift-at ?f1)
+                     (above ?f1 ?f2))
+  :effect (and (lift-at ?f2)
+               (not (lift-at ?f1)))
+)
+```
 
 ---
 
 # Extensions
 
+* PDDL is a standard, but it allows for several extensions
+
+* The planner you implement in the project will support
+
+   - `:strips`
+   - `:typing`
+   - `:adl`, which is an abbreviation for `:disjunctive-preconditions`, `:equality`, `:existential-preconditions`, `:universal-preconditions`, and
+     `:conditional-effects`
+
+* There are many other extensions, related to numbers, temporal planning, probabilistic effects, etc.
+ 
 ---
 
+# Structure of a PDDL Problem File
+
+.left-column[
+
+]
+
+.right-column[
+
+* The *domain* defines the available operators of the world
+
+* The *problem* defines the initial state and the goal condition
+
+* Objects may be spread out over both files
+
+]
+
+---
+
+# An Example
+
+```
+(:objects p0 - passenger
+             f0 f1 - floor)
+
+
+(:init
+(above f0 f1)
+(origin p0 f1)
+(destin p0 f0)
+(lift-at f0)
+)
+
+
+(:goal (forall (?p - passenger) (served ?p)))
+```
+
+---
+
+class: small
+
 # Running a Planner
+
+* Most planners will provide you with some executable that expects two parameters: a domain file, and a problem file
+
+* Some will then perform some preprocessing step and translate the problem into some internal representation, and you may have to run a second executable on that
+
+* Then you wait ...
+
+--
+
+* And wait ...
+
+--
+
+* And wait ...
+
+--
+
+* And then you get a solution (or not)!
+
+---
+
+# Some Planners
+
+* FastForward
+
+* FastDownward
+
+* Glaive
 
 ---
 
 # Plans
+
+* So you run your planner and it finishes
+
+* The output will be a "plan"
+
+* However, unlike for the input, there is no real standard for the output
+
+---
+
+# planning.domains
+
+* Since planning is a very active field of research, there are many planning domains out there
+
+* [planning.domains](planning.domains) actually contains a collection of known domains, drawing from planning competitions and other sources
+
+* All of the files in that repository are PDDL files
+
+* However, they may require various extensions
+
+---
+
+# Some Advice For the Project
+
+* For the project, testing your planner on the classical domains is a good idea
+
+* On the project page, you will find information on which domains should work with your planner
+
+* There are also other sources for domains, some of which are linked on the project page
+
+* If you find anything else, please let me know, and I'll test them with my solution
+
+---
+
+# Performance
+
+* With task 3, your planner will be quite slow
+
+* There will still be a decent amount of problems you should be able to solve
+
+* Check the project page for performance metrics of my solution for comparison
+
+* In task 4 we will improve this performance (and we will talk next week about how)
   
 ---
 
 class: small
 
-# Resources 
+# Resources
 
   * [International Planning Competition](http://icaps-conference.org/index.php/Main/Competitions)
 

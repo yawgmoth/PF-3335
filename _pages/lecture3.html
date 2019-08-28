@@ -1,7 +1,3 @@
----
-permalink: /slides/lecture3.html
----
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -64,7 +60,7 @@ class: center, middle
 
 ---
 
-# Intelligent Agents 
+# Intelligent Agents
 
   * We said intelligent agents can solve problems without requiring exact instructions how to
   
@@ -72,19 +68,19 @@ class: center, middle
   
   * So how do we solve problems?
   
-  * Let's formalize "solving problems" as: The agent has to figure out by itself how to achieve a goal it is given 
+  * Let's formalize "solving problems" as: The agent has to figure out by itself how to achieve a goal it is given
   
 ---
 
-# The Planning Problem 
+# The Planning Problem
 
 A planning problem consists of three parts:
 
-  * A definition of the current state of the world 
+  * A definition of the current state of the world
   
-  * A definition of a desired state of the world 
+  * A definition of a desired state of the world
   
-  * A definition of the actions the agent can take 
+  * A definition of the actions the agent can take
   
 All of these definitions are done in "some" formal language.
 
@@ -94,27 +90,27 @@ Logic is a good choice for a formal language!
 
 ---
 
-# An Example Planning Problem: Blocks World 
+# An Example Planning Problem: Blocks World
 
   * We have three blocks, A, B, and C
   
   * Blocks A and B are on the table, block C is on top of block B
   
-  * Blocks can be stacked 
+  * Blocks can be stacked
   
-  * At the moment, all blocks are on the table next to each other 
+  * At the moment, all blocks are on the table next to each other
   
   * We want the blocks to be stacked, with C on top of B, and B on top of A
   
 ---
 
-# An Example Planning Problem: Blocks World 
+# An Example Planning Problem: Blocks World
 
 <img src="/PF-3341/assets/img/problemstatement.png" width="100%"/>
   
 ---
 
-# Formalizing the Problem 
+# Formalizing the Problem
 
 Current state:
 $$
@@ -150,25 +146,25 @@ What can the agent do?
   
   * Picking up a block then has a **precondition** and an **effect**
   
-  * The precondition defines *when* an action can even be taken 
+  * The precondition defines *when* an action can even be taken
   
-  * The effect defines what the action *changes* in the world 
+  * The effect defines what the action *changes* in the world
   
 ---
 
-# Picking Up a Block X 
+# Picking Up a Block X
 
 Precondition:
 $$
 \forall Y \in \mathit{blocks}: \neg \text{holds}(Y) \wedge \\\\
-\forall Y \in \mathit{blocks}: \neg \text{on}(Y, X) 
+\forall Y \in \mathit{blocks}: \neg \text{on}(Y, X)
 $$
 
 Effect:
 $$
 \forall Y \in \mathit{blocks}: \neg \text{on}(X, Y) \wedge \\\\
 \neg \text{on}(X, \mathit{table}) \wedge \\\\
-\text{holds}(X) 
+\text{holds}(X)
 $$
 
 ---
@@ -178,14 +174,14 @@ $$
 Precondition:
 $$
 \text{holds}(X) \wedge \\\\
-\forall Z \in \mathit{blocks}: \neg \text{on}(Z, Y) 
+\forall Z \in \mathit{blocks}: \neg \text{on}(Z, Y)
 $$
 
 Effect:
 $$
 \text{on}(X, Y) \wedge \\\\
 \neg \text{holds}(X)
-$$ 
+$$
 
 ---
 
@@ -195,8 +191,8 @@ class: medium
 
   * Logic is nice, but this seems like a pretty complex problem to solve?
   
-  * Whenever we want to execute an action we have to check against all blocks to see if the agent is already holding something, or if there's already something on 
-  the target block 
+  * Whenever we want to execute an action we have to check against all blocks to see if the agent is already holding something, or if there's already something on
+  the target block
   
   * We can use an encoding trick to simplify the problem: Have predicates for negative conditions, too
   
@@ -204,7 +200,7 @@ class: medium
   
 ---
 
-# Picking Up a Block X 
+# Picking Up a Block X
 
 Precondition:
 $$
@@ -215,7 +211,7 @@ $$
 Effect:
 $$
 \neg \text{clear}(X) \wedge \\\\
-\neg \text{free}() \wedge 
+\neg \text{free}() \wedge
 \text{holds}(X)
 $$
 
@@ -242,7 +238,7 @@ $$
 # STRIPS
 
 
-.left-column[ 
+.left-column[
   <img src="/PF-3341/assets/img/Shakey.png" width="100%"/>
 ]
 
@@ -260,16 +256,16 @@ $$
 
 class: small
 
-# STRIPS planning 
+# STRIPS planning
 
   * A state (and the goal!) is defined as a set of atomic propositions of what is true in the world
   
   * The goal is reached when it is a **subset** of a state
   
-  * Each action consists of four sets of atomic propositions: 
+  * Each action consists of four sets of atomic propositions:
       * Two sets of preconditions: positive and negative
       * An add list: What the action makes true
-      * A delete list: What the action makes false 
+      * A delete list: What the action makes false
       
   * To check if an action can be executed in a state, the planner checks if all positive preconditions are in the state and all negative ones are not
   
@@ -301,11 +297,11 @@ class: medium
 
 # Actions vs. Action Schemata
 
-  * Technically "Picking up a block X" (`pickup(X)`) is not an action, because there is no "Block X" in our domain 
+  * Technically "Picking up a block X" (`pickup(X)`) is not an action, because there is no "Block X" in our domain
   
   * We used "X" as a free variable to refer to "any block"
   
-  * An actual (classical) STRIPS planning problem needs ground actions, without any free variables 
+  * An actual (classical) STRIPS planning problem needs ground actions, without any free variables
   
   * `pickup(X)` is an **action schema** that will need to be turned into ground actions (without free variables) `pickup(A)`, `pickup(B)`, and `pickup(C)`
   
@@ -315,10 +311,10 @@ class: medium
 
 # The Actual Planning Process
 
-  * Forward-Chaining: The planner starts with the start state, and applies actions to get a new state until it reaches a state that satisfies the goal. It may do so 
+  * Forward-Chaining: The planner starts with the start state, and applies actions to get a new state until it reaches a state that satisfies the goal. It may do so
   by dividing the goal into subgoals that have to be reached.
   
-  * Backward-Chaining: The planner examines the goal and determines which actions have an effect that contributes to that goal and which preconditions these actions 
+  * Backward-Chaining: The planner examines the goal and determines which actions have an effect that contributes to that goal and which preconditions these actions
   have, until it reaches the start state
 
 ---
@@ -345,11 +341,11 @@ A "proper" solution has to interleave solving these two goals: First remove C, t
 
 ---
 
-# Planning is PSPACE-complete 
+# Planning is PSPACE-complete
 
 ---
 
-# Planning Complexity 
+# Planning Complexity
   
   * You probably know the problem of P vs. NP?
   
@@ -365,15 +361,15 @@ $$
 
 # Why is Planning Hard?
 
-  * We just said that planning is pathfinding on a graph consisting of the states 
+  * We just said that planning is pathfinding on a graph consisting of the states
   
-  * Pathfinding is solvable in polynomial time 
+  * Pathfinding is solvable in polynomial time
   
   * Planning is not? Why?
 
 --
 
-  * For a pathfinding problem, the input is the graph. For a planning problem the input is the initial state, the goal condition and the actions. The graph is 
+  * For a pathfinding problem, the input is the graph. For a planning problem the input is the initial state, the goal condition and the actions. The graph is
   **implicit** (and potentially exponentially large)
   
 ---
@@ -384,14 +380,14 @@ $$
   
   * Many interesting planning problems, i.e. the ones that show up in practice, are tractable, even if their generalizations are theoretically hard to solve.
   
-  * Another way to think about it: Since the solutions we usually *want* are not going to be exponential in length, we shouldn't have to generate a graph of 
+  * Another way to think about it: Since the solutions we usually *want* are not going to be exponential in length, we shouldn't have to generate a graph of
   exponential size.
 
 
   
 ---
 
-# Resources 
+# Resources
 
   * [Planning as Heuristic Search](https://www.cs.toronto.edu/~sheila/2542/s14/A1/bonetgeffner-heusearch-aij01.pdf)
   
