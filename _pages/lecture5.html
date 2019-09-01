@@ -60,31 +60,181 @@ class: center, middle
 
 ---
 
-# Review: The Planning Problem 
+# Review: The Planning Problem
+
+A planning problem consists of three parts:
+
+  * A definition of the current state of the world
+  
+  * A definition of a desired state of the world
+  
+  * A definition of the actions the agent can take
 
 ---
 
-# Review: PDDL Domains and Problems 
+# Review: PDDL Domains and Problems
+
+We can define a planning problem in PDDL domain and problem files:
+ 
+  * The domain file defines which actions (operators) exist, and (optionally) the types of all objects
+  
+  * The problem file defines the initial state of the world (and any additional objects that may be required), and the goal condition
+  
+  * A planner then reads these two files and outputs a plan
+  
+Today we'll talk about that last part
 
 ---
 
-# Planning As Pathfinding 
+# Pathfinding
+
+Recall the pathfinding problem from the second lecture
+
+* We are given a graph, consisting of nodes and edges
+
+* In our implicit graph representation, we could ask one node to generate its neighbors
+
+* We would start at the start node, and generate neighbors "intelligently" until we reached **a** goal node
+
+---
+
+# Planning As Pathfinding
+
+To use a pathfinding algorithm for planning, we need to formulate the planning problem as a graph. Let's start with the "obvious" choice:
+
+* Each state is a logical state
+
+* Each edge corresponds to an action
+
+* In any state, we can take any action whose preconditions are satisfied to generate a new state
 
 ---
 
 # The State-Space
 
+- When we start at the node corresponding to the start state and start expanding actions, we generate the so-called *State-Space*
+
+- We can then use a standard A* algorithm to do pathfinding
+
+- In fact, many planners do exactly that, with different heuristics
+
+---
+
+# A short timeline
+
+* 1995: Graphplan (next lecture)
+
+* 1997/1998: HSP (Heuristic Search Planner)
+
+* 2000/2001: FastForward
+
+* 2005/2006: FastDownward
+
 ---
 
 # Heuristics
+
+- We heard that heuristics can speed up A*
+
+- When we expand a state by applying all actions, we compute a heuristic value for each successor state
+
+- This heuristic value should estimate how long a plan from that state to a goal state is at most
+
+---
+
+# Heuristics
+
+- So how do we define a heuristic for such an abstract process?
+
+- Here is an idea: Solve a simplified/approximate (*relaxed*) version of the problem, and use the cost of the solution as the heuristic
+
+- How can we simplify the problem?
 
 ---
 
 # HSP
 
+- Idea: Ignore delete lists
+
+- Why is this simpler? Because the state always grows
+
+- With a larger state, more actions can be applied, and eventually we will have added all atoms that can possibly be added
+
+Note: This does not work without modification for non-STRIPS domains that have negative preconditions.
+
 ---
 
-# FastForward 
+class: small
+
+# HSP
+
+- Oops: This is still NP-hard (action ordering)...
+
+- Instead, use an estimation:
+
+   * Assign a heuristic value i=0 to *each atom* in the current state
+   
+   * Increase i by 1
+   
+   * Apply all possible relaxed actions (without delete lists), and set the heuristic value of each produced atom to i
+   
+   * Repeat the last two steps until no values change anymore
+   
+- The heuristic value is then the sum of the heuristic values of all atoms in the goal
+
+- This is no longer admissible, since all goal atoms are treated as independent
+
+---
+
+# HSP
+
+- HSP was the first widely successful planner to use heuristic search on STRIPS problems
+
+- It won the 1998 planning competition
+
+- There are updated versions which work with similar strategies
+
+- FastForward was inspired by HSP
+
+---
+
+# FastForward
+
+* We said earlier that solving the relaxed problem is NP-Hard
+
+* But that depends on *which* relaxed problem we mean
+
+* Specificially, finding the *optimal* plan is NP-hard, but determining *a* plan is in P
+
+* Of course, this may overestimate
+
+---
+
+class: medium
+
+# FastForward Heuristic
+
+* Start with a "layer" consisting of the set of all atoms in the current state
+
+* Apply *all* applicable relaxed actions, and add all their effects to the set of atoms generating the next layer
+
+* Continue until all atoms in the goal can be found in a layer
+
+* Then *backtrack* through the layers to build a relaxed plan
+
+* The length of this plan is the value of the heuristic
+
+---
+
+# FastForward: Hillclimbing
+
+* FastForward also uses a modified search procedure
+
+* Since the heuristic may overestimate, it can be beneficial to ignore it for parts of the search
+
+* For any state, if all neighbors have a higher estimated cost, FastForward will expand *all* of those states' neighbors, until it finds a state with a lower heuristic value
+
+* In other words, as long as the heuristic values don't decrease, FastForward uses breadth-first search
 
 ---
 
@@ -92,7 +242,11 @@ class: center, middle
 
 ---
 
-# Resources 
+# Resources
+
+* Planning as Heuristic Search
+
+* [HSP: Heuristic Search Planner](https://bonetblai.github.io/reports/aips98-competition.pdf)
 
   
 
