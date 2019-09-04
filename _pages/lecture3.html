@@ -60,18 +60,6 @@ class: center, middle
 
 ---
 
-# Intelligent Agents
-
-  * We said intelligent agents can solve problems without requiring exact instructions how to
-  
-  * This allows them to solve problems in "arbitrary" situations
-  
-  * So how do we solve problems?
-  
-  * Let's formalize "solving problems" as: The agent has to figure out by itself how to achieve a goal it is given
-  
----
-
 # The Planning Problem
 
 A planning problem consists of three parts:
@@ -146,7 +134,7 @@ What can the agent do?
   
   * Picking up a block then has a **precondition** and an **effect**
   
-  * The precondition defines *when* an action can even be taken
+  * The precondition defines *if* an action can even be taken
   
   * The effect defines what the action *changes* in the world
   
@@ -374,6 +362,126 @@ $$
   
 ---
 
+class: small
+
+# So how hard is planning?
+
+* Imagine you have a (any!) Turing machine that needs at most polynomial space for some computation (i.e. it is in PSPACE)
+
+* If we could solve the *same* computation with a planner, **and** the conversion only takes polynomial time, we know that planning is PSPACE-hard
+
+* So how could we encode a Turing machine in a planner?
+
+* How is a Turing machine defined?
+
+---
+
+# Turing Machine
+
+A Turing Machine consists of three parts:
+
+  - A tape (in our case **polynomial** in size) filled with symbols from a finite alphabet `\(\Sigma\)`, e.g. `\(x\)`
+  
+  - A read/write head position `\(i\)`
+  
+  - A state `\(q \in Q\)`
+  
+The computation a Turing Machine computes is defined by a state transition function: `\(Q \times \Sigma \mapsto Q \times \Sigma \times \{L,R\}\)`
+
+The Turing Machine applies this state transition function until it reaches a *terminal state*
+
+---
+
+class: medium
+
+# Turing Machine
+
+Say:
+
+* We have a predicate `\(\mathit{in}(i,x)\)` to define which symbol is in a tape cell
+
+* We have a predicate `\(\mathit{at}(i,q)\)` to define the read/write head is at position `\(i\)` and we are in state `\(q\)`
+
+* We have a predicate `\(\mathit{accept}\)` to define that we are in a terminal state
+
+Let's additionally define a predicate `\(\mathit{do}(i,q,x)\)` to mean "we are processing the transition from state `\(q\)`, with current symbol `\(x\)`, and the read/write head is at position `\(i\)`"
+
+---
+
+class: small
+
+# Turing Machine
+
+Take a transition from the Turing Machine, e.g. `\((q_0,x) \mapsto (q_1,y,L)\)`. We can then define planning operators:
+
+Delete old symbol
+* Positive Preconditions: `\(\{\mathit{in}(i,x), \mathit{at}(i,q)\}\)`
+* Add List: `\(\{\mathit{do}(i,q,x)\}\)`, Delete List: `\(\{\mathit{in}(i,x)\}\)`
+
+Write new symbol
+* Positive Preconditions: `\(\{\mathit{in}(i,x), \mathit{do}(i,q,x)\}\)`
+* Add List: `\(\{\mathit{in}(i,y)\}\)`, Delete List: `\(\{\mathit{in}(i,x)\}\)`
+
+Move and change state
+* Positive Preconditions: `\(\{\mathit{do}(i,q,x), \mathit{in}(i,y)\}\)`
+* Add List: `\(\{\mathit{at}(i-1,q_1)\}\)`, Delete List: `\(\{\mathit{do}(i,q,x)\}\)`
+
+---
+
+class: small
+
+# Turing Machine
+
+Are we polynomial in size?
+
+* We need at most polynomially many `\(\mathit{in}\)` atoms 
+
+* For every state transition we generate actions equal to the number of possible symbols times the number of states (part of the definition) times the number of `\(\mathit{in}\)` atoms (squared)
+
+* Overall, we will generate polynomially many actions (and we need a few extras that set `\(\mathit{accept}\)` to true)
+
+If planning was not PSPACE-hard, we could therefore solve any problem in PSPACE more efficiently. Since we can not, that means that planning must be PSPACE-hard.
+
+---
+
+# It gets worse ...
+
+Recall our operators:
+
+Delete old symbol
+* Positive Preconditions: `\(\{\mathit{in}(i,x), \mathit{at}(i,q)\}\)`
+* Add List: `\(\{\mathit{do}(i,q,x)\}\)`, Delete List: `\(\{\mathit{in}(i,x)\}\)`
+
+Write new symbol
+* Positive Preconditions: `\(\{\mathit{in}(i,x), \mathit{do}(i,q,x)\}\)`
+* Add List: `\(\{\mathit{in}(i,y)\}\)`, Delete List: `\(\{\mathit{in}(i,x)\}\)`
+
+Move and change state
+* Positive Preconditions: `\(\{\mathit{do}(i,q,x), \mathit{in}(i,y)\}\)`
+* Add List: `\(\{\mathit{at}(i-1,q_1)\}\)`, Delete List: `\(\{\mathit{do}(i,q,x)\}\)`
+
+---
+
+# It gets worse ...
+
+* None of our operators used negative preconditions 
+
+* And they only used **two** positive preconditions 
+
+* And **two** effects 
+
+* This means that planning is PSPACE-hard even if we limit the operators to two positive preconditions and two effects
+
+* Oh, and by the way: This result is just for determining if there even *exists* any plan
+
+---
+
+# Complexity Zoo
+
+<img src="/PF-3335/assets/img/plancomplexity.png" width="80%"/>
+  
+---
+
 # The Good News
 
   * [All PSPACE-complete planning problems are equal, but some are more equal than others](https://www.aaai.org/ocs/index.php/SOCS/SOCS11/paper/view/4009/4353)
@@ -391,21 +499,27 @@ class: medium
 
 * A planning problem consists of a start state, actions, and a goal condition
 
-* In STRIPS planning the start state consists of a set of atoms, each action has preconditions (a set of atoms), and effects (an add list and a delete list of atoms), and the goal is also a set of atoms
+* In STRIPS planning the start state consists of a set of atoms, each action has positive and negative preconditions (sets of atoms), and effects (an add list and a delete list of atoms), and the goal is also a set of atoms
 
 * Actions are usually defined as operators, which contain free variables, and have to be ground for the actual planning process
 
 * Next week we will look at a standard file format for planning problems, and some extensions that go beyond STRIPS
+
+---
+
+# Homework
+
+
   
 ---
 
 # Resources
 
-  * [Planning as Heuristic Search](https://www.cs.toronto.edu/~sheila/2542/s14/A1/bonetgeffner-heusearch-aij01.pdf)
+  * [Shakey the Robot](https://www.youtube.com/watch?v=qXdn6ynwpiI)
   
-  * [An Introduction to Least-Commitment Planning](https://homes.cs.washington.edu/~weld/papers/pi.pdf)
+  * [The Computational Complexity of Propositional Strips Planning](https://ai.dmi.unibas.ch/research/reading_group/bylander-aij1994.pdf)
   
-  * [PDDL Resources](http://icaps-conference.org/ipc2008/deterministic/PddlResources.html)
+  * [All PSPACE-complete planning problems are equal, but some are more equal than others](https://www.aaai.org/ocs/index.php/SOCS/SOCS11/paper/view/4009/4353)
   
   * [Introduction to STRIPS Planning and Applications in Video-games](https://www.dis.uniroma1.it/~degiacom/didattica/dottorato-stavros-vassos/)
 
