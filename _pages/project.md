@@ -136,6 +136,8 @@ Mandatory function in `pathfinding.py`, following the API described there:
    
 Do **not** remove or change the `default_heuristic` in `pathfinding.py`.
 
+**Note:** The comment for `get_neighbors` in `graph.py` used to incorrectly state that its return value was a list of 3-tuples. In fact the return value is a list of `Edge` object, each of which contains three attributes. This has been corrected in the framework on 7/9/2019. This was only a change in documentation, the actual functionality was unaffected by this change.
+
 Task 3: PDDL Parser and Planner
 -------------------------------
 

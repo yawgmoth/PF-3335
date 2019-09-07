@@ -256,7 +256,7 @@ $$
 \text{on}(X, Y) \wedge \\\\
 \neg \text{clear}(Y) \wedge \\\\
 \neg \text{holds}(X) \\\\
-\text{clear}(X)
+\text{clear}(X) \wedge \text{free}()
 $$
 
 ---
@@ -466,9 +466,9 @@ class: small
 
 Take a transition from the Turing Machine, e.g. `\((q_0,x) \mapsto (q_1,y,L)\)`. We can then define planning operators:
 
-Delete old symbol
+Delete old state
 * Positive Preconditions: `\(\{\mathit{in}(i,x), \mathit{at}(i,q)\}\)`
-* Add List: `\(\{\mathit{do}(i,q,x)\}\)`, Delete List: `\(\{\mathit{in}(i,x)\}\)`
+* Add List: `\(\{\mathit{do}(i,q,x)\}\)`, Delete List: `\(\{\mathit{at}(i,q)\}\)`
 
 Write new symbol
 * Positive Preconditions: `\(\{\mathit{in}(i,x), \mathit{do}(i,q,x)\}\)`
@@ -502,7 +502,7 @@ Recall our operators:
 
 Delete old symbol
 * Positive Preconditions: `\(\{\mathit{in}(i,x), \mathit{at}(i,q)\}\)`
-* Add List: `\(\{\mathit{do}(i,q,x)\}\)`, Delete List: `\(\{\mathit{in}(i,x)\}\)`
+* Add List: `\(\{\mathit{do}(i,q,x)\}\)`, Delete List: `\(\{\mathit{at}(i,q)\}\)`
 
 Write new symbol
 * Positive Preconditions: `\(\{\mathit{in}(i,x), \mathit{do}(i,q,x)\}\)`
