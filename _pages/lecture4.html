@@ -1,3 +1,6 @@
+---
+permalink: /slides/lecture4.html
+---
 <!DOCTYPE html>
 <html>
   <head>
@@ -56,7 +59,23 @@ class: center, middle
 
 ---
 
+class: center, middle
+
 # Planning
+
+---
+
+# Reminder: The Planning Problem 
+
+A planning problem consists of three parts:
+
+  * A definition of the current state of the world
+  
+  * A definition of a desired state of the world
+  
+  * A definition of the actions the agent can take
+  
+All of these definitions are done in "some" formal language.
 
 ---
 
@@ -233,7 +252,7 @@ We have reached the end of the tokens, and the only item on our stack is the lis
 # Structure of a PDDL Domain File
 
 .left-column[
-
+<img src="/PF-3335/assets/img/domain.png" width="100%"/>
 ]
 
 .right-column[
@@ -247,6 +266,123 @@ We have reached the end of the tokens, and the only item on our stack is the lis
 * After all processing, we have our domain
 
 ]
+
+---
+
+# Structure of a PDDL Domain File
+
+.left-column[
+<img src="/PF-3335/assets/img/domain.png" width="100%"/>
+]
+
+.right-column[
+
+* Now we have our PDDL domain file as a parse-tree
+
+* Let's extract the individual parts
+
+* For each part we have to do some processing
+
+* After all processing, we have our domain
+
+]
+
+---
+
+# Structure of a PDDL Domain File
+
+.left-column[
+<img src="/PF-3335/assets/img/domainrequirements.png" width="100%"/>
+]
+
+.right-column[
+
+* **Requirements** 
+
+* Types/Objects
+
+* Predicates
+
+* Actions
+
+]
+
+---
+
+# Structure of a PDDL Domain File
+
+.left-column[
+<img src="/PF-3335/assets/img/domaintypes.png" width="100%"/>
+]
+
+.right-column[
+
+* Requirements
+
+* **Types/Objects**
+
+* Predicates
+
+* Actions
+
+]
+
+---
+
+# Structure of a PDDL Domain File
+
+.left-column[
+<img src="/PF-3335/assets/img/domainpredicates.png" width="100%"/>
+]
+
+.right-column[
+
+* Requirements
+
+* Types/Objects
+
+* **Predicates**
+
+* Actions
+
+]
+
+---
+
+# Structure of a PDDL Domain File
+
+.left-column[
+<img src="/PF-3335/assets/img/domainactions.png" width="100%"/>
+]
+
+.right-column[
+
+* Requirements 
+
+* Types/Objects
+
+* Predicates
+
+* **Actions**
+
+]
+
+---
+
+class: medium
+
+# Extensions: "Requirements"
+
+* PDDL is a standard, but it allows for several extensions
+
+* The planner you implement in the project will support
+
+   - `:strips`
+   - `:typing`
+   - `:adl`, which is an abbreviation for `:disjunctive-preconditions`, `:equality`, `:existential-preconditions`, `:universal-preconditions`, and
+     `:conditional-effects`
+
+* There are many other extensions, related to numbers, temporal planning, probabilistic effects, etc.
 
 ---
 
@@ -326,9 +462,9 @@ class: medium
 
 # Actions
 
-* Actions in PDDL are actually action schemata/*operators*
+* "Actions" in PDDL are actually *operators*
 
-* That means they contain free variables
+* That means they contain free variables (often with types)
 
 * Each operator may represent multiple actions
 
@@ -348,27 +484,14 @@ class: medium
                (not (lift-at ?f1)))
 )
 ```
-
----
-
-# Extensions
-
-* PDDL is a standard, but it allows for several extensions
-
-* The planner you implement in the project will support
-
-   - `:strips`
-   - `:typing`
-   - `:adl`, which is an abbreviation for `:disjunctive-preconditions`, `:equality`, `:existential-preconditions`, `:universal-preconditions`, and
-     `:conditional-effects`
-
-* There are many other extensions, related to numbers, temporal planning, probabilistic effects, etc.
  
 ---
 
 # Structure of a PDDL Problem File
 
 .left-column[
+
+<img src="/PF-3335/assets/img/pddlproblem.png" width="100%"/>
 
 ]
 
@@ -384,11 +507,187 @@ class: medium
 
 ---
 
-# An Example
+# Structure of a PDDL Problem File
+
+.left-column[
+
+<img src="/PF-3335/assets/img/pddlproblemdomain.png" width="100%"/>
+
+]
+
+.right-column[
+
+* **Domain Reference**
+
+* Additional Objects
+
+* Initial State
+
+* Goal Condition
+
+]
+
+---
+
+# Structure of a PDDL Problem File
+
+.left-column[
+
+<img src="/PF-3335/assets/img/pddlproblemobjects.png" width="100%"/>
+
+]
+
+.right-column[
+
+* Domain Reference
+
+* **Additional Objects**
+
+* Initial State
+
+* Goal Condition
+
+]
+
+---
+
+# Structure of a PDDL Problem File
+
+.left-column[
+
+<img src="/PF-3335/assets/img/pddlprobleminit.png" width="100%"/>
+
+]
+
+.right-column[
+
+* Domain Reference
+
+* Additional Objects
+
+* **Initial State**
+
+* Goal Condition
+
+]
+
+---
+
+# Structure of a PDDL Problem File
+
+.left-column[
+
+<img src="/PF-3335/assets/img/pddlproblemgoal.png" width="100%"/>
+
+]
+
+.right-column[
+
+* Domain Reference
+
+* Additional Objects
+
+* Initial State
+
+* **Goal Condition**
+
+]
+
+
+
+---
+
+class: center, middle
+
+# PDDL Example: Elevator
+
+---
+
+# Domain: Types and Predicates 
+
+```
+(:types 
+    passenger - object
+    floor - object
+)
+
+(:predicates 
+
+ (origin ?person - passenger ?floor - floor)
+
+ (destin ?person - passenger ?floor - floor)
+
+ (above ?floor1 - floor  ?floor2 - floor)
+
+ (boarded ?person - passenger)
+
+ (served ?person - passenger)
+
+ (lift-at ?floor - floor)
+
+)
+```
+
+---
+
+# Domain: Stop at Floor
+
+```
+(:action stop
+
+  :parameters (?f - floor)
+  
+  :precondition (lift-at ?f)
+  
+  :effect (and 
+               (forall (?p - passenger) 
+                  (when (and (boarded ?p) 
+                             (destin ?p ?f))
+                        (and (not (boarded ?p)) 
+                             (served  ?p))))
+                             
+               (forall (?p - passenger)                
+                   (when (and (origin ?p ?f) (not (served ?p)))
+                              (boarded ?p)))
+          )
+)
+```
+
+---
+
+# Domain: Drive Up and Down
+
+```
+;;drive up
+
+(:action up
+  :parameters (?f1 - floor ?f2 - floor)
+
+  :precondition (and (lift-at ?f1) (above ?f1 ?f2))
+
+  :effect (and (lift-at ?f2) (not (lift-at ?f1)))
+)
+
+
+;;drive down
+
+(:action down
+  :parameters (?f1 - floor ?f2 - floor)
+
+  :precondition (and (lift-at ?f1) (above ?f2 ?f1))
+
+  :effect (and (lift-at ?f2) (not (lift-at ?f1)))
+)
+
+```
+
+---
+
+# Problem
 
 ```
 (:objects p0 - passenger
-             f0 f1 - floor)
+          f0 f1 - floor)
 
 
 (:init
@@ -401,6 +700,12 @@ class: medium
 
 (:goal (forall (?p - passenger) (served ?p)))
 ```
+
+---
+
+class: center, middle 
+
+# Planners 
 
 ---
 
@@ -430,11 +735,11 @@ class: small
 
 # Some Planners
 
-* FastForward
+* [FastForward](https://fai.cs.uni-saarland.de/hoffmann/ff.html)
 
-* FastDownward
+* [FastDownward](http://www.fast-downward.org/)
 
-* Glaive
+* [Glaive](http://nil.cs.uno.edu/projects/glaive/)
 
 ---
 
@@ -446,13 +751,15 @@ class: small
 
 * However, unlike for the input, there is no real standard for the output
 
+* Some/most planners will print the required actions in a PDDL/LISP-like syntax
+
 ---
 
 # planning.domains
 
 * Since planning is a very active field of research, there are many planning domains out there
 
-* [planning.domains](planning.domains) actually contains a collection of known domains, drawing from planning competitions and other sources
+* [planning.domains](http://planning.domains) actually contains a collection of known domains, drawing from planning competitions and other sources
 
 * All of the files in that repository are PDDL files
 
@@ -469,6 +776,18 @@ class: small
 * There are also other sources for domains, some of which are linked on the project page
 
 * If you find anything else, please let me know, and I'll test them with my solution
+
+---
+
+# Some Advice For the Project
+
+* You may assume that the domain/problem you are given "make sense"
+
+* That means you don't have to check if the `:requirements` section matches what is used in the files, if all used predicates exist and the types match, etc.
+
+* You also don't need to worry about emitting "good" error messages for syntax errors
+
+* But make sure that the files listed on the project page work with your planner, and come up with your own (reasonable) tests
 
 ---
 
