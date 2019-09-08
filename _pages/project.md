@@ -314,6 +314,174 @@ encourage you to push the limits of your planners, which may require some more "
 task 4, but if you want to send me a different/modified version for the planning competition to play around with different heuristic or even more adventerous optimizations, you are free to do so. If you don't send me a separate
 submission, I will automatically use your submission for task 4.
 
+Performance Baseline
+--------------------
+
+In this table you can see how my solution fares on several of the planning problems in the repository of <a href="http://planning.domains">planning.domains</a>. The column "heuristic" contains an "h" if my planning heuristic (based on relaxed graphplan) was used, and a "d" if the default (constant 0) heuristic was used. As you can see, the heuristic does not always reduce the time needed to solve a problem, but in many cases it does so significantly. 
+
+
+|       PDDL Problem File                | heuristic | expanded | visited | time needed |
+|:---------------------------------------|:---------:|:--------:|:-------:|:-----------:|
+|airport\p01-airport1-p1.pddl| h |        8 |         9 |    0.17s |
+|airport\p01-airport1-p1.pddl| d |       11 |        12 |    0.12s |
+|airport\p02-airport1-p1.pddl| h |        9 |        15 |    0.16s |
+|airport\p02-airport1-p1.pddl| d |       16 |        17 |    0.13s |
+|airport\p03-airport1-p2.pddl| h |       18 |        47 |    0.49s |
+|airport\p03-airport1-p2.pddl| d |     1078 |      1272 |   30.38s |
+|airport\p04-airport2-p1.pddl| h |       20 |        21 |    0.39s |
+|airport\p04-airport2-p1.pddl| d |       22 |        23 |    0.15s |
+|airport\p05-airport2-p1.pddl| h |       21 |        28 |    0.51s |
+|airport\p05-airport2-p1.pddl| d |       34 |        35 |    0.16s |
+|airport\p06-airport2-p2.pddl| h |       66 |       130 |    5.36s |
+|airport\p06-airport2-p2.pddl| d |     4875 |      5071 |  332.73s |
+|airport\p07-airport2-p2.pddl| h |       60 |       125 |    5.20s |
+|airport\p07-airport2-p2.pddl | d |  |  |  timeout |
+|airport\p08-airport2-p3.pddl| h |      116 |       333 |   32.75s |
+|airport\p08-airport2-p3.pddl | d |  |  |  timeout |
+|airport\p09-airport2-p4.pddl | h |  |  |  timeout |
+|airport\p09-airport2-p4.pddl | d |  |  |  timeout |
+|airport\p10-airport3-p1.pddl| h |       18 |        20 |    0.42s |
+|airport\p10-airport3-p1.pddl| d |       22 |        25 |    0.16s |
+|airport\p11-airport3-p1.pddl| h |       21 |        28 |    0.58s |
+|airport\p11-airport3-p1.pddl| d |       33 |        34 |    0.17s |
+|airport\p12-airport3-p2.pddl| h |       55 |       116 |    5.58s |
+|airport\p12-airport3-p2.pddl| d |     4286 |      4792 |  455.59s |
+|airport\p13-airport3-p2.pddl| h |       45 |        89 |    4.22s |
+|airport\p13-airport3-p2.pddl| d |     1847 |      1960 |   59.88s |
+|airport\p14-airport3-p3.pddl| h |      104 |       294 |   29.08s |
+|airport\p14-airport3-p3.pddl | d |  |  |  timeout |
+|airport-adl\p01-airport1-p1.pddl| h |       14 |        18 |   57.98s |
+|airport-adl\p01-airport1-p1.pddl| d |       18 |        20 |    2.23s |
+|airport-adl\p02-airport1-p1.pddl| h |       21 |        25 |   85.07s |
+|airport-adl\p02-airport1-p1.pddl| d |       24 |        27 |    2.30s |
+|airport-adl\p03-airport1-p2.pddl | h |  |  |  timeout |
+|airport-adl\p03-airport1-p2.pddl| d |      600 |       645 |   28.53s |
+|airport-adl\p04-airport2-p1.pddl | h |  |  |  timeout |
+|airport-adl\p04-airport2-p1.pddl| d |       42 |        43 |   13.95s |
+|airport-adl\p05-airport2-p1.pddl | h |  |  |  timeout |
+|airport-adl\p05-airport2-p1.pddl| d |       48 |        51 |   14.42s |
+|airport-adl\p06-airport2-p2.pddl | h |  |  |  timeout |
+|airport-adl\p06-airport2-p2.pddl| d |     2677 |      2738 |  540.40s |
+|airport-adl\p07-airport2-p2.pddl | h |  |  |  timeout |
+|airport-adl\p07-airport2-p2.pddl| d |     2646 |      2699 |  532.61s |
+|elevators-00-adl\s1-0.pddl| h |        5 |         6 |    0.12s |
+|elevators-00-adl\s1-0.pddl| d |        4 |         4 |    0.11s |
+|elevators-00-adl\s1-1.pddl| h |        5 |         6 |    0.11s |
+|elevators-00-adl\s1-1.pddl| d |        4 |         4 |    0.11s |
+|elevators-00-adl\s1-2.pddl| h |        4 |         4 |    0.12s |
+|elevators-00-adl\s1-2.pddl| d |        4 |         4 |    0.11s |
+|elevators-00-strips\s1-0.pddl| h |        4 |         4 |    0.16s |
+|elevators-00-strips\s1-0.pddl| d |        4 |         4 |    0.11s |
+|elevators-00-strips\s1-1.pddl| h |        4 |         4 |    0.11s |
+|elevators-00-strips\s1-1.pddl| d |        4 |         4 |    0.11s |
+|elevators-00-strips\s1-2.pddl| h |        4 |         4 |    0.11s |
+|elevators-00-strips\s1-2.pddl| d |        4 |         4 |    0.11s |
+|elevators-00-strips\s1-3.pddl| h |        4 |         4 |    0.12s |
+|elevators-00-strips\s1-3.pddl| d |        4 |         4 |    0.11s |
+|movie\prob01.pddl| h |      129 |       140 |    3.18s |
+|movie\prob01.pddl| d |      289 |       354 |   15.74s |
+|movie\prob02.pddl| h |      134 |       134 |    4.37s |
+|movie\prob02.pddl| d |      165 |       166 |    5.91s |
+|movie\prob03.pddl| h |      158 |       159 |    7.73s |
+|movie\prob03.pddl| d |      127 |       127 |    5.41s |
+|movie\prob04.pddl| h |      127 |       127 |    6.74s |
+|movie\prob04.pddl| d |      127 |       127 |    6.93s |
+|movie\prob05.pddl| h |      127 |       127 |    8.42s |
+|movie\prob05.pddl| d |      232 |       263 |   25.60s |
+|movie\prob06.pddl| h |      158 |       159 |   14.40s |
+|movie\prob06.pddl| d |      284 |       313 |   40.67s |
+|movie\prob07.pddl| h |      127 |       127 |   12.14s |
+|movie\prob07.pddl| d |      184 |       190 |   23.73s |
+|movie\prob08.pddl| h |      233 |       233 |   46.19s |
+|movie\prob08.pddl| d |      196 |       196 |   36.84s |
+|movie\prob09.pddl| h |      188 |       197 |   30.19s |
+|movie\prob09.pddl| d |      184 |       190 |   32.28s |
+|movie\prob10.pddl| h |      127 |       127 |   19.04s |
+|movie\prob10.pddl| d |      127 |       127 |   19.21s |
+|movie\prob11.pddl| h |      158 |       159 |   32.63s |
+|movie\prob11.pddl| d |      127 |       127 |   23.10s |
+|movie\prob12.pddl| h |      127 |       127 |   24.79s |
+|movie\prob12.pddl| d |      127 |       127 |   25.36s |
+|movie\prob13.pddl| h |      127 |       127 |   27.43s |
+|movie\prob13.pddl| d |      127 |       127 |   27.30s |
+|movie\prob14.pddl| h |      184 |       190 |   59.01s |
+|movie\prob14.pddl| d |      127 |       127 |   30.72s |
+|movie\prob15.pddl| h |      127 |       127 |   33.89s |
+|movie\prob15.pddl| d |      127 |       127 |   34.01s |
+|movie\prob16.pddl| h |      127 |       127 |   37.04s |
+|movie\prob16.pddl| d |      184 |       190 |   72.65s |
+|movie\prob17.pddl| h |      158 |       159 |   57.58s |
+|movie\prob17.pddl| d |      226 |       237 |  116.48s |
+|movie\prob18.pddl| h |      127 |       127 |   45.51s |
+|movie\prob18.pddl| d |      184 |       190 |   88.48s |
+|movie\prob19.pddl| h |      269 |       311 |  200.22s |
+|movie\prob19.pddl| d |      164 |       173 |   68.24s |
+|movie\prob20.pddl| h |      344 |       409 |  338.36s |
+|movie\prob20.pddl| d |      206 |       232 |  130.79s |
+|movie\prob21.pddl| h |      225 |       231 |  153.62s |
+|movie\prob21.pddl| d |      232 |       238 |  173.96s |
+|movie\prob22.pddl| h |      127 |       127 |   63.55s |
+|movie\prob22.pddl| d |      158 |       159 |   87.58s |
+|movie\prob23.pddl| h |      127 |       127 |   64.98s |
+|movie\prob23.pddl| d |      153 |       158 |   80.68s |
+|movie\prob24.pddl| h |      127 |       127 |   70.35s |
+|movie\prob24.pddl| d |      127 |       127 |   70.40s |
+|movie\prob25.pddl| h |      127 |       127 |   75.20s |
+|movie\prob25.pddl| d |      127 |       127 |   74.32s |
+|movie\prob26.pddl| h |      158 |       159 |  110.80s |
+|movie\prob26.pddl| d |      127 |       127 |   81.98s |
+|movie\prob27.pddl| h |      127 |       127 |   85.90s |
+|movie\prob27.pddl| d |      127 |       127 |   84.22s |
+|movie\prob28.pddl| h |      184 |       190 |  178.61s |
+|movie\prob28.pddl| d |      184 |       190 |  176.34s |
+|movie\prob29.pddl| h |      127 |       127 |   95.54s |
+|movie\prob29.pddl| d |      127 |       127 |   95.49s |
+|movie\prob30.pddl| h |      206 |       232 |  254.15s |
+|movie\prob30.pddl| d |      184 |       190 |  196.72s |
+|psr-small\p01-s2-n1-l2-f50.pddl| h |       20 |        25 |    0.17s |
+|psr-small\p01-s2-n1-l2-f50.pddl| d |       21 |        22 |    0.11s |
+|psr-small\p02-s5-n1-l3-f30.pddl| h |      388 |      1207 |   10.49s |
+|psr-small\p02-s5-n1-l3-f30.pddl| d |     1849 |      2301 |   37.69s |
+|psr-small\p03-s7-n1-l3-f70.pddl| h |       90 |       157 |    0.30s |
+|psr-small\p03-s7-n1-l3-f70.pddl| d |      264 |       293 |    0.42s |
+|psr-small\p04-s8-n1-l4-f10.pddl| h |       21 |        66 |    0.22s |
+|psr-small\p04-s8-n1-l4-f10.pddl| d |      530 |       727 |    4.53s |
+|psr-small\p05-s9-n1-l4-f30.pddl| h |      127 |       430 |    1.72s |
+|psr-small\p05-s9-n1-l4-f30.pddl| d |     1670 |      2046 |   27.42s |
+|psr-small\p06-s10-n1-l4-f50.pddl| h |       65 |       172 |    0.39s |
+|psr-small\p06-s10-n1-l4-f50.pddl| d |      321 |       445 |    1.34s |
+|psr-small\p07-s11-n1-l4-f70.pddl| h |      228 |       780 |    4.69s |
+|psr-small\p07-s11-n1-l4-f70.pddl| d |     4627 |      5957 |  349.13s |
+|psr-small\p08-s12-n1-l5-f10.pddl| h |       40 |       115 |    0.33s |
+|psr-small\p08-s12-n1-l5-f10.pddl| d |      207 |       262 |    0.55s |
+|psr-small\p09-s13-n1-l5-f30.pddl| h |       40 |        88 |    0.25s |
+|psr-small\p09-s13-n1-l5-f30.pddl| d |      243 |       314 |    0.77s |
+|psr-small\p10-s17-n2-l2-f30.pddl| h |       81 |       594 |    5.58s |
+|psr-small\p10-s17-n2-l2-f30.pddl | d |  |  |  timeout |
+|psr-small\p11-s18-n2-l2-f50.pddl | h |  |  |  timeout |
+|psr-small\p11-s18-n2-l2-f50.pddl | d |  |  |  timeout |
+|psr-small\p12-s21-n2-l3-f30.pddl| h |      278 |       789 |    4.33s |
+|psr-small\p12-s21-n2-l3-f30.pddl| d |     2875 |      3567 |   58.20s |
+|psr-small\p13-s22-n2-l3-f50.pddl| h |      434 |      1178 |    9.70s |
+|psr-small\p13-s22-n2-l3-f50.pddl| d |     1235 |      1289 |    6.65s |
+|psr-small\p14-s23-n2-l3-f70.pddl| h |      155 |       902 |    9.90s |
+|psr-small\p14-s23-n2-l3-f70.pddl | d |  |  |  timeout |
+|psr-small\p15-s24-n2-l4-f10.pddl| h |       80 |       313 |    9.19s |
+|psr-small\p15-s24-n2-l4-f10.pddl | d |  |  |  timeout |
+|tpp\p01.pddl| h |        5 |         6 |    0.18s |
+|tpp\p01.pddl| d |        8 |         8 |    0.12s |
+|tpp\p02.pddl| h |       17 |        33 |    0.26s |
+|tpp\p02.pddl| d |       33 |        36 |    0.15s |
+|tpp\p03.pddl| h |       58 |        98 |    1.07s |
+|tpp\p03.pddl| d |      229 |       235 |    0.65s |
+|tpp\p04.pddl| h |      123 |       251 |    3.89s |
+|tpp\p04.pddl| d |     2642 |      2754 |   64.49s |
+|tpp\p05.pddl| h |       45 |       177 |    6.20s |
+|tpp\p05.pddl | d |  |  |  timeout |
+|tpp\p06.pddl| h |      212 |      1062 |  230.57s |
+|tpp\p06.pddl | d |  |  |  timeout |
+|tpp\p07.pddl| h |      112 |       677 |  204.42s |
+
 
 Late submission policy
 ----------------------
