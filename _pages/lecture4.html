@@ -630,31 +630,6 @@ class: center, middle
 
 ---
 
-# Domain: Stop at Floor
-
-```
-(:action stop
-
-  :parameters (?f - floor)
-  
-  :precondition (lift-at ?f)
-  
-  :effect (and 
-               (forall (?p - passenger) 
-                  (when (and (boarded ?p) 
-                             (destin ?p ?f))
-                        (and (not (boarded ?p)) 
-                             (served  ?p))))
-                             
-               (forall (?p - passenger)                
-                   (when (and (origin ?p ?f) (not (served ?p)))
-                              (boarded ?p)))
-          )
-)
-```
-
----
-
 # Domain: Drive Up and Down
 
 ```
@@ -679,6 +654,31 @@ class: center, middle
   :effect (and (lift-at ?f2) (not (lift-at ?f1)))
 )
 
+```
+
+---
+
+# Domain: Stop at Floor (Homework)
+
+```
+(:action stop
+
+  :parameters (?f - floor)
+  
+  :precondition (lift-at ?f)
+  
+  :effect (and 
+               (forall (?p - passenger) 
+                  (when (and (boarded ?p) 
+                             (destin ?p ?f))
+                        (and (not (boarded ?p)) 
+                             (served  ?p))))
+                             
+               (forall (?p - passenger)                
+                   (when (and (origin ?p ?f) (not (served ?p)))
+                              (boarded ?p)))
+          )
+)
 ```
 
 ---
