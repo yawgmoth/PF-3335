@@ -1,7 +1,6 @@
 ---
 permalink: /slides/lecture5.html
 ---
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -27,6 +26,8 @@ permalink: /slides/lecture5.html
       .small li {  font-size: 1em; }
       
       .medium li {  font-size: 1.1em; }
+      
+      .mediumc {  font-size: 0.8em; }
       
       .mmedium li {  font-size: 1.05em; }
       
@@ -71,6 +72,8 @@ A planning problem consists of three parts:
   * A definition of the actions the agent can take
 
 ---
+
+class: medium
 
 # Review: PDDL Domains and Problems
 
@@ -120,6 +123,85 @@ To use a pathfinding algorithm for planning, we need to formulate the planning p
 
 ---
 
+# State Space Example 
+
+<img src="/PF-3341/assets/img/planspace.png" width="100%"/>
+
+---
+
+# Planning Problem in State Space 
+
+<img src="/PF-3341/assets/img/problem.png" width="100%"/>
+
+---
+
+# For the Project 
+
+* Parse PDDL files like discussed last week 
+
+* Extract all types, objects, operators, the initial state and the goal condition
+
+* Ground actions 
+
+* Plan 
+
+---
+
+# Grounding Actions 
+
+```
+(:action up
+  :parameters (?f1 - floor ?f2 - floor)
+  :precondition (and (lift-at ?f1) (above ?f1 ?f2))
+  :effect (and (lift-at ?f2) (not (lift-at ?f1))))
+```
+
+For each parameter, replace with all possible values.
+
+Save all ground actions in a list.
+
+You may end up with many ground actions.
+
+---
+
+# State Representation 
+
+You can create the world for the initial state by passing all atoms and the type dictionary to `make_world`. However, for pathfinding you will need a `Node` subclass, e.g. `PlanningState`.
+
+Each `PlanningState` contains a reference to a logical world, as well as to the list of all actions
+  
+Note: You don't **have to** use `make_world`, and could instead store the state information directly in `PlanningState` 
+
+---
+
+# `get_neighbors`
+
+- checks which actions can be applied in the logical world, i.e. which actions' preconditions are satisfied using `models`
+     
+- Generates a new logical world for each of these actions by applying its effects using `apply`
+    
+- Returns `Edge` objects containing new `PlanningState` objects for each generated logical world, with a cost of `1`, and a string representing the action that was taken
+     
+---
+
+# Pathfinding 
+
+* We can now use `astar` as our planning algorithm!
+
+* Pass it a `PlanningState` corresponding to the initial state (which can generate more states by applying actions)
+
+* For the goal condition, write a `isgoal` function that uses `models` on the state and the goal condition 
+
+* Call `pathfinding.astar(start, h, isgoal)`
+
+---
+
+class: center, middle 
+
+# Planning Heuristics
+
+---
+
 # A short timeline
 
 * 1995: Graphplan (next lecture)
@@ -132,13 +214,29 @@ To use a pathfinding algorithm for planning, we need to formulate the planning p
 
 ---
 
+class: medium
+
 # Heuristics
 
 - We heard that heuristics can speed up A*
 
-- When we expand a state by applying all actions, we compute a heuristic value for each successor state
+- We used heuristics to tell the algorithm which nodes on the search frontier were "closer" to the goal 
 
-- This heuristic value should estimate how long a plan from that state to a goal state is at most
+- For search in Romania or on UCR campus we used the straight line distance as a "guess" of how close a node could be to the goal 
+
+- We tried to have our heuristic underestimate the cost and be in the same "units" as the actual cost (e.g. km)
+
+---
+
+# Planning Heuristics
+
+- In planning, our nodes are (logical) states, and our edges are actions
+
+- When we expand a state by applying all actions, we compute a heuristic value for each of the successor states
+
+- This heuristic value should estimate how long a plan from that state to a goal state is (at most)
+
+- In other words, we want to estimate how "difficult" it is to satisfy the goal from each state in our search frontier
 
 ---
 
@@ -152,7 +250,7 @@ To use a pathfinding algorithm for planning, we need to formulate the planning p
 
 ---
 
-# HSP
+# Heuristic Search Planning (HSP)
 
 - Idea: Ignore delete lists
 
@@ -183,6 +281,55 @@ class: small
 - The heuristic value is then the sum of the heuristic values of all atoms in the goal
 
 - This is no longer admissible, since all goal atoms are treated as independent
+
+---
+
+# HSP Heuristic Example: Pickup
+
+Positive Preconditions:
+$$
+\\{\text{free}(), \text{clear}(X)\\}
+$$
+Negative Preconditions: None
+
+Add List:
+$$
+\\{\text{holds}(X)\\}
+$$
+
+Delete List:
+$$
+\\{\text{free}(), \text{clear}(X)\\}
+$$
+
+---
+
+
+
+# HSP Heuristic Example
+
+Relaxed blocksworld
+Pickup: 
+.mediumc[
+$$
+\\{\text{free}(), \text{clear}(X)\\} \Rightarrow \\{\text{holds}(X)\\}
+$$
+]
+
+Put down:
+.mediumc[
+$$
+\\{\text{holds}(X), \text{clear}(Y)\\} \\\\ \Rightarrow \\\\
+\\{ \text{on}(X, Y), \text{clear}(X), \text{free}() \\}
+$$
+]
+
+Current State: 
+.mediumc[
+$$
+\\{ \text{on}(A, B), \text{on}(B,\mathit{Table}), \text{on}(C,\mathit{Table}),\\\\ \text{clear}(A), \text{clear}(C), \text{free}() \\}
+$$
+]
 
 ---
 
@@ -226,6 +373,8 @@ class: medium
 
 ---
 
+class: medium
+
 # FastForward: Hillclimbing
 
 * FastForward also uses a modified search procedure
@@ -240,13 +389,271 @@ class: medium
 
 # FastDownward
 
+* FastDownward is a "planning system", that implements several different search procedures and heuristics 
+
+* Additionally, FastDownward compiles the planning problem to a different representation 
+
+* *Multi-Valued Planning Task*: Instead of binary predicates we have value assignments 
+
+---
+
+class: medium
+
+# Multi-Valued Planning Task 
+
+* Predicates are often not a very natural way to represent real-world tasks 
+
+* For example, it would be nice if we could easily say *which* block the gripper is holding in blocksworld, or *which* block is above another
+
+* Multi-Valued Planning Tasks (MPT) allow you to do just that 
+
+* An MPT contains variables, each of which can be assigned one value from a finite domain 
+
+* For example: "holds" may be a state variable with the domain ranging over all available blocks
+
+---
+
+class: small
+
+# Multi-Valued Planning Task
+
+Why?
+
+ - MPTs are *still* PSPACE-hard (propositional planning is just a special case where all state variables have values "true" or "false")
+ 
+ - However, MPTs allow the natural expression of mutually exclusive states, which may cut down the search space 
+ 
+ - For example, we know that `on(A,B)` and `on(A,C)` can never be true at the same time 
+ 
+ - A propositional planner first has to figure that out 
+ 
+ - An MPT planner knows that `on_A` can only have the value `B` **or** `C`, but never both
+ 
+---
+
+class: small
+
+# Search-Heuristic
+
+* Using the state variables, we can analyze how they can change 
+
+* For example, `on_A = B` may only change into `on_A = undefined`
+
+* We can also determine under which conditions such changes may occur (i.e. which actions cause them, and what preconditions they have)
+
+* This gives us some guidance in what to do 
+
+* Of course, this analysis *could* have been done on the original problem, the MPT approach just reduces the space of possibilities
+
+---
+
+# FastDownward 
+
+* As mentioned, FastDownward actually implements several different approaches 
+
+* The translation from a propositional planning problem (in PDDL) to an MPT is actually a separate component 
+
+* The algorithms we are discussing for propositional planning usually still work on MPTs with some slight modifications 
+
+---
+
+class: middle, center
+
+# Types of Heuristics
+
+---
+
+# Different Types of Heuristics 
+
+* Relaxation
+
+* Abstraction
+
+* Critical Paths 
+
+* Landmarks 
+
+* Network Flow
+
+---
+
+# Relaxation 
+
+* So far all heuristics we have talked about have been relaxation heuristics 
+
+* They *relax* the planning problem in some way
+
+* Removing negative effects is the most common way to do this
+
+* You could also remove other parts of actions, or the goal, or split up actions
+
+---
+
+class: medium
+
+# Abstraction 
+
+"Estimate cost by projecting the state space to a smaller space (applying a graph homomorphism)" (Helmert and R&ouml;ger)
+
+* Make the planning problem simpler, by removing options 
+
+* For example, remove one of the blocks from actions and goals 
+
+* For some domains you may also have a more abstract representation (e.g. for a strategy game: Have a library of high level strategic actions which can help solve the planning problem on low-level actions)
+
+---
+
+# Critical Paths 
+
+* We can part of the goal, and construct a "critical path" backwards 
+
+* For example, to get `B` on the table, we have to `put-on-table(B)`, for that we first have to `pickup(B)`, etc.
+
+* The number of actions on this critical path can serve as a heuristic 
+
+* We may want to try different parts of the goal to get a better estimate
+
+---
+
+# Landmarks 
+
+* In many cases, we can find actions that *have* to happen (Landmarks)
+
+* For example: If we want `B` to be on the table, we *have* to have an action `put-on-table(B)`
+
+* Our heuristic value can be constructed from counting all of these landmark actions 
+
+* The more accurate our count is, the more accurate is our heuristic
+
+---
+
+# Network Flow 
+
+* We can look at actions as producing and consuming facts 
+
+* The number of productions and consumptions has to be the same 
+
+* That means, for every time we pick up a block, we have to put one down as well 
+
+* We may be able to use this fact to determine how many "switches" have to be made at least
+
+---
+
+# For the Project 
+
+* Task 4 is the most "creative" part of the project 
+
+* You are supposed to come up with your own heuristic
+
+* Think about the different types, and how you would implement them 
+
+* The FastForward Heuristic may be a good starting point
+
+---
+
+class: middle, center
+
+# Other Optimizations 
+
+---
+
+# Other Optimizations
+
+- Combining Multiple Heuristics 
+
+- State-Space Pruning
+
+- Invariant Synthesis
+
+- Action preferences
+
+- Other search strategies
+
+---
+
+# Combining Multiple Heuristics 
+
+* No single heuristic is good for all planning problems 
+
+* Just calculate multiple different ones, and combine the results 
+
+* Pick the highest, lowest, average, sum, etc.
+
+* Of course, this is just another heuristic and will not be "perfect" either 
+
+* But it may overcome limitations of others
+
+---
+
+class: medium
+
+# State-Space Pruning
+
+* Many problems contain states that are "almost" the same 
+
+* For example, if we want to transport packages around (logistics domain), and have multiple identical trucks, we can remove states that only differ by which truck is where 
+
+* It may also be that the order of two actions does not matter, so we don't have to consider both orderings
+
+* Some of these calculations are relatively simple, others may require external knowledge
+
+---
+
+class: medium
+
+# Invariant Synthesis 
+
+* In most planning problems the operators maintain certain invariants, i.e. facts that hold in all reachable states
+
+* For example, in blocksworld there can only ever be one block that is held by the gripper 
+
+* This forms the basis of the translation to an MPT, but can also be used when solving the relaxed problem to strengthen the heuristic
+
+* Another form of invariants are predicates that can never change, which we can use to exclude certain actions (like putting a block on itself)
+
+---
+
+# Action Preference
+
+* When we calculate a heuristic by solving a relaxed problem, we actually get a "plan"
+
+* This plan can be used to give us a clue what a "good" next action might be 
+
+* Rather than considering all actions the same, we prefer these actions 
+
+* Can be used to augment the heuristic, or simply try this action first and if things don't work out fall back to "full" search
+
+---
+
+# Other Search Strategies 
+
+Remember: Everything in AI is either representation or search
+
+- Searching through state space is just one possible approach to planning 
+
+- Other planners may search through a different kind of space (different representation)
+
+- Yet others may use a very different search procedure when expanding the states
+
+- We will look at two such approaches in the next two weeks
+
+---
+
+# Homework
+
 ---
 
 # Resources
 
-* Planning as Heuristic Search
+* [Planning as Heuristic Search]()
 
 * [HSP: Heuristic Search Planner](https://bonetblai.github.io/reports/aips98-competition.pdf)
+
+* [FastForward](https://www.aaai.org/ojs/index.php/aimagazine/article/view/1572/1471)
+
+* [FastDownward](https://www.jair.org/index.php/jair/article/download/10457/25068/)
+
+* [A Beginner's Introduction to Heuristic Search Planning](https://ai.dmi.unibas.ch/misc/tutorial_aaai2015/)
 
   
 
