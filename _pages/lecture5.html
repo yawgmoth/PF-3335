@@ -271,11 +271,8 @@ class: small
 - Instead, use an estimation:
 
    * Assign a heuristic value i=0 to *each atom* in the current state
-   
    * Increase i by 1
-   
    * Apply all possible relaxed actions (without delete lists), and set the heuristic value of each produced atom to i
-   
    * Repeat the last two steps until no values change anymore
    
 - The heuristic value is then the sum of the heuristic values of all atoms in the goal
@@ -641,11 +638,19 @@ Remember: Everything in AI is either representation or search
 
 # Homework
 
+* [Homework 5](/PF-3335/assets/pdf/homework5.pdf) has been posted on the class website
+  
+* There are 5 problems using the planning domains from the repository of http://planning.domains
+
+* You will be calculating heuristic values and solving relaxed problems 
+
+* When you do this, take note of how the different heuristics perform their estimations
+
 ---
 
 # Resources
 
-* [Planning as Heuristic Search]()
+* [Planning as Heuristic Search](https://www.sciencedirect.com/science/article/pii/S0004370201001084)
 
 * [HSP: Heuristic Search Planner](https://bonetblai.github.io/reports/aips98-competition.pdf)
 
