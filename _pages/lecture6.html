@@ -26,21 +26,17 @@ permalink: /slides/lecture6.html
       
       .small li {  font-size: 1em; }
       
-      .oneline li { font-size: 1.25em; line-height: 1.25em; }
-      .oneline li p { font-size: 1.25em; line-height: 1.25em; }
-      .oneline p { font-size: 1.25em; line-height: 1.25em; }
-      .oneline div { font-size: 1.25em; line-height: 1.25em; }
+      .medium li {  font-size: 1.1em; }
+      
+      .mediumc {  font-size: 0.8em; }
+      
+      .mmedium li {  font-size: 1.05em; }
       
       .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
       
-      .medium li {  font-size: 1.1em; }
-     
-      .mmedium li {  font-size: 1.05em; }
-      
-        
       .left-column {
         color: #777;
-        width: 40%;
+        width: 25%;
         height: 92%;
         float: left;
       }
@@ -48,7 +44,7 @@ permalink: /slides/lecture6.html
           color: #000;
         }
       .right-column {
-        width: 60%;
+        width: 70%;
         float: right;
         padding-top: 1em;
         font-size: 1em;
@@ -67,19 +63,299 @@ class: center, middle
 
 ---
 
-# The Planning Graph 
+# Review: The Planning Problem
+
+A planning problem consists of three parts:
+
+  * A definition of the current state of the world
+  
+  * A definition of a desired state of the world
+  
+  * A definition of the actions the agent can take
 
 ---
+
+# Review: State-Space Planning
+
+We defined a graph called the "state space":
+
+* Each state is a logical state
+
+* Each edge corresponds to an action
+
+* In any state, we can take any action whose preconditions are satisfied to generate a new state
+
+Using this definition, we can use A* on the state space graph to find a plan.
+
+---
+
+class: medium
+
+# Review: FastForward Heuristic 
+
+* Start with a "layer" consisting of the set of all atoms in the current state
+
+* Apply *all* applicable relaxed actions, and add all their effects to the set of atoms generating the next layer
+
+* Continue until all atoms in the goal can be found in a layer
+
+* Then *backtrack* through the layers to build a relaxed plan
+
+* The length of this plan is the value of the heuristic
+
+---
+
+# FastForward Heuristic 
+
+* How did you do on the homework problem?
+
+* My description of FastForward was based on intuition rather than the full formal specification
+
+* Since heuristic values are generally not accurate, it's fine if you came up with "some" value
+
+* The heuristic is actually based on Graphplan, which we are going to look at in detail today
+
+---
+
+class: middle, center
+
+# Planning Graphs
+
+---
+
+# Planning Graphs: Motivation
+
+* In many planning problems, the order of certain actions does not matter 
+
+* If two actions don't affect one another, they could even be executed in parallel
+
+* Rather than looking at the planning problem as a sequence of actions, we will look at it as a sequence of time steps
+
+* We will build a graphical representation of time from left to right 
+
+---
+
+class: medium
+
+# Planning Graphs 
+
+* A planning graph consists of layers 
+
+* Layers alternate between literals and actions 
+
+* The first layer consists of all literals that form the initial state 
+
+* Note: **literals** (positive **and** negative), not atoms
+
+* The second layer consists of all actions that can be applied using literals in the first layer
+
+* The third layer consists of all effects of these actions, etc.
+
+---
+
+# No-Ops 
+
+* If we do exactly what I wrote on the previous slide, we will "lose" literals 
+
+* In plan-space planning we assumed if an action didn't change something, that it would stay the same 
+
+* Let's add this assumption to our plan graph!
+
+* Add one "action" for each literal that has that literal as its precondition and effect ("maintainance action")
+
+---
+
+# Planning Graph 
+
+<img src="/PF-3335/assets/img/plangraphstructure.png" width="80%"/>
+
+---
+
+# Planning Graph 
+
+* We construct this graph level by level
+
+* In order to do actual planning with it, we need to do some more processing, though 
+
+* What does a planning graph "mean"?
+
+---
+
+class: middle, center
 
 # Mutexes 
 
 ---
 
+# Mutexes 
+
+* A planning graph of depth `k` consists of k timesteps 
+
+* Within each time step, there are many actions 
+
+* But just because two actions are within the same timestep does not necessarily mean that they can be executed in parallel 
+
+* We need to determine which actions are **mutually exclusive** ("mutex")
+
+---
+
+# Inconsistent Effects 
+
+One action's effect is the negation of the effect of another action 
+
+<img src="/PF-3335/assets/img/inconsistenteffects.png" width="80%"/>
+
+---
+
+# Interference
+
+One action's effect is the negation of the precondition of another action 
+
+<img src="/PF-3335/assets/img/interference.png" width="80%"/>
+
+---
+
+# Competing Needs
+
+One action's precondition is the negation of the precondition of another action 
+
+<img src="/PF-3335/assets/img/competingneeds.png" width="80%"/>
+
+---
+
+# Inconsistent Support 
+
+Any way to achieve two literals is mutually exclusive
+
+<img src="/PF-3335/assets/img/competingneeds.png" width="80%"/>
+
+Also: If a literal is the negation of another, they are mutually exclusive.
+
+---
+
+# Planning 
+
+* So, now we can generate a graph of depth k, and determine which actions and literals are mutex 
+
+* We want to use this graph for planning?
+
+* How do we choose k?
+
+* And how do we get a plan out of this mess?
+
+---
+
+class: middle, center
+
 # Graphplan 
 
 ---
 
+# Graphplan 
+
+* Graphplan constructs a planning graph one level at a time 
+
+* After generating a level, we check if the goal is present in the layer **and** not mutex 
+
+* Then we try to "extract" a solution 
+
+* If we can't extract a solution, we generate another layer 
+
+* If we run out of new layers to generate, the problem can't be solved
+
+---
+
+# Solution Extraction 
+
+* Once we have a layer in which all goal literals are present (and not mutex), we can try to extract a solution 
+
+* Pick a set of actions from the preceeding layer that achieves the goal 
+
+* Use the preconditions of these actions as the new goal and search backwards 
+
+* If any goal ever becomes mutex, backtrack and choose a new set of actions (if there is one)
+
+---
+
+# Properties 
+
+* Graphplan is sound and complete 
+
+* If there is no solution, Graphplan will terminate with "no solution"
+
+* The planning graph is potentially huge, but in typical problems actions can often be executed "in parallel", requiring fewer layers 
+
+* Backtracking may require extra time 
+
+---
+
+# Planning Graph Properties 
+
+* Because we maintain all literals, the number of literals in each new layer never decreases
+
+* Likewise, the number of actions from one layer to the next never decreases 
+
+* Because of maintainance actions, the number of mutexes will decrease over time
+
+* At some point, the planning graph will "level off", i.e. not change anymore
+
+---
+
+# Another Observation: Relaxed Graphplan
+
+* When we don't have any negative preconditions and effects, we can ignore negative literals 
+
+* That means we won't have any mutexes 
+
+* The planning graph will grow over time 
+
+* That's exactly what the FastForward heuristic did
+
+---
+
+class: middle, center 
+
+# Example
+
+---
+
+# Example: Dinner Date
+
+<img src="/PF-3335/assets/img/dinneractions.png" width="60%"/>
+
+---
+
+# Example: Planning Graph of depth 1
+
+<img src="/PF-3335/assets/img/plangraph1.png" width="50%"/>
+
+---
+
+# Example: Mutexes
+
+<img src="/PF-3335/assets/img/plangraph1.png" width="50%"/>
+
+---
+
+# Example: Planning Graph of depth 2
+
+<img src="/PF-3335/assets/img/plangraph2.png" width="50%"/>
+
+---
+
+# Example: Solution
+
+<img src="/PF-3335/assets/img/plangraphsolution.png" width="50%"/>
+
+---
+
 # References
+
+* Dana Nau, [Planning-Graph Techniques](http://www.cs.umd.edu/~nau/planning/slides/chapter06.pdf)
+
+* Nilufer Onder, [Planning Graphs and Graphplan](http://pages.mtu.edu/~nilufer/classes/cs5811/2005-fall/lecture-slides/cs5811-ch11b-graphplan.pdf)
+
+* Tomás Lozano-Pérez, Leslie Kaelbling [Graph Plan](https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-825-techniques-in-artificial-intelligence-sma-5504-fall-2002/lecture-notes/Lecture12FinalPart1.pdf)
  
 
     </textarea>
