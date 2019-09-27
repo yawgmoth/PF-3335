@@ -63,6 +63,113 @@ class: center, middle
 
 ---
 
+class: center, middle 
+
+# Project: Task 1
+
+---
+
+# Task 1
+
+* I sent out the scores yesterday
+
+* While many of you did really well, there were some reoccuring problems 
+
+* Let me talk about them a bit 
+
+---
+
+# Class Hierarchy
+
+The idea was to have **one class for each logical operator**
+
+```
+class And(Expression):
+    def __init__(self, args):
+        self.args = tuple(args)
+    
+    def isModeledBy(self, world):
+        return all(map(lambda a: a.isModeledBy(world), self.args))
+    
+    def substitute(self, var, value):
+        return And(map(lambda x: x.substitute(var,value), self.args))
+    
+    def get_change(self, world):
+        delset = set()
+        addset = set()
+        for arg in self.args:
+            d,a = arg.get_change(world)
+            delset = delset.union(d)
+            addset = addset.union(a)
+        return (delset,addset)
+```
+
+---
+
+# Atoms 
+
+```
+class Atom(Expression):
+    def __init__(self, name, args):
+        self.name = name 
+        self.args = tuple(args)
+        
+    def models(self, world):
+        return self in world.atoms
+        
+    def __eq__(self, other):
+        return self.name == other.name and self.args == other.args
+        
+    def substitute(self, var, value):
+        return Atom(self.name, 
+            map(lambda x: value if x == var else x, self.args))
+            
+    def get_change(self, world):
+        return (set(self), set())
+
+```
+
+---
+
+# Make an Expression 
+
+```
+def make_expression(ast):
+    op = ast[0]
+    if op == "and":
+        return And(map(make_expression, ast[1:]))
+        
+    elif op == "or":
+        return Or(map(make_expression, ast[1:]))
+        
+    elif op == "imply":
+        return Imply(make_expression(ast[1]), 
+                     make_expression(ast[2]))
+    ...
+    else:
+        return Atom(ast[0], ast[1:])
+```
+
+---
+
+# Pitfalls 
+
+* Effect expressions are conjunctions of positive and negative literals, when expressions and **forall** expressions 
+
+* A `forall` in `apply` needs to replace its child with all possible substitutions of the variable 
+
+* Substitute has to work for any arbitrary string variable and all formulas
+
+* Please put your code in the **root folder** of the zip file!
+
+---
+
+class: center, middle 
+
+# Graphplan
+
+---
+
 # Review: The Planning Problem
 
 A planning problem consists of three parts:
@@ -157,7 +264,7 @@ class: medium
 
 * If we do exactly what I wrote on the previous slide, we will "lose" literals 
 
-* In plan-space planning we assumed if an action didn't change something, that it would stay the same 
+* In state-space planning we assumed if an action didn't change something, that it would stay the same 
 
 * Let's add this assumption to our plan graph!
 
@@ -346,6 +453,18 @@ class: middle, center
 # Example: Solution
 
 <img src="/PF-3335/assets/img/plangraphsolution.png" width="50%"/>
+
+---
+
+# Homework
+
+* [Homework 6](/PF-3335/assets/pdf/homework6.pdf) has been posted on the class website
+  
+* There are 4 problems where you will draw planning graphs
+
+* It's only 4, because planning graphs are annoying to draw
+
+* There is also also a bonus problem (another proof)
 
 ---
 
