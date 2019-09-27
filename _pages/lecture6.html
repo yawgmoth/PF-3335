@@ -114,7 +114,7 @@ class Atom(Expression):
         self.name = name 
         self.args = tuple(args)
         
-    def models(self, world):
+    def isModeledBy(self, world):
         return self in world.atoms
         
     def __eq__(self, other):
