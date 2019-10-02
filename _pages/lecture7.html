@@ -344,9 +344,81 @@ class: center, middle
 
 # Blocksworld 
 
+* Let's look at a simplified blocksworld!
+
+* We have three blocks, A, B, and C 
+
+* Blocks can be stacked 
+
+* We can take the topmost block of any stack and put it on another stack, or the table 
+
 ---
 
-# Elevator Domain
+# Blocksworld Problem 
+
+<img src="/PF-3335/assets/img/sussman.png" width="80%"/>
+
+---
+
+# Plan-Space
+
+<img src="/PF-3335/assets/img/popsussman1.png" width="100%"/>
+
+---
+
+# Resolve an open precondition flaw
+
+<img src="/PF-3335/assets/img/popsussman2.png" width="100%"/>
+
+---
+
+# Add a causal link
+
+<img src="/PF-3335/assets/img/popsussman3.png" width="100%"/>
+
+---
+
+# Resolve another open precondition 
+
+<img src="/PF-3335/assets/img/popsussman4.png" width="100%"/>
+
+---
+
+# Resolve threatened causal link
+
+<img src="/PF-3335/assets/img/popsussman5.png" width="100%"/>
+
+---
+
+# Add more causal links
+
+<img src="/PF-3335/assets/img/popsussman6.png" width="100%"/>
+
+---
+
+class: small
+
+# Secret Agent Domain
+
+* Let's say we have a secret agent that needs some documents 
+
+* We have three actions: `move(?who, ?fr, ?to)`, `giveDocs(?who, ?whom, ?where)`, `buyLunch(?who, ?where)`
+
+* `move(?who, ?fr, ?to)`: <br/>`(at ?who ?fr) -> (and (not (at ?who ?fr)) (at ?who ?to))`
+
+* `giveInfo(?who, ?whom, ?where)`: <br/>`(and (at ?who ?where) (at ?whom ?where) (has-info ?who) (not (= ?where home))) -> (has-info ?whom)`
+
+* `buyLunch(?who, ?where)`: <br/>`(and (at ?who ?where) (has-food ?where)) -> (has-food ?who)`
+
+---
+
+# Planning Problem 
+
+* Initial: `(has-info Q), (at Q home), (at bond home), (has-food park), (has-food diner)`
+
+* Goal: `(and (has-info bond) (has-food bond))`
+
+* Available locations: home, park, diner, mi6, towerbridge
 
 ---
 
