@@ -68,34 +68,295 @@ class: center, middle
 
 # Review: The Planning Problem
 
+A planning problem consists of three parts:
+
+  * A definition of the current state of the world
+  
+  * A definition of a desired state of the world
+  
+  * A definition of the actions the agent can take
+
 ---
 
 # Review: State-Space Planning
+
+We defined a graph called the "state space":
+
+* Each state is a logical state
+
+* Each edge corresponds to an action
+
+* In any state, we can take any action whose preconditions are satisfied to generate a new state
+
+Using this definition, we can use A* on the state space graph to find a plan.
 
 ---
 
 # A different space
 
+* We will now look at a very different graph 
+
+* Each node in the graph is a (potentially flawed) **plan**
+
+* Two nodes are connected with an edge if there is a modification that can be made to one plan that yields the other
+
+* We will call usually these modifications "refinements"
+
+---
+
+class: center, middle 
+
+# (Partial) Plans
+
+---
+
+# Partial Plans
+
+A plan consists of:
+
+* A set of *operators* (not necessarily ground!)
+
+* A set of *ordering constraints* `\(s_1 < s_2 \)`
+
+* A set of *binding constraints* `?v = x` or `?w != y`
+
+* A set of *causal links* `\(s_1 \rightarrow_c s_2\)`
+
+---
+
+class: medium
+
+# Partial Plans 
+
+Intuition:
+
+* We construct our plan "piece by piece"
+
+* As long as we don't have to "commit" to any decision, we don't take it 
+
+* For example, we add two actions, but don't commit to an order unless we have to
+
+* Or when we add an operator, we don't commit to the parameters until we need to
+
+* We may never have to commit to some variables!
+
+---
+
+class: medium
+
+# Bindings
+
+* When we have to, we assign values to the parameters of operators 
+
+* But our binding constraints are actually more powerful than that!
+
+* We can also say that two parameters have to be the same (e.g. make one agent move to location X, make another agent move to the same location X, so they can exchange a package, but we never specify what X actually is)
+
+* Or we can require that two parameters are not equal (we have two trucks, we require that two packages go to different trucks, but we don't care which goes to which)
+
 ---
 
 # Causal Links
+
+* A *causal links* link describes how two actions are linked: `\(s_1 \rightarrow_c s_2\)`
+
+* It links two steps if one has an effect that is the precondition of the other, and it is the **cause** for that precondition to be true 
+
+* For example, unlocking the door has an effect that the door is unlocked, and opening the door requires the door to be unlocked 
+
+* The two actions, `unlock` and `open` are causally linked, **if** there is nothing in between that locks the door again 
+
+* We keep track of this information so we know when someone "threatens" a precondition
+
+---
+
+# Flaws
+
+Our plans are partial, and may have "flaws":
+
+ * *Open precondition*: Some action's precondition is not causally linked to any effect 
+ 
+ * A causal link is "threatened": We have an action that *may* interfere with a causal link (by changing the corresponding literal)
+ 
+Our "planning process" will start with some initial plan, and then remove all flaws!
+
+---
+
+# Threatened Causal Links 
+
+* Say we have a causal link `\(s_1 \rightarrow_c s_2\)`
+
+* Now we add a new step to our plan, `\(s_3\)`
+
+* One of the effects of this new step is `\(\neg c\)`
+
+* What could happen?
+
+--
+
+* Our causal link is "threatened"
+
+---
+
+class: center, middle 
+
+# Partial-Order Causal Link Planning
+
+---
+
+# The Initial Plan 
+
+* Since our search works on *plans* rather than on states, we need to start with some initial plan 
+
+* Idea: Our initial state is like an action that only has an effect (the literals in the initial state)
+
+* Likewise, our goal condition is like an action that only has a precondition 
+
+* Additionally, we require that the initial state/action comes before the goal condition/action with an ordering constraint 
+
+---
+
+# Plan Refinement 
+
+* Now we can "start planning": We have an action (the goal condition) that has preconditions that are not satisfied 
+
+* Our planning algorithm will look at a plan, choose a flaw and produce a new plan where that flaw is "fixed"
+
+* How do we "fix" flaws? Plan refinement!
+
+---
+
+# The POP algorithm 
+
+1. If we don't have any flaws, return the current plan 
+
+2. Non-deterministically choose a flaw 
+
+3. Refine the plan to fix the flaw (note: this may generate new flaws!)
+
+4. Call POP on the newly refined plan
+
+(Note: A deterministic implementation will have to backtrack to step 2 if it picks the wrong flaw)
 
 ---
 
 # Refinement Operations 
 
+What can we do to a plan?
+
+* Add an operator 
+
+* Add a binding (variable to value, or variable to variable, equality or unequality)
+
+* Add an ordering constraint 
+
+* Add a causal link 
+
+Our refinements are combinations of these actions!
+
 ---
 
-# Least-Commitment Approach 
+# Refinement: Adding an Operator 
+
+* When we have an open precondition flaw, we can fix it by adding an operator that has that precondition as an effect 
+
+* However, we usually will have to set (some) of the parameters, i.e. add more bindings 
+
+* We then also add a causal link to indicate the now satisfied precondition 
 
 ---
 
-# Bindings
+# Refinement: Adding Causal Links 
+
+* Sometimes we have an open precondition that some action already produces 
+
+* Say we have to buy 5 things from the store, and we just added an action to go to the store to resolve the precondition of one of the buy actions
+
+* We can also just add causal links to satisfy the preconditions of the buy action
+
+---
+
+class: mmedium
+
+# Refinement: Adding a Binding
+
+* Say we want two agents to exchange information "somewhere"
+
+* Our plan has an action "exchange information" that requires both of them to be at the same location 
+
+* We add two move actions to indicate that the agents move 
+
+* But we don't need to specify *where* they move exactly
+
+* We just add a binding that says that the two destinations have to be the same!
+
+* Why? Another goal of our planning process may need one of them to be in a specific location later
+
+---
+
+# Refinement: Adding an Ordering Constraint
+
+* When we have a threatened causal link, we can resolve the threat by adding an ordering
+
+* This ensures that the threat step happens either before the causal chain, or after
+
+* When we have a causal link `\(s_1 \rightarrow_c s_2\)` and a new step `\(s_3\)` that threatens it, add either `\(s_3 < s_1\)` or `\(s_2 < s_3\)` as an ordering constraint 
+
+* We have to make sure our orderings are consistent!
+
+---
+
+class: small
+
+# Inconsistent Ordering 
+
+* Say we want to buy a beer and a bratwurst
+
+* We add two actions: buy a beer, buy a bratwurst 
+
+* Oops, we only have "one money", so the two actions compete for a resource
+
+* So we say we order the "buy a beer" action before the "buy a bratwurst" action. Now "buy a beer" knows that it will have money.
+
+* But then we say that we *also* order "buy a bratwurst" before "buy a beer", so that we have money for the bratwurst
+
+* Even though our plan would satisfy all preconditions, and no causal links are threatened, we have a problem ...
+
+---
+
+# When are we done?
+
+* When we have a plan! 
+
+* But we always have "a plan", most of them are just "broken" :/
+
+* We are done, when we have a plan where no action has any open preconditions 
+
+* **And** the bindings and ordering constraints are *consistent*
+
+---
+
+class: center, middle 
+
+# Examples 
+
+---
+
+# Blocksworld 
+
+---
+
+# Elevator Domain
+
+---
+
+# Homework
 
 ---
 
 # References
-
+ 
+  * Weld, D. [An Introduction to Least-Commitment Planning](https://homes.cs.washington.edu/~weld/papers/pi.pdf)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
