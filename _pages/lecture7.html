@@ -419,15 +419,22 @@ class: center, middle
 
 ---
 
+class: medium
+
 # Blocksworld 
 
 * Let's look at a simplified blocksworld!
 
 * We have three blocks, A, B, and C 
 
-* Blocks can be stacked 
-
 * We can take the topmost block of any stack and put it on another stack, or the table 
+
+Move(b,fr,to):<br/>
+Precondition: `(and (clear b) (clear to) (on b fr))`<br/>
+Effect: `(and (not (clear to)) (not (on b fr)) (on b to) (clear fr))`<br/><br/>
+MoveToTable(b,fr):<br/>
+Precondition: `(and (clear b) (on b fr))`<br/>
+Effect: `(and (not (on b fr)) (on b table) (clear fr))`<br/><br/>
 
 ---
 
@@ -457,19 +464,19 @@ class: center, middle
 
 # Resolve another open precondition 
 
-<img src="/PF-3335/assets/img/popsussman4.png" width="100%"/>
+<img src="/PF-3335/assets/img/popsussman4.png" width="70%"/>
 
 ---
 
 # Resolve threatened causal link
 
-<img src="/PF-3335/assets/img/popsussman5.png" width="100%"/>
+<img src="/PF-3335/assets/img/popsussman5.png" width="70%"/>
 
 ---
 
 # Add more causal links
 
-<img src="/PF-3335/assets/img/popsussman6.png" width="100%"/>
+<img src="/PF-3335/assets/img/popsussman6.png" width="70%"/>
 
 ---
 
