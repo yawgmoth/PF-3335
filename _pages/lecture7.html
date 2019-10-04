@@ -66,6 +66,77 @@ class: center, middle
 
 ---
 
+class: center, middle 
+
+# Project: Task 2
+
+---
+
+# Task 2
+
+* I sent out the scores yesterday
+
+* I think it went better than task 1
+
+* PLEASE DO NOT PUT YOUR SOURCECODE INSIDE A FOLDER INSIDE YOUR ZIP FILE
+
+* There were also some minor issues with the algorithm, so here's a short reminder 
+
+---
+
+class: small
+
+# A*
+
+* You have a search frontier, which only has the start node initially
+
+* And a list of nodes you have already expanded (or "closed")
+
+* Take the first node from the frontier and look at its neighbors 
+
+   - If a neighbor has already been expanded: do nothing   
+
+   - If a neighbor is already in the frontier, **update** the frontier, if the new cost is less (!)
+   
+   - Otherwise, add the neighbor to the frontier
+
+* Sort the frontier by cost
+
+---
+
+class: small
+
+# A* 
+
+```
+while (frontier):
+    current, cdist, h, path = frontier.pop(0)
+    if goal(current):
+        return path,cdist,visited_cnt,expanded_cnt
+        
+    expanded.add(current.get_id())
+    for edge in current.get_neighbors():
+        if edge.target.get_id() not in expanded:
+            cost = cdist+edge.cost
+            h = heuristic(edge.target,edge)
+            if contains(frontier, edge.target):
+                updateValue(frontier,(edge.target,cost,h,path+[edge]))
+            else:
+                insertSorted(frontier,(edge.target,cost,h,path+[edge]))
+```
+
+`updateValue` needs to find the old entry, update the value and then resort the frontier.
+
+`insertSorted` just needs to put the new value in the right position.
+
+---
+
+class: center, middle 
+
+# Plan-Space Planning
+
+---
+
 # Review: The Planning Problem
 
 A planning problem consists of three parts:
@@ -101,6 +172,12 @@ Using this definition, we can use A* on the state space graph to find a plan.
 * Two nodes are connected with an edge if there is a modification that can be made to one plan that yields the other
 
 * We will call usually these modifications "refinements"
+
+---
+
+# Plan-Space 
+
+<img src="/PF-3335/assets/img/spaceofplans.png" width="100%"/>
 
 ---
 
@@ -423,6 +500,12 @@ class: small
 ---
 
 # Homework
+
+* [Homework 7](/PF-3335/assets/pdf/homework7.pdf) has been posted on the class website
+  
+* There are 6 problems where you have to use Partial-Order Planning
+
+* Note: You have **two** weeks, because I will be at a conference next week
 
 ---
 
