@@ -103,7 +103,7 @@ class: medium
 
 * On the other hand, if we drive a package from Limón to San José, and another from San Ramon to Punta Arenas, we need to come up with a plan to fill the gap
 
---- 
+---
 
 # Planning 
 
@@ -112,18 +112,6 @@ class: medium
 * Let's see if we can apply it to planning 
 
 * We probably have to augment our formalism with some way to represent decomposition
-
----
-
-class: center, middle 
-
-# Decompositions
-
----
-
-# Decompositions 
-
-
 
 ---
 
@@ -145,11 +133,102 @@ class: center, middle
 
 ---
 
+# Abstract Actions
+
+* We always assumed that actions were what the agent could execute in the end 
+
+* What if we have something more abstract, like "go to the airport"
+
+* There may be many ways to achieve such an abstract action, like going by car, by taxi, by train
+
+* Some ways only work in certain situations (not all airports have train connections)
+
+---
+
+# Abstract Actions 
+
+* Just as with our regular actions, let's assume that an abstract action has preconditions and effects
+
+* That means our POCL planning process can just insert abstract actions to satisfy other actions' preconditions 
+
+* However, we need a new type of flaw because abstract actions can not be executed
+
+---
+
+# Decompositions 
+
+* To define how an abstract action can actually be performed we define "decompositions"
+
+* Basically, we say that to perform an abstract action we instead perform a set of several other actions 
+
+* Of course, these other actions may also be abstract, leading to a hierarchy of decompositions 
+
+* So what *is* a decomposition?
+
+---
+
+class: medium
+
+# Decompositions 
+
+* You can imagine a decomposition to be like a "mini-plan"
+
+* The abstract action has some preconditions and effects 
+
+* The decomposition has these preconditions as an initial state, and the effects as the goal 
+
+* Additionally, the decomposition adds "pseudo-steps" to the plan
+
+* We **require** that all preconditions and effects are used by causal links connected to these pseudo-steps
+
+
+---
+
+class: medium
+
+# Pseudo-Steps
+
+* We could just replace an abstract action by its decomposition 
+
+* However, in many cases we want to "reuse" some steps 
+
+* For example, we have an abstract action "go on vacation", and another "buy a gift"
+
+* One may involve going to the airport, the other going to a store, but there are often stores at airports
+
+---
+
+# Review: The POP algorithm 
+
+1. If we don't have any flaws, return the current plan 
+
+2. Non-deterministically choose a flaw 
+
+3. Refine the plan to fix the flaw (note: this may generate new flaws!)
+
+4. Call POP on the newly refined plan
+
+---
+
 # DPOCL 
 
-* 
+* We can reuse POP by adding a new flaw type and new refinements 
 
+* New flaw: Abstract Action without decomposition 
 
+* New refinement: Apply decomposition 
+
+* New refinement: Merge pseudo-steps
+
+---
+
+# Discourse Planning 
+
+* One particularly well-suited domain for decompositional planning is conveying information
+
+* Take a scientific paper: The paper consists of sections, which each have their own preconditions and effects, each section consists of a series of paragraphs, and each paragraph consists of sentences
+
+* The "preconditions" and "effects" are of the form "the reader knows x"
 
 ---
 
