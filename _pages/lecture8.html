@@ -22,6 +22,8 @@
       .large { font-size: 2em; }
       
       .small li {  font-size: 1em; }
+	  
+	  .tiny {  font-size: 0.6em; }
       
       .oneline li { font-size: 1.25em; line-height: 1.25em; }
       .oneline li p { font-size: 1.25em; line-height: 1.25em; }
@@ -256,6 +258,17 @@ class: medium
 
 # HTN Formalisms
 
+"(Compared with classical planners,) the primary advantage of HTN planners is their sophisticated knowledge representation (and reasoning capabilities) (1)"
+
+* Early PDDL tried to include syntax to describe task networks 
+
+* That effort was discarded, and no one really used it
+
+* To this day there is no "standard" HTN formalism
+
+
+.tiny[ (1) Ghallab et al. *Automated Planning: Theory &amp; Practice* ]
+
 ---
 
 # HTN Complexity 
@@ -263,6 +276,153 @@ class: medium
 * HTN planning is (depending on the exact formulation) Turing-complete
 
 * Some reduced HTN formalisms can be *compiled* to PDDL
+
+* Others (as we will see) allow arbitrary code to be mixed with tasks
+
+---
+
+# Famous HTN Planners 
+
+* NOAH (1975): Nets of Action Hierarchies, the first HTN planner
+
+* Nonlin (1976)
+
+* SHOP (1999), SHOP2 (2003): Simple Hierarchical Ordered Planner
+
+* SIADEX (2005)
+
+---
+
+# HTN Task Definitions
+
+<img src="/PF-3335/assets/img/htntask.png" width="80%"/>
+
+---
+
+class: mmedium
+
+# HTN Applicability
+
+* Some people have argued that HTNs require the domain to encode a lot of almost algorithmic knowledge
+
+* SHOP was even disqualified from the international planning competition in 2000
+
+* On the other hand, such additional information often means that HTNs often perform really well on real-world tasks
+
+* "HTN planning is promoted as the most applied automated planning technique of real-world problem" (1)
+
+.tine[ (1) Nau et al. *Applications of SHOP and SHOP2* ]
+
+---
+
+# PyHOP
+
+* PyHOP is an newer and simplified version of SHOP
+
+* Instead of logic, it uses Python objects and functions to represent states and methods
+
+* The planning algorithm itself needs less than 150 lines of python code
+
+---
+
+# PyHOP: State
+
+A *state* in PyHOP is a simple Python object with some attributes assigned to it. 
+
+For example, an initial state for blocksworld could look like this:
+
+```Python
+state1 = State('state1')
+
+state1.pos = {'a':'b', 'b':'table', 'c':'table'}
+
+state1.clear = {'a':True, 'b':False, 'c':True}
+
+state1.holding = False
+```
+
+---
+
+# PyHOP: Operators
+
+To pick up or put down a block, we write Python functions
+
+```Python
+def pickup(state,b):
+    if state.pos[b] == 'table' and state.clear[b] == True 
+	   and state.holding == False:
+        state.pos[b] = 'hand'
+        state.clear[b] = False
+        state.holding = b
+        return state
+    else: return False
+```
+
+---
+
+# PyHOP: Methods
+
+
+```Python
+def moveb_m(state,goal):
+
+    for b1 in all_blocks(state):
+        s = status(b1,state,goal)
+        if s == 'move-to-table':
+            return [('move_one',b1,'table'),('move_blocks',goal)]
+        elif s == 'move-to-block':
+            return [('move_one',b1,goal.pos[b1]), 
+			        ('move_blocks',goal)]
+   
+    b1 = pyhop.find_if(lambda x: status(x,state,goal)=='wait', 
+	                   all_blocks(state))
+    if b1 != None:
+        return [('move_one',b1,'table'), ('move_blocks',goal)]
+    
+    return []
+
+pyhop.declare_methods('move_blocks',moveb_m)
+```
+
+---
+
+# PyHOP: Helper function
+
+```Python
+def is_done(b1,state,goal):
+    if b1 == 'table': return True
+    if b1 in goal.pos and goal.pos[b1] != state.pos[b1]:
+        return False
+    if state.pos[b1] == 'table': return True
+    return is_done(state.pos[b1],state,goal)
+
+def status(b1,state,goal):
+    if is_done(b1,state,goal):
+        return 'done'
+    elif not state.clear[b1]:
+        return 'inaccessible'
+    elif not (b1 in goal.pos) or goal.pos[b1] == 'table':
+        return 'move-to-table'
+    elif is_done(goal.pos[b1],state,goal) and 
+	     state.clear[goal.pos[b1]]:
+        return 'move-to-block'
+    else:
+        return 'wait'
+```
+
+
+---
+
+# PyHOP Call 
+
+To use PyHOP we pass it a task to solve, with an (optional) goal.
+
+```Python
+goal1a = Goal('goal1a')
+goal1a.pos={'c':'b', 'b':'a'}
+
+pyhop(state1,[('move_blocks', goal1a)], verbose=1)
+```
 
 ---
 
@@ -277,6 +437,10 @@ class: medium
 # References
  
   * Young, R. M. [DPOCL: A Principled Approach to Discourse Planning](https://www.aclweb.org/anthology/W94-0302.pdf)
+  
+  * Georgievski, I. and Aiello, M. [An Overview of Hierarchical Task Network Planning](https://arxiv.org/pdf/1403.7426.pdf)
+  
+  * [PyHOP](https://bitbucket.org/dananau/pyhop/src/default/)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
