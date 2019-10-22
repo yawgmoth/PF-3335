@@ -64,6 +64,8 @@ class: center, middle
 # Artificial Intelligence: Planning
 
 ### Decompositional Planning
+#### and 
+### Multiagent Planning
 
 ---
 
@@ -426,17 +428,175 @@ goal1a.pos={'c':'b', 'b':'a'}
 pyhop(state1,[('move_blocks', goal1a)], verbose=1)
 ```
 
+
+---
+
+# Multiagent Planning
+
+---
+
+# Multiagent Planning 
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/25pRE6bTU24" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+---
+
+# Multiagent Planning 
+
+* We now have multiple agents 
+
+* They want to collaborate 
+
+* But each agent is performing their planning individually
+
+* Communication?
+
+---
+
+# Communication 
+
+* Imagine we have unlimited bandwidth for communication 
+
+* Then we could write a distributed algorithm that solves the planning problem for all agents simultaenously
+
+* The plans are then distributed to the agents and executed by them 
+
+---
+
+# Limitations 
+
+* In practice, communication is severely limited
+
+* Additionally, combining multiple planning problems into one increases computational complexity
+
+* We may therefore need every agent to perform their own planning and only coordinate when necessary 
+
+---
+
+# Multiagent Planning Outline 
+
+  1. Goal Selection 
+  
+  2. Planning 
+  
+  3. Synchronization 
+  
+  4. Execution
+
+---
+
+class: medium
+
+# Goal Selection
+
+* But wait! Before we plan anything we need to have a goal 
+
+* If we collaborate on a larger task, such as soccer, we need to distribute the goals among the agents 
+
+* Some of these goals may require shared resources (there is usually only one ball)
+
+* There are many ways to do this goal allocation, for example in the form of an "auction" (where each agent "bids" their expected cost of achieving it, lowest one gets the goal)
+
+---
+
+# Planning 
+
+* Once each agent has their goals, they come up with a plan to achieve them 
+
+* This can be done using any of the techniques we have discussed so far 
+
+* The agents could even use different algorithms (for example, if they have different computational capabilities)
+
+* Since the agents often operate in real-time environments, the duration of each action (and plan) is important!
+
+---
+
+# Synchronization
+
+* Agents communicate their plans to each other 
+
+* They then may need to synchronize certain actions (e.g. a pass between players)
+
+* They also need to verify that they do not use the same resource at the same time (including space on the field)
+
+* If this synchronization fails, they may have to start over
+
+---
+
+# Execution
+
+* Once the plans have been validated against each other, the agents can start executing them 
+
+* Each action will take a certain amount of time, e.g. to move across the field
+
+* Oops: Things change quickly in soccer 
+
+* The agents basically have to constantly replan to account for the changed circumstances
+
+
+---
+
+class: small
+
+# Coordination
+
+* We assumed that the plans would "play nicely" together, and resource conflicts would be relatively rare
+
+* For many domains, including soccer, this is surprisingly effective 
+
+* Consider this: The players start distributed across the field, with the ball in one known location
+
+* If we define reasonable goals, not every player will run towards the ball, but instead position themselves intelligently
+
+* These assignments result in a low chance for collisions
+
+* Additionally, defined "roles" for the players result in natural collaboration such as forward passes
+
+---
+
+class: medium
+
+# Coordination
+
+* The generalized version of these soccer "conventions" is called *social laws*
+
+* Basically, each agent has a set of rules they are expected to follow, that define which plans are "socially" acceptable 
+
+* One approach is to define an increasingly strict set of such laws, and start planning with the strictest version, relaxing the laws until a plan can be found 
+
+* Because these laws basically define a hand-crafted restriction on the plans, the solution may not be optimal, but this approach has been shown to work well in practice
+
+---
+
+class: small
+
+# Further Complications
+
+* What if the agents are not (fully) cooperative?
+
+* For example, logistics trucks may need to distribute packages for delivery between them, but each truck operator receives payment for deliveries
+
+* What if some actions can only be executed by two agents? 
+
+* For example, to lift a couch two agents need to be present. A single agent can not just "plan to move the couch"
+
+* What if each agent only has limited information about the world? 
+
+* For example, each agent has cameras and there are walls blocking vision
+
 ---
 
 # Homework
 
 * [Homework 8](/PF-3335/assets/pdf/homework8.pdf) has been posted on the class website
   
-* There are 4 problems 
+* There are 5 problems 
 
 * One problem is about DPOCL 
 
-* The other three use PyHOP: Download the code and play around with it
+* Three use PyHOP: Download the code and play around with it
+
+* The last one is about multiagent planning
 
 ---
 
@@ -447,6 +607,8 @@ pyhop(state1,[('move_blocks', goal1a)], verbose=1)
   * Georgievski, I. and Aiello, M. [An Overview of Hierarchical Task Network Planning](https://arxiv.org/pdf/1403.7426.pdf)
   
   * [PyHOP](https://bitbucket.org/dananau/pyhop/src/default/)
+  
+  * [Introduction to Planning in Multiagent Systems](https://pdfs.semanticscholar.org/119f/98dacdb8cb68c326a151664bc7348c8fd0a8.pdf)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
