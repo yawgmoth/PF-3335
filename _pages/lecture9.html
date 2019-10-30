@@ -98,17 +98,63 @@ class: medium
 
 # Uncertainty about the world
 
-Uncertainty about the world:
+* Imagine we have a robot that should perform tasks 
 
-* We 
+* We tell it to go to the grocery store
+
+* If it is raining, it will need some sort of protection, like an umbrella
+
+* But the robot may not know the weather outside 
+
+* It could go and check!
 
 ---
 
+class: medium
+
 # Uncertainty about actions 
+
+* We often/usually talk about robots performing our actions 
+
+* Here's the problem with robots: hardware
+
+* Our robot may decide to move to a particular room, but maybe it's motors break
+
+* Or maybe there is one small obstacle that it can't see but that blocks the path 
+
+* Generally: Actions may fail
 
 ---
 
 # Interference
+
+* A special case of failing actions and uncertainty about the world is if we are not alone 
+
+* Say there is another agent in the world 
+
+* That agent has its own goals, and doesn't cooperate with us 
+
+* What we know about the world may change because of what the other agent does
+
+* They may even actively try to stop us
+
+---
+
+# Action Failure
+
+* Failing actions and interfering actors are actually kind of the same 
+
+* In both cases there is someone else "doing" something 
+
+* It may just be "nature"/randomness, or an intentional agent 
+
+* We can handle both in the same way!
+
+---
+
+# Sensing and Replanning
+
+*
 
 ---
 
@@ -120,25 +166,218 @@ class: center, middle
 
 # Review: Probability Theory
 
+* A random variable X is a function that maps *outcomes* S to real numbers
+
+* In this class, we only deal with discrete random variables, so we can avoid many of the nasty things 
+
+* The outcomes describe the possible "states" we can have, and we have an *event space* F consisting of the power set of S
+
+* We assign probabilities to the outcomes (technically, to the elements of the event space)
+
+---
+
+class: medium
+
+# Review: Probability Theory
+
+Requirements for the Probabilities:
+
+* `\(P(E) \ge 0\)` for all E in F
+
+* `\(P(S) = 1\)`
+
+* `\(P(X \cup Y) = P(X) + P(Y)\:\:\text{if}\:\:X \cap Y = \emptyset\)`
+
+What this means is basically that we can assign probabilities to the single events, and these axioms will tell us the probabilities for combinations of events.
+
+Example: A (fair) coin has `\(S = \{H, T\}, F = \{\{\}, \{H\}, \{T\}, \{H,T\}\}, P(H) = 0.5\)`
+
+We can then define a random variable `\(X(H) = 0, X(T) = 1\)`
+
+---
+
+# Review: Probability Theory 
+
+The *expected value* of a random variable X is:
+
+$$
+E(X) = \sum_{s \in S} P(x) \cdot X(s)
+$$
+
+In words: The expected value is the probability-weighted sum of the real values we assigned to each outcome. For our fair coin, this expected value is:
+
+$$
+E(X) = \frac{1}{2} \cdot 0 + \frac{1}{2} \cdot 1 = 0.5
+$$
+
+The expected value tells us the "average" value we would get if we sampled the random variable "very often".
+
 ---
 
 # Probabilistic Actions
+
+* How could we model actions that have different outcomes?
+
+* Instead of having one effect, these actions may have one of a set of effects 
+
+* Each possibility has a probability associated with it 
+
+* For example, if we fire a gun, there is a 5% chance that the bullet is a blank
+
+---
+
+# Action Planning 
+
+* To start, let us just plan a single action
+
+* We have three possibilities:
+  
+   - Drive to the airport, 25% chance of a traffic jam
+   - Train to the airport, 30% chance of delay
+   - Walk to the airport, 99% chance of exhaustion
+   
+* Which action do we choose?
 
 ---
 
 # Strategy: Maximize Expected Value 
 
+* One approach is to pick the option that gives us the highest expected value 
+
+* Each of these actions has two possible outcomes: We either get to the airport on time, or we don't
+
+* We assign a value of 1 to arriving on time, and 0 to the other case 
+
+* That means, driving has the highest expected value (75% of arriving on time = expected value of 0.75)
+
+---
+
+# Action Costs
+
+* But wait! Not all actions are created equal!
+
+* We have three possibilities:
+  
+   - Drive to the airport, 25% chance of a traffic jam, $40
+   - Train to the airport, 40% chance of delay, $20
+   - Walk to the airport, 99% chance of exhaustion, $2 for a drink
+   
+* Which action do we choose?
+
+---
+
+# Utility
+
+* How do we define the "value" of these actions?
+
+* One possibility is to say that if we don't make it to the airport, we wasted our money
+
+* That means that driving to the airport would have -30 utility if we are late, and 0 otherwise (we didn't waste anything)
+
+* With this approach, we can assign an expected utility value to each action, and choose the one with the highest utility
+
+---
+
+class: medium
+
+# Expected Value 
+
+Consider these four choices:
+
+  * Gain $100
+  
+  * Flip a (fair) coin. On heads, gain $200, on tails gain $0
+  
+  * Flip a (fair) coin. On heads, gain $500, on tails, pay $300
+  
+  * Roll a 100-sided die. On a 1, gain $10 000, else gain $0
+  
+Which option would you choose?
+
+---
+
+# Limitations of the Expected Value
+
+* In many cases, the expected value does not reflect how humans would make a decision
+
+* Sometimes that is because humans are not logical, sometimes there are other factors
+
+* In our example the expected value was exactly the same for all options
+
+* But the expected value expresses what happens if we perform the sampling "many times"
+
 ---
 
 # Strategy: Assume the Worst
+
+* If we only perform an action once, we may just want to be really cautious
+
+* Instead of analyzing each possibility, we analyze how we can avoid the "worst" outcome with the highest probability 
+
+* In our case, if we take the $100, we always have $100
+
+* However, the exact decision depends on the situation and may not always be possible to define mathematically
+
+---
+
+class: medium
+
+# Another Example
+
+Consider these three choices:
+
+  * Gain $100
+  
+  * Roll a 100-sided die. On a 1, gain $25 000, else gain $0
+  
+  * Roll a 100-sided die. On a 1, gain $0.2, else gain $0. Repeat 100 000 times
+  
+Which option would you choose?
 
 ---
 
 # Planning
 
+* Remember: This is a class about Planning 
+
+* So far we have only talked about *one* single action 
+
+* What we want is a plan, i.e. a sequence of actions 
+
+* We can calculate the expected value/utility of a plan as the combination of utilities of the individual steps 
+
 ---
 
-# Conditional Plans
+# Plan Utility
+
+* We have two possible plans:
+
+  - Call a taxi (10% chance of failing), take the taxi (25% chance of failing), check in at the airport (10% chance of failing)
+  - Check in online (15% chance of failing), go to the train station (1% chance of failing), take the train (40% chance of failing)
+  
+* Which one do we choose?
+
+---
+
+# Failure
+
+* So far we have assumed that one of our possible outcomes of an action is "failure"
+
+* In many cases the outcome is just "random", or "different"
+
+* And even if it is "failure", we don't just want to give up 
+
+* How could we account for that?
+
+---
+
+# Conditional Plans 
+
+* Instead of having one linear plan (or a partially ordered one), we can include conditions 
+
+* For example, one action is "flip a coin", and our plan continues with two branches: One where the coin came up heads, and one where it came up with tails 
+
+* This form of plan is basically a sequence of "if-then" statements after the non-deterministic actions
 
 ---
 
@@ -2309,8 +2548,12 @@ class: small
 ---
 
 # References
+
+  * [Continual Planning and Acting in Dynamic Multiagent Environments](ftp://ftp.informatik.uni-freiburg.de/papers/ki/brenner-nebel06.pdf)
  
   * [Planning Algorithms](http://planning.cs.uiuc.edu/bookbig.pdf)
+  
+  * [Building a Chess AI with Minimax](https://medium.freecodecamp.org/simple-chess-ai-step-by-step-1d55a9266977)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
