@@ -1,3 +1,6 @@
+---
+permalink: /slides/lecture9.html
+---
 <!DOCTYPE html>
 <html>
   <head>
@@ -118,7 +121,7 @@ class: medium
 
 * Here's the problem with robots: hardware
 
-* Our robot may decide to move to a particular room, but maybe it's motors break
+* Our robot may decide to move to a particular room, but maybe its motors break
 
 * Or maybe there is one small obstacle that it can't see but that blocks the path 
 
@@ -152,9 +155,17 @@ class: medium
 
 ---
 
+class: medium
+
 # Sensing and Replanning
 
-*
+* In some scenarios we can know what we don't know 
+
+* For example, a household robot may have an action to wash the dishes, but knows that it doesn't know the particular model of dishwasher in the house 
+
+* The action "wash the dishes" will then, when executed, require the robot to be in front of the dishwasher (to know the model), download the manual, and then cause a "replanning" to come up with the actual steps needed 
+
+* In a way, the action "wash the dishes" is therefore an abstract action that will be decomposed into concrete actions when the necessary information is available
 
 ---
 
@@ -274,7 +285,7 @@ The expected value tells us the "average" value we would get if we sampled the r
 
 * That means that driving to the airport would have -30 utility if we are late, and 0 otherwise (we didn't waste anything)
 
-* With this approach, we can assign an expected utility value to each action, and choose the one with the highest utility
+* With this approach, we can calculate the expected utility value of each action, and choose the one with the highest utility
 
 ---
 
@@ -387,25 +398,49 @@ class: center, middle
 
 ---
 
-# Adversaries 
+# Adversaries
+
+* As mentioned before, we can think of non-deterministic outcomes as having "nature" act against us 
+
+* However, *real* adversaries typically have their own goals
+
+* By reasoning about these goals, we may be able to anticipate their behavior and counteract 
+
+* This integrates nicely with our strategy of "assuming the worst"
 
 ---
 
 # Adversarial Planning 
 
+* Instead of assuming our actions have non-deterministic/random effects we assume that our actions are followed by an opponent's action 
+
+* The opponent will always choose what is best for them
+
+* To determine what is "best" for the opponent, we can use planning "from their perspective"
+
+* However, we need to know what their goal is (more about this in 3 weeks)
+
 ---
+
+class: medium
 
 # Zero-Sum Games 
 
+* One particularly interesting scenario are zero-sum games 
+
+* These are scenarios in which the gain of one agent comes at the expense of another 
+
+* For two players we can model this as one person getting positive rewards, and the other player getting the same negative reward, i.e. the sum of the two is zero
+
+* From our point of view, we want to maximize our points, while the opponent is trying to minimize our points (because that maximizes their own)
+
 ---
 
-class: small
+class: medium
 
 # Minimax
 
-  * Let's say we want to get the highest possible score 
-  
-  * Then our opponent wants us to get the lowest possible score 
+  * Let's say we go first
   
   * For each of our potential actions, we look at each of the opponents possible actions 
   
@@ -2508,7 +2543,7 @@ when the number has 6 digits in total (after 5 choices), or if the same bit was 
 
 class: small
 
-# Alpha-beta pruning 
+# Alpha-beta Pruning 
 
   * For the max player: Remember the minimum score they will reach in nodes that were already evaluated (alpha)
   
@@ -2522,7 +2557,7 @@ class: small
   
 ---
 
-class: small
+class: medium
 
 # Minimax: Limitations
 
@@ -2535,6 +2570,56 @@ class: small
   * Use a guess! For example: Board value after 3 turns 
   
   * What about unknown information (like a deck that is shuffled)?
+  
+---
+
+class: medium
+
+# Unknown Information
+
+* Let's say we have a shuffled deck 
+
+* We don't quite know what our best action is
+
+* We can work around this! Shuffle the deck once, and build the game tree
+
+* Repeat "often"
+
+* We will get the expected value of each action (over the different possible decks)
+
+---
+
+class: small
+
+# Monte Carlo Tree Search 
+
+* One problem with this approach: Building the Game Tree is expensive, and now we are doing it "often"
+
+* Instead, we can just choose one plan "randomly"
+
+* Then we shuffle the deck again, and choose plan "randomly"
+
+* We then only repeat this process "often"
+
+* We will get a partial tree, with the value for each of the random plans in the different possible situations 
+
+* We can "merge" plans with the same prefix to calculate an expected value for starting with a particular action
+
+---
+
+class: small
+
+# Action Selection
+
+* Note how I always put "randomly" in quotes 
+
+* We want the algorithm to explore different possibilities 
+
+* But we also want to make sure that we explore more promising possibilities more often 
+
+* Our random search will therefore be guided by the results we got so far, preferring actions that have already resulted in good outcomes 
+
+* This way we make sure that we don't randomly encountered a good outcome that our opponent could easily thwart
 
 ---
 
@@ -2554,6 +2639,8 @@ class: small
   * [Planning Algorithms](http://planning.cs.uiuc.edu/bookbig.pdf)
   
   * [Building a Chess AI with Minimax](https://medium.freecodecamp.org/simple-chess-ai-step-by-step-1d55a9266977)
+  
+  * [Monte Carlo Tree Search](https://pdfs.semanticscholar.org/574e/6872df3fe9b89afa98a7bdeef710a931da34.pdf)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
