@@ -1,3 +1,6 @@
+---
+permalink: /slides/lecture10.html
+---
 <!DOCTYPE html>
 <html>
   <head>
@@ -107,6 +110,23 @@ class: medium
 * We also know that our opponent knows which cards they have
 
 ---
+
+class: medium
+
+# Knowledge and Beliefs 
+
+  * "Epistemic Logic", which we will discuss today is the "Logic of Knowledge and Beliefs"
+  
+  * Some people make a distinction between the two: Beliefs may be false, knowledge has to be true 
+     
+  * Other people require that knowledge not only be true, but be "justified" ("Knowledge is justified, true belief")
+  
+Example: A farmer looks from his farm house to the field, to check if his favorite cow is still there. He sees a black and white paper that got caught in the tree, and looks exactly like his cow from far away. In reality, the cow was sleeping in a hollow behind a bush on the field. 
+  
+
+---
+
+class: medium
 
 # Beliefs 
 
@@ -246,7 +266,7 @@ class: medium
   
 ---
 
-class: medium
+class: ssmall
 
 # Action Language
 
@@ -255,6 +275,8 @@ class: medium
   * By default, actions are not visible to any agent, and only change the actual world 
   
   * The action token `\((a)^x\)` means that agent `x` believes that action `a` happens (but it does not actually happen)
+  
+  * The action token `\((a)^{\star{}x}\)` means action `a` happens, agent `x` believes that action `a` happens, they believe that they believe that `a` happens, etc.
   
   * We can combine two actions sequentially: `\( a \cdot b \)`
   
@@ -304,19 +326,119 @@ class: medium
   
 ---
 
+# A Joke
+ 
+  * Three logicians walk into a bar
+  
+  * The barkeeper asks: "Three beers?"
+  
+  * The first logician says: "I don't know"
+  
+  * The second logician says: "I don't know"
+  
+  * The third logician says: "Yes!"
+  
+---
+
+class: small
+
+# Explaining the Joke 
+
+* Every logician knows if they themself want a beer or not
+
+* Imagine if the first logician did not want a beer 
+
+  - She would know about it 
+  
+  - Therefore, she would know that the order is not "three beers"
+  
+  - Therefore, she would have said "No"
+  
+* The second logician knows that the first logician knows if she wants a beer or not
+
+* So, when the first logician says "I don't know", the second logician can conclude that she wants one (otherwise she'd say "No")
+
+---
+
+class: medium
+
+# An Epistemic View 
+
+* There are 8 possible worlds: Each logician may want a beer, or they may not
+
+* The answer of a logician follows three rules:
+
+   - If they know that all three logicians want a beer, they say "yes"
+   
+   - If they know that at least one logician does not want a beer, they say "no"
+   
+   - Otherwise, they say "I don't know"
+
+* How do we write that in Dynamic Epistemic Logic?
+
+---
+
+# A Logician in Logic 
+
+- If they know that all three logicians want a beer, they say "yes"
+
+$$
+?(\Box_l \forall x\:\: \mathit{wb}(x)) \cdot \text{flip}\: \mathit{say}(l, \text{yes})
+$$
+   
+- If they know that at least one logician does not want a beer, they say "no"
+
+$$
+?(\Box_l \exists x\:\: \neg \mathit{wb}(x)) \cdot \text{flip}\: \mathit{say}(l, \text{no})
+$$
+   
+- Otherwise, they say "I don't know"
+   
+$$
+?((\neg \Box_l \forall x\:\: \mathit{wb}(x)) \wedge (\neg \Box_l \exists x\:\: \neg \mathit{wb}(x)))\cdot \\\\
+\text{flip}\: \mathit{say}(l, \text{idk})
+$$
+
+---
+
+# What about the other two?
+
+Let `\(\mathit{all}, \mathit{one}, \mathit{else}\)` be the three sentences from the previous slide:
+
+The action the logician l performs is:
+$$
+\mathit{all} + \mathit{one} + \mathit{else}
+$$
+
+But the other two can observe this:
+
+$$
+(\mathit{all})^{\star{}L} + (\mathit{one})^{\star{}L} + (\mathit{else})^{\star{}L}
+$$
+
+---
+
 # Homework
 
 * [Homework 10](/PF-3335/assets/pdf/homework9.pdf) has been posted on the class website
   
 * There are 5 problems 
 
-* \emph{all} 
+* *All* problems are "bonus problems", but they are of regular difficulty
+
+* Basically, if you need to catch up on points, this will give you extra points
   
 ---
 
-  * [Intentional Agents for Doxastic Games](https://repository.lib.ncsu.edu/handle/1840.20/35747)
+# References
+
+* [101 Philosophy Problems](http://dl.lilibook.ir/2016/11/101-Philosophy-Problems.pdf)
+
+* [Intentional Agents for Doxastic Games](https://repository.lib.ncsu.edu/handle/1840.20/35747)
   
-  * [A Logic For Suspicious Players](https://www.vub.ac.be/CLWF/SS/BER.pdf)
+* [A Logic For Suspicious Players](https://www.vub.ac.be/CLWF/SS/BER.pdf)
+
+* [Dynamic Epistemic Logic](http://www.iep.utm.edu/wp-content/media/DynamicEpistemicLogic.pdf)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
