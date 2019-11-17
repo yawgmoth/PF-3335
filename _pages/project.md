@@ -19,7 +19,7 @@ In the project for the class you will develop a simple planner in python. To do 
  1. A representation of logical formulas, due September 20, 2019, worth 15 points
  2. A search algorithm, due September 27, 2019, worth 15 points
  3. A parser for PDDL planning domains and problems, and the planner itself, due November 8, 2019, worth 15 points
- 4. A planning heuristic, due November 22, 2019, worth 10 points
+ 4. A planning heuristic, due November 22, 2019, worth 15 points
  5. A separate submission to our own internal planning competition (optional), also due November 22, 2019
 
 All due dates are given as anywhere-on-earth, i.e. 23:59 UCT-12. See below for the penalty for late submissions.
