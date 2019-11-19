@@ -1,10 +1,7 @@
----
-permalink: /slides/lecture12.html
----
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Lecture 12: Rewriting Systems</title>
+    <title>Lecture 12: Plan Recognition</title>
     <meta charset="utf-8">
     <style>
       @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
@@ -68,494 +65,317 @@ permalink: /slides/lecture12.html
 
 class: center, middle
 
-# AI in Digital Entertainment
+# Artificial Intelligence: Planning
 
-### Rewriting Systems
-
----
-
-class: center, middle
-
-# Procedural Content Generation
+### Plan Recognition
 
 ---
 
-# The cost of making games 
+# Review: The Planning Problem
 
-<img src="/CI-2700/assets/img/gamecost.png" width="100%"/>
+A planning problem consists of three parts:
+
+  * A definition of the current state of the world
+  
+  * A definition of a desired state of the world
+  
+  * A definition of the actions the agent can take
 
 ---
 
-class: small
+# Observation
 
-# Procedural Content Generation
+* Imagine we want to cooperate with an agent (or a human)
 
-  * Making games requires a lot of effort 
-  
-  * Apart from coding, there are also art assets, music, a story, etc. that need to be created 
-  
-  * Some of these creation processes can be (partially) automated, or assisted: Procedural Content Generation (PCG)
-  
-  * Two problems
-  
-     - Generating content is not always easy
-     - Generating *good* content is usually even harder
-     
----
+* We can see which actions they are performing
 
-class: small
-
-# What can we generate?
-
-  * Levels
-  
-  * Enemies 
-  
-  * Quests 
-  
-  * Dialog
-  
-  * Narrative 
-  
-  * Plants 
-  
-  * 3D objects
-  
-  * Rules 
-  
-  * Games 
-  
----
-
-class: medium
-
-# PCG Approaches
-
-* Template-based: (More or less) randomly assemble preconstructed pieces
-
-* Search-based: Define a start-state and a goal, find a solution 
-
-* Logic-based: Define logical formulas, find satisfying assignments
-
-* Noise-based: Define a structure, add noise, refine 
-
-* Rewriting-based: Start with a generic item, split into parts, and resolve the parts
+* Now we need to figure out what they want to achieve
 
 ---
 
 class: medium
 
-# Example: Diablo 3 Map Generation
+# Plan Recognition 
 
-* In Diablo 3, the maps are randomly assembled from templates 
+* Goal Recognition: Given some observed actions, figure out which goal the observed agent is trying to achieve
 
-* Each map has predefined entry (and exit) points
+* Plan Recognition: Given some observed actions, figure out which plan the observed agent is likely to follow 
 
-* The interior is filled in with three kinds of blocks:
+* Activity Recognition: Given some observed actions, figure out which of them are relevant to an activity performed by the observed agent 
 
-   - Large blocks containing epic events 
-   - Medium sized blocks which make up the majority of the map
-   - Small blocks to fill up
-   
-* Events that are necessary to progress the story are always placed as blocks
+Confusing: All of them were at some point or another called "Plan Recognition"
 
 ---
 
-# Diablo 3: Westmarch Heights 
+# Intention Recognition 
 
-<img src="/PF-3341/assets/img/Westmarch-heights-map.jpg" width="80%"/>
+* More confusion: Some people also use "intention recognition"
 
----
+* Unfortunately, this has some non-research connotations of "mind reading"
 
-# Diablo 3: Westmarch Heights 
+* Philosophers also have their own (different) ideas of what "intentions" are 
 
-<img src="/PF-3341/assets/img/Westmarch-heights-map2.jpg" width="80%"/>
-
----
-
-class: center, middle
-
-# Rewriting Systems 
+* We will be clear, and us "Plan Recognition" for the task of determining the *plan* that the observed agent is (likely) following
 
 ---
 
-# Grammar-based PCG
+# Applications 
 
-Remember grammars?
-  
-$$
-A \rightarrow B A C\\\\
-A \rightarrow \varepsilon\\\\
-B \rightarrow b\\\\
-C \rightarrow c
-$$
+* Games (cooperative and competitive)
 
----
+* Assistive care for the elderly
 
-class: medium
+* Software help 
 
-# Grammars
+* Security
 
-* A (formal) consists of terminal symbols, non-terminal symbols, and rules 
+* Cooking 
 
-* One of the non-terminal symbols is designated as the starting symbol 
-
-* A grammar defines a language
-
-* To determine if a word is an element of the language, we need to find a derivation for it, starting with the start symbol, and replacing it with further non-terminal symbols 
+* Etc.
 
 ---
 
-# Grammar Example
+# Plan Recognition Approaches 
 
-$$
-A \rightarrow B A C\\\\
-A \rightarrow \varepsilon\\\\
-B \rightarrow b\\\\
-C \rightarrow c
-$$
+* Plan library: Match observed actions against known plans 
 
-To confirm that `bbcc` is part of our language, we can do:
-$$
-A \rightarrow B A C \rightarrow B B A C C \rightarrow b b \varepsilon c c \rightarrow bbcc
-$$
+* Statistical methods: Collect data from many users to predict likely follower actions
+
+* Planning: What plan would *you* execute if you had done the observed actions 
 
 ---
 
-# Grammar-Based Generation 
+# Plan Recognition: Example 
 
-* However, instead of parsing/checking words, we can also use a grammar to *generate* them 
-
-* Start with the start symbol, and apply rules until only non-terminal symbols are left 
-
-* By choosing rules "at random", we can generate different words
-
----
-
-# How does that help us?
-
-* We can generate text! 
-
-* For example: The "words" are actually sentences, our terminal symbols are words, the non-terminal symbols are clauses, etc. 
-
-* Of course the grammar does not know anything about *semantics*
-
----
-
-# Generated Text
-
-$$
-\text{Sentence} \rightarrow  \text{Name}\:\text{Verb}\:\text{Profession}\\\\
-\text{Name} \rightarrow  \mathit{Ana} | \mathit{Brian} | \mathit{Cristina} | \mathit{Diego}\\\\
-\text{Verb} \rightarrow  \mathit{is} | \mathit{works}\:\mathit{as}\\\\
-\text{Profession} \rightarrow  \mathit{a\:carpenter} | \mathit{a\:firefighter} | \\\\
-                               \mathit{a\:nurse} | \mathit{a\:lawyer}\\\\
-$$
---
-Example outputs:
-
-Ana works as a lawyer.<br/>
-Diego works as a nurse.
-
----
-
-# Tracery
-
-* Tracery is a JavaScript library for grammar-based "text"-generation 
-
-* Tracery input files are in JSON, consisting of one top-level dictionary where each entry is a rule
-
-* The key of each entry is the left hand side, and the value is a list of possible expansions
-
-* To call another rule, enclose it in #
-
----
-
-# Tracery
-
-```JS
-{
-  "origin": "#greeting#, #noun#!",
-  
-  "greeting": ["Howdy", "Hello", 
-               "Greetings", "What's up", 
-               "Hey", "Hi"],
-  
-  "noun": ["world", "solar system", 
-           "galaxy", "local cluster", 
-           "universe"]
-}
-```
-
----
-
-class: medium
-
-# Tracery
-
-* Tracery has several other features to make text-generation easier 
-
-* It can automatically pluralize words, put the appropriate a/an before a noun, put verbs in past tense, etc. 
-
-* There is also syntax to store "variables" that you can reuse, for example to have a consistent, but random, name for the hero of a story 
-
-* George Buckenham is running "Cheap Bots, Done Quick" which allows anyone to write a Twitter bot using Tracery
-
----
-
-# Cheap Bots, Done Quick 
-
-<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Germans even have a word for worrying about cats:  Katzensorge</p>&mdash; GermanWords (@words_german) <a href="https://twitter.com/words_german/status/1069297382268067841?ref_src=twsrc%5Etfw">December 2, 2018</a></blockquote>
-
----
-
-class: center, middle
-
-# Other Kinds of Grammars
-
----
-
-class: medium
-
-# Other Kinds of Grammars 
-
-* Instead of limiting ourselves to text, we can use grammars to describe anything that can be described by rewriting/subdivision
-
-* A sentence consists of words 
-
-* A level consists of screens or missions
-
-* A song consists of verses and a chorus 
-
-* A tree consists of branches and leaves
-
-* A house consists of floors and rooms
-
----
-
-class: medium
-
-# Grammar-Based Level Generation 
-
-* A designer provides some input on the structure of the level (e.g. difficulty curve)
-
-* The grammar consists of subdivision rules (how to split the level into smaller parts), and terminal symbols (individual screens, missions, rooms, etc.) annotated with their difficulty 
-
-* To generate a level, apply the subdivision rules, and use terminal symbols until you get a "good" match with the desired structure 
-
-* Some approaches use optimization methods to vary which rules are applied to better approximate the desired structure
-
----
-
-class: medium
-
-# Grammar-Based Music Generation 
-
-* Music has some similarities with text: It is one-dimensional (or may consists of multiple one-dimensional tracks in parallel), and consists of clearly defined words/notes
-
-* However, for music you usually want self-similarity across different "phrases"
-
-* Johann Sebastian Bach wrote about music theory, and describes common chords and note patterns that can be used to achieve self-similarity
-
----
-
-# Grammar-Based Music Generation
-
-<img src="/PF-3341/assets/img/sugerencia.png" width="80%"/>
-
-<a href="#26" onClick="p()">Play</a> <a href="#26" onClick="MIDIjs.stop();">Stop</a>
-
----
-
-# Graph-Grammars
-
-* Instead of having something linear, we can also apply grammars to other structures, such as graphs 
-
-* Take a graph where each vertex has a label/tag 
-
-* A grammar then describes how to replace a node with a particular tag with a graph consisting of multiple nodes with different tags 
-
-* This can be used to generate dungeons for RPGs!
-
----
-
-# Graph Grammars 
-
-<img src="/PF-3341/assets/img/graphgrammar.png" width="100%"/>
-
----
-
-# L-Systems 
-
-  * Named after the Hungarian theoretical biologist and botanist Aristid Lindenmayer
-  
-  * Idea: Use a grammar to simulate plant growth
-  
-  * For example: F draws a line "forward", - turns left, + turns right, the brackets store and retrieve the current drawing position
-  
-
-$$
-X \rightarrow F+[[X]-X]-F[-FX]+X\\\\
-F \rightarrow FF
-$$
-
----
-
-# L-Systems
-
-<img src="/CI-2700/assets/img/lsystem.svg" width="70%"/>
-
----
-
-class: small
-
-# Shape Grammars
-
-  * We can use a similar idea as L-Systems for 3D geometry 
-  
-  * Start with a block, and divide it into parts with meaning 
-  
-  * For example: 
-     - Start with a cylinder, cut it into n slices radially
-     - For each of the slices you cut out a part in the center and decorate the edges 
-     - You now have a gothic window 
-     
-  * Note: If you do this well, you can change n, the cutout shape, and the decoration arbitrarily
-
----
-
-# Shape Grammars
-
-<img src="/CI-2700/assets/img/gothic.jpg" width="100%"/>
-
----
-
-class: small
-
-# Split Grammar Rules 
-
-Rules in our grammars looked like: 
-  
-$$
-A \rightarrow C\:B\:C 
-$$
-
-How do we write rules for Shape Grammars?
-
-$$
-A \rightarrow[\text{split}\:x\:5\%\:90\%\:5\%] C\:B\:C
-$$ 
-
-<img src="/PF-3341/assets/img/splitappl.png" width="100%"/>
-
----
-
-class: small
-
-# Recursion
-
-
-<img src="/PF-3341/assets/img/cubeception.png" width="60%"/>
-
----
-
-class: medium 
-
-# Other Applications for Shape Grammars
-
-  * Shape Grammars are great for any structure with a lot of self-similarity 
-  
-  * Most houses have a similar layout on each floor 
-  
-  * Cut a block into floors, then divide each floor into a hallway and rooms 
-  
-  * For each room, we may want multiple windows, each with the same decoration, etc.
-  
----
-
-# Another Shape Grammar Example 
-
-.left-column[
-<img src="/PF-3341/assets/img/eiffel.png" width="100%"/>
-]
-.right-column[
-* The Eiffel Tower consists of 4 main columns that are the same 
-
-* Each column consists of 4 segments 
-
-* Each segment consists of 4-8 frames, etc.
-
-Why bother?
-]
-
----
-
-# Variations!
-
-.left-column[
-<img src="/PF-3341/assets/img/eiffel_alternative2.png" width="100%"/>
-]
-.right-column[
-<img src="/PF-3341/assets/img/eiffel_alternative3.png" width="66%"/>
-]
-
----
-
-# Challenges
-
-.left-column[
-<img src="/PF-3341/assets/img/rivets_treillis.png" width="100%"/>
-]
-.right-column1[
-* We basically only talked about context-free grammars (replacing a single non-terminal symbol with a sequence of terminal/non-terminal symbols)
-
-* However, 3D structures often need *context*
-
-* For example, once we cut a building into two floors, we need to connect them with stairs 
-
-* Of if we have multiple metal bars in the Eiffel Tower, we want to place rivets and connecting struts
-
-]
-
+<img src="/PF-3335/assets/img/planrecognition.png" width="80%"/>
 
 ---
 
 class: center, middle 
 
-# An Update on GPT-2
+# Plan Recognition as Planning 
 
 ---
 
-# GPT-2
+# Assumptions 
 
-* A few weeks ago we talked about the language model GPT-2 by OpenAI 
+* We know the initial state of the world
 
-* OpenAI has decided not to release the full model because they deemed it "too dangerous"
+* We observe complete actions 
 
-* We discussed advantages and drawbacks of that approach
+* We observe them in order 
 
----
+* We know what goals the observed agent could potentially be trying to achieve
 
-# GPT-2 Replicated
-
-<blockquote class="twitter-tweet" data-theme="dark"><p lang="en" dir="ltr">Hey <a href="https://twitter.com/OpenAI?ref_src=twsrc%5Etfw">@OpenAI</a>, I&#39;ve replicated GPT2-1.5B in full and plan on releasing it to the public on July 1st. I sent you an email with the model. For my reasoning why, please read my post: <a href="https://t.co/UEPEgIuS4j">https://t.co/UEPEgIuS4j</a><a href="https://twitter.com/hashtag/machinelearning?src=hash&amp;ref_src=twsrc%5Etfw">#machinelearning</a> <a href="https://twitter.com/hashtag/gpt2?src=hash&amp;ref_src=twsrc%5Etfw">#gpt2</a> <a href="https://twitter.com/hashtag/aisafety?src=hash&amp;ref_src=twsrc%5Etfw">#aisafety</a></p>&mdash; Connor Leahy (@NPCollapse) <a href="https://twitter.com/NPCollapse/status/1136559379602427904?ref_src=twsrc%5Etfw">June 6, 2019</a></blockquote> 
+* We believe the observed agent follows the optimal plan 
 
 ---
 
-# GPT-2 Replicated 
+# The Plan Recognition Problem 
 
-* Connor Leahy, an undergraduate student, replicated GPT-2 with an estimated 100h of effort using about $40 000 in cloud computing infrastructure 
+Given:
 
-* With no disrespect to his efforts, but that basically means that "anyone" (or at least any non-trivially sized organization) can do it, the only question is the cost/reward ratio
-
-* Connor said he plans on publishing the model in July
-
----
-
-# Next Week 
-
-  * [Procedural Modeling of Interconnected Structures](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.682.2517&rep=rep1&type=pdf)
+  * A set of observed actions 
   
+  * A set of potential goals 
+  
+Find:
+
+  * A set of plans the agent is likely to follow 
+  
+---
+
+# A different perspective 
+
+* If we know the initial state and the potential goals, we can just find a plan for each of them 
+
+* Then we compare the plans we found with the actions the agent performed 
+
+* If there's a match, we found a potential solution
+
+* What could possibly go wrong?
+
+---
+
+# Optimality
+
+* We assume the agent follows "the" optimal plan 
+
+* What if there is more than one option?
+
+* The agent may find one optimal plan 
+
+* We find a different one that is also optimal 
+
+* Those two don't match ...
+
+---
+
+class: medium
+
+# Incorporating Observed Actions
+
+* What we want is that our plans *have to* include the observed actions 
+
+* We can include this in the goals!
+
+* We create a new predicate `observed`, which has one parameter: an action/step number
+
+* For each observed action `i` we create a **new** action that has an additional precondition `(not (observed i))` and an additional effect `(observed i)`
+
+* We add **all** `(observed i)` atoms to each of the goals
+
+---
+
+# Plan Recognition as Planning 
+
+* To perform the plan recognition, we now have to run the planner **twice** for each goal 
+
+* One time, we try to find a plan given the initial state, with the unmodified actions and goal 
+
+* The second time, we try to find a plan with the modified actions and goal 
+
+* If (and only if) these two plans have the same length, do we consider the resulting plan a possibility
+
+---
+
+# Performance
+
+* As mentioned, we need to use an optimal planner *twice* for each possible goal 
+
+* This will be computationally expensive
+
+* How about we use a heuristic planner that may not be optimal?
+
+* We may overlook a few possible plans, or find a few extra ones
+  
+---
+
+# Evaluation
+
+* Let's say we have produced a set of plans that we believe the agent is following
+
+* How do we determine if we "did well"?
+
+* What was our goal?
+
+* What can we expect?
+
+---
+
+# Evaluation: Precision and Recall 
+
+* Precision: What percentage of produced plans are actually reasonable?
+
+* Recall: What percentage of reasonable plans do we produce?
+
+Both of these measures are important! 
+
+We can use them to find out how good our "non-optimal" planner did
+
+---
+
+# Plan Recognition: Ideal Solution?
+
+* Precision and Recall tell us how well an algorithm does 
+
+* But what do we actually want?
+
+* Also, does the *domain* have any effect on how good we can do?
+
+* What if it's impossible to predict what the observed agent is trying to do?
+
+---
+
+# Worst Case Distinctiveness
+
+<img src="/PF-3335/assets/img/wcd.png" width="60%"/>
+
+---
+
+# Worst Case Distinctiveness
+
+* Worse Case Distinctiveness is a measure of a *domain* 
+
+* It basically says how long we have to wait *in the worst case* before we can figure out what the observed agent is up to
+
+* This can be arbitrarily "bad" (imagine an "infinite" corridor with two doors at the end ...)
+
+* In practice we may want to modify our domain to improve the situation
+
+---
+
+# Worst Case Distinctiveness: Domain Modification
+
+<img src="/PF-3335/assets/img/wcdfix.png" width="100%"/>
+
+---
+
+class: center, middle 
+
+# Extensions
+
+---
+
+# Extensions
+
+* Partial plans
+
+* Observations 
+
+* Noise
+
+* Continual Plan Recognition
+
+* Suboptimality
+
+---
+
+# Partial Plans 
+
+<img src="/PF-3335/assets/img/planrecognition_partial.png" width="80%"/>
+
+---
+
+# Observations 
+
+* So far we have assumed we can observe actions
+
+* What if we can just observe the world?
+
+* We will have to deduce which actions the agent performed in order to enact the changes we observe
+
+* There may be multiple options for some changes
+
+---
+
+# Noise 
+
+* Maybe we can't observe the *full* action, but only parts of it 
+
+* Or we can't observe the *full* world 
+
+* We may have to use some sort of fuzzy reasoning (or a possible worlds model!) to represent the world 
+
+---
+
+# Continual Plan Recognition 
+
+* In many domains, like games, we will perform plan recognition over and over (e.g. every turn)
+
+* But many of the computations will be repeated 
+
+* If we design a planner that keeps track of expanded states (and discards the ones corresponding to actions that did not happen), we can make these computations more efficient
+
+---
+
+# Homework 
+
+* No more homework 
+
+* Next week we will wrap up the class with some applications and an outlook
+
+* There will also be a discussion of the planning competition
   
 ---
 
@@ -563,23 +383,13 @@ class: small
 
 # References
 
-  * [Procedural Content Generation](http://pcgbook.com/) by Noor Shaker, Julian Togelius, and Mark J. Nelson (free PDF available)
-
-  * [Analysis of Diablo 3 Block Types](https://www.diablofans.com/forums/diablo-iii-general-forums/diablo-iii-general-discussion/24505-a-full-guide-to-the-first-4-overworld-maps)
+  * [Plan Activity and Intent Recognition Tutorial](http://www.planrec.org/Tutorial/Resources_files/pair-tutorial.pdf)
   
-  * [Official Tracery Tutorial](http://www.crystalcodepalace.com/traceryTut.html)
+  * [Resources for Plan, Activity, Behavior, and Intent Recognition Research](http://www.planrec.org/Resources.html)
   
-  * [Another Tracery Tutorial](http://air.decontextualize.com/tracery/)
+  * [Plan Recognition as Planning](https://sites.google.com/site/prasplanning/home)
   
-  * [Cheap Bots, Done Quick](https://cheapbotsdonequick.com/)
-  
-  * [Automatic Music Generation by Context-Free Grammars](https://members.loria.fr/sperchy/software/)
-  
-  * [Grammar-based Procedural Content Generation from Designer-provided Difficulty Curves](http://sander.landofsand.com/publications/paper_fdg2015_mircea-short.pdf)
-  
-  * [Locally Context-Sensitive Shape Grammars](https://diglib.tugraz.at/locally-context-sensitive-shape-grammars-2013)
-  
-  
+  * [Goal Recognition Design](https://www.aaai.org/ocs/index.php/ICAPS/ICAPS14/paper/viewFile/7814/8023)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
