@@ -1,10 +1,8 @@
----
-permalink: /slides/lecture13.html
----
+
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Lecture 13: Logic-Based PCG</title>
+    <title>Lecture 13: Conclusion</title>
     <meta charset="utf-8">
     <style>
       @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
@@ -68,470 +66,388 @@ permalink: /slides/lecture13.html
 
 class: center, middle
 
-# AI in Digital Entertainment
+# Artificial Intelligence: Planning
 
-### Logic-Based PCG
+### Conclusion
 
 ---
 
 class: center, middle
 
-# Satisfiability
+# Current Developments
 
 ---
 
-# Satisfiability
+# Current Developments
 
-* We will look at logical formulas `\(\phi\)` with free variables 
+- Planning is still a highly active field of research
 
-* For example: `\(x \vee (y \wedge z)\)`
+- The International Conference on Automated Planning and Scheduling (ICAPS) is the premiere venue for planning research
 
-* Such a formula is called *satisfiable* if we can assign truth values to the free variables such that the formula is true
+- They also hold various competitions every year
 
-* There are solvers that can *find* such truth value assignments
-
----
-
-# Logic-Based PCG
-
-* How do we use this for content generation?
-
-* We tell our system which properties a level/quest/story should have in terms of logical formulas 
-
-* Then we use a solver to find an assignment of truth values to the free variables
-
-* We then interpret these assignments as a generated level/quest/story 
+- For example, the First Unsolvability International Planning Competition in 2016
 
 ---
 
-class: small
+# Recent Research
 
-# Example: Enemy Generation
+- Novel Heuristics
 
-* The enemy should have exactly one of 3 special abilities: a, b, and c 
+- Novel Applications
 
-$$
-(a \wedge \neg b \wedge \neg c) \vee (b \wedge \neg a \wedge \neg c) \vee (c \wedge \neg a \wedge \neg b)
-$$
+- Integration with Machine Learning
 
-* The enemy can be a goblin, orc, or warg
-
-$$
-(g \wedge \neg o \wedge \neg w) \vee (o \wedge \neg g \wedge \neg w) \vee (w \wedge \neg g \wedge \neg o)
-$$
-
-* Wargs can not use special ability c 
-
-$$
-(w \rightarrow \neg c)
-$$
-
-Any truth value assignment to g, o, w, a, b, c that satisfies these constraints will represents one possible enemy type and special attack we can generate.
+- Extensions to the formalism, like temporal and probabilistic planning
 
 ---
 
-# Challenges with Logic-Based PCG 
+# Some Applications
 
-* Checking if a formula is satisfiable is hard 
+- Logistics (RoboCup Logistics League)
 
-* In fact, for first-order predicate logic it is undecidable :(
+- Ride sharing
 
-* What can we do? We restrict the kinds of formulas you can write 
+- Video Games
 
-* Anyone remember Prolog?
-
----
-
-class: center, middle 
-
-# Answer-Set Programming
+- Narrative Generation
 
 ---
 
-# Answer-Set Programming 
+class: center, middle
 
-* Answer-Set Programming (ASP) is a form of declarative programming 
-
-* Programs represent facts and rules 
-
-* A *solver* finds assignments to free variables that are consistent with the given facts and rules (i.e. that satisfy the corresponding formula)
-
-* A common language for ASP is AnsProlog
+# Goal-Oriented Action Planning
 
 ---
 
-# AnsProlog 
+# Goal-Oriented Action Planning
 
-* Facts: `p(x)`
 
-* Rules: `p(x) :- q(x).`
-
-* Choice: `{p(x), q(x), r(x)}`
-
-* Restricted Choice: `1 {p(x), q(x), r(x)} 2`
-
-* Range: `p(1..4)` is the same as `p(1). p(2). p(3). p(4).`
-
-* Conditional literal: `p(X):q(X)` is the same as `p(x)` for all x for which `q(x)` holds
 
 ---
 
-# AnsProlog 
+class: center, middle
 
-`c(1..n).`
-
-`1 {color(X,I) : c(I)} 1 :- v(X).`
-
-`:- color(X,I), color(Y,I), e(X,Y), c(I).`
-
-What is this?
-
---
-
-Graph coloring!
-
-`c(1..n)` are n colors 
-
-`1 {color(X,I) : c(I)} 1 :- v(X).` Every vertex has exactly one color 
-
-`:- color(X,I), color(Y,I), e(X,Y), c(I).` Two neighbors can't have the same color
+# Narrative Generation as Planning
 
 ---
 
-# A Maze
+# Narratives
 
-* Now let's generate some game content!
+* A narrative is often considered to consist of two parts:
 
-* How about mazes?
+  - Story: What is happening in the world (the "plot")
 
-* We want our maze to be contained in a grid, with connections between adjacent grid cells
+  - Discourse: What the audience is told (the "telling")
 
-* Let's say there are no loops, and every location should be reachable from (1,1)
-
-* Basically, we want to build a tree that is embedded in the grid
+* We can use a planner to generate each of these two parts
 
 ---
 
-# A Tree in AnsProlog 
+# Story Generation
 
-```
-#const width = 5.
-dim(1..width).
+- We have an initial state of the world
 
-1 { parent(X,Y, 0,-1),
-    parent(X,Y, 1, 0),
-    parent(X,Y,-1, 0),
-    parent(X,Y, 0, 1) } 1 
-    :-
-    dim(X), dim(Y), (X,Y) != (1,1).
-```
+- We have actions the different characters can perform
 
-Each cell should have exactly one parent (up, down, left or right). What mazes do we get now?
+- The author defines a goal for the story
+
+- For example: In a detective story the goal is that there is a murder and that the detective identifies the murderer
 
 ---
 
-# Generated Mazes 
+# Story Example
 
-<img src="/PF-3341/assets/img/maze.png" width="100%"/>
+* Sherlock Holmes goes to Irene Adler's house
 
-Oops, our mazes are not connected.
+* Sherlock Holmes stabs Irene Adler
 
----
+* Sherlock Holmes identifies himself as the killer
 
-# A Solvable Maze 
-
-How do we define that our maze should be connected?
-
-First, we say that (1,1) is connected. Then, every cell that has a parent that is connected is also connected.
-
-Then we need to require that all cells are connected.
-
-```
-linked(1,1).
-linked(X,Y) :- parent(X,Y,DX,DY), linked(X+DX,Y+DY).
-:- dim(X), dim(Y), not linked(X,Y).
-```
+* The End.
 
 ---
 
-# Generated Mazes 
+# Story Generation as Planning
 
-<img src="/PF-3341/assets/img/solvablemaze.png" width="100%"/>
+- Planners are usually good at finding efficient solutions
 
-If we leave the solver running, we will eventually get all possible solvable mazes in the 5x5 grid. There are many, but what if we have a way to define which ones we "prefer"?
+- Stories are not efficient!
 
----
+- However, each *character* should act rationally, i.e. efficiently
 
-# An "Interesting" Maze 
-
-* Say we want our mazes to have few vertical connections, in order to force the player to explore more horizontally 
-
-* AnsProlog actually allows you to specify an optimization constraint 
-
-```
-vertical(X,Y) :- parent(X,Y,0, 1).
-vertical(X,Y) :- parent(X,Y,0,-1).
-#minimize { vertical(X,Y) }.
-```
-
-Typically, the solver will emit answers it finds on the way to the optimal solution, so we can actually choose how "good" of a solution we want, versus how long we want to run the solver.
+- We could use one planner per character ...
 
 ---
 
-# Generated Mazes 
+# Intentional Planning
 
-<img src="/PF-3341/assets/img/minmaze.png" width="100%"/>
+- With one planner per character we may never find a path to the story goal
 
----
+- Instead, we use a "trick": We tell the planner what each character wants to achieve
 
-# A Dungeon
+- The planner may then only use actions for a character that helps them achieve their goal
 
-* Mazes are a bit boring, let's make a more complicated level
+- But the overall plan still has to solve the story goal!
 
-* Specificially, let's make a dungeon with an entrance, a gem, an altar and an exit
-
-* The idea is that the player has to find the gem and socket it into the altar to open the exit 
-
-* Let's start with defining what such a dungeon actually is in our logical formulation
+- Implementations: IPOCL, CPOCL
 
 ---
 
-# A Dungeon 
+class: center, middle
 
-```
-#const width=10.
-param("width",width).
-dim(1..width).
-tile((X,Y)) :- dim(X), dim(Y).
-adj((X1,Y1),(X2,Y2)) :-
-         tile((X1,Y1)),
-         tile((X2,Y2)),
-         #abs(X1-X2)+#abs(Y1-Y2) == 1.
-
-start((1,1)).
-finish((width,width)).
-
-% tiles have at most one named sprite
-0 { sprite(T,wall), sprite(T,gem), sprite(T,altar) } 1 :- tile(T).
-
-% there is exactly one altar and one gem in the whole level
-:- not 1 { sprite(T,altar) } 1.
-:- not 1 { sprite(T,gem) } 1.
-```
+# Compilation
 
 ---
 
-# Generated Dungeons
+# Feature Creep
 
-<img src="/PF-3341/assets/img/dungeon.png" width="100%"/>
+- New applications have led to the need for new features in planners
 
----
+- For example, intentional planning for stories, or constraints on the plan
 
-# Making the Dungeon Nicer 
+- But classical planning is already very expressive!
 
-```
-% style : at least half of the map has wall sprites
-:- not (width*width)/2 { sprite(T,wall) }.
-
-% style : altars have no surrounding walls for two steps
-0 { sprite(T3,wall):adj(T1,T2):adj(T2,T3) } 0 :- sprite(T1,altar).
-
-% style : altars have four adjacent tiles (not up against edge of map)
-:- sprite(T1,altar), not 4 { adj(T1,T2) }.
-
-% style : every wall has at least two neighbouring walls 
-%         (no isolated rocks and spurs )
-2 { sprite(T2,wall):adj(T1,T2) } :- sprite(T1,wall).
-
-% style : gems have at least three surrounding walls 
-%         (they are stuck in a larger wall )
-3 { sprite(T2,wall):adj(T1,T2) } :- sprite(T1,gem).
-```
+- We can "compile away" certain things
 
 ---
 
-# Generated Dungeons
+# Compiling Intentions
 
-<img src="/PF-3341/assets/img/styledungeon.png" width="100%"/>
+- In Intentional Planning the planner may only add actions that help a character achieve their goal
 
----
+- But that's just another precondition!
 
-# A Playable Dungeon 
+- For each predicate, such as `has`, we add an additional predicate `intends-has`
 
-* Similar to the maze example, we need to make sure our dungeon is actually solvable 
-
-* How? Let's simulate a player!
-
-* Actually, we just encode what a player *could* do, and the solver will figure out how they can complete the dungeon 
-
-* Basically, we say a player touches the start, and on every step they can touch an adjacent tile if there's no wall 
+- Then we add a new action for each such intention that has the additional precondition of that intention
 
 ---
 
-# A Playable Dungeon 
+# Why Compilation?
 
-```
-% states:
-% 1: initial
-% 2: after picking up gem
-% 3: after putting gem in altar
+- IPOCL can solve intentional planning problems!
 
-% you start in state 1
-touch(T,1) :- start(T).
+- To plan a variation of the Aladdin story it needs 12h
 
-% possible navigation paths
-{ touch(T2,2):adj(T1,T2) } :- touch(T1,1), sprite(T1,gem).
-{ touch(T2,3):adj(T1,T2) } :- touch(T1,2), sprite(T1,altar).
-{ touch(T2,S):adj(T1,T2) } :- touch(T1,S).
+- The compiled version can be run using *any* state of the art planner
 
-% you can’t touch a wall in any state
-:- sprite(T,wall), touch(T,S).
+- Even with significantly more predicates due to the compilation, a solution was found in under a minute!
 
-% the finish tile must be touched in state 3
-completed :- finish(T), touch(T,3).
-
-:- not completed.
-```
+- Using compilation we can make use of all recent advances in classical planning!
 
 ---
 
-# Generated Dungeons
+class: center, middle
 
-<img src="/PF-3341/assets/img/playabledungeon.png" width="100%"/>
+# Planner Selection
 
 ---
 
-# Interesting Dungeons
+# Planner Selection
 
-* The dungeons we get may already be described as "reasonable"
+- No heuristic works well for all problems
 
-* However, they may be a bit too easy to solve sometimes, because the gem is right next to the altar 
+- In fact, no planner works well for all problems
 
-* What if we could define that the player actually has to "do some work" to solve the level?
+- What if we have "every" possible planner available?
 
-* Unfortunately, this is hard to do in standard AnsProlog 
+- We would want to pick the best planner for each problem!
+
+---
+
+# Planner Selection
+
+- We could run all planners in parallel
+
+- As soon as one finishes, we return its solution and terminate all others
+
+- Problem: We "need" 1 CPU per planner (or equivalent computation resources)
+
+---
+
+# Problem Structure
+
+- Let's run each planner on a couple of benchmark problems and time it
+
+- We then figure out which planner is the fastest for each of these problems
+
+- Ideally, when we look at the problems each planner is good at, we can identify some common "structure"
+
+- Then we use each planner on problems that have the structure of problems it is good at
 
 ---
 
 class: medium
 
-# Concepts and Level Designs 
+# Machine Learning?
 
-Consider that a generated dungeon consists of two parts:
+- Identifying a common structure may be tricky to do manually
 
-* The level geometry 
+- Machine Learning is good at finding patterns!
 
-* The path a player uses to complete the level 
+- We could train a neural network on a representation of each problem and the time needed by a planner
 
-What we want to describe is the fact that for a given **constant** level geometry, **all** possible paths have some interesting property. 
+- Then we can use the neural network to predict how long a particular planner may need on a new problem!
 
-Smith et al. describe an extension to AnsProlog that defines two new keywords:
-`__level_design` is used to describe what is part of the level geometry, and `__concept` is used to define constraints on **all** possible assignments to something (the player's solution).
-
----
-
-# Interesting Dungeons 
-
-```
-% holding sprites constant , ensure every solution 
-% touches at least width tiles in each state
-__level_design(sprite(T,Name)) :- sprite(T,Name).
-
-__concept :-
-width { touch(T,1) },
-width { touch(T,2) },
-width { touch(T,3) }.
-```
-
-Now we can generate levels that are guaranteed to *require* at least `width` steps in each of the three states.
-
----
-
-# Generated Dungeons
-
-<img src="/PF-3341/assets/img/interestingdungeon.png" width="100%"/>
-
----
-
-# ASP in practice
-
-* One nice aspect of the ASP programs we discussed is that they are modular
-
-* For example, we can use the check for interesting dungeons on human designed levels, too
-
-* In practice, generating levels takes some time, and the ASP solver has to run as its own process, so levels may just be pre-generated when the game is developed
-
----
-
-# CatSAT
-
-* Ian Horswill developed CatSAT as a small, fast ASP solver as a Unity plugin 
-
-* It is specifically meant to be used at *run time*
-
-* He also observed that for PCG the formulas typically have *many* satisfying variable assignments (because we want many different levels), so the challenge is not to find one, but to find several *different* ones 
-
-* CatSAT takes measures to ensure that subsequent runs produce substantially different results
-
----
-
-class: small
-
-# CatSAT Example
-
-  * Say we want to generate a quest 
-  
-  * There are 3 types of quests: Retrieve, deliver, and kill 
-  
-  * There are 4 types of enemies: Bandits, another kingdom, orcs, and wolves
-  
-  * There are some constraints on the possible quests:
-       - You can't retrieve an item from the wolves
-       - No more than 2 types of enemies should be present in any quest 
-       - The bandits do not work together with the other kingdom 
-       - etc.
-
----
-
-# CatSAT Example
-
-
-```C#
-var p = new Problem("quest");
-...
-var retrieve = (Proposition)"retrieve";
-...
-var wolves = (Proposition)"wolves";
-...
-p.Inconsistent(wolves, retrieve);
-...
-p.AtMost(2, bandits, others, orcs, wolves);
-...
-p.Solve();
-
-```
+- Of course, this requires a proper encoding, and comes with all the other challenges of using Machine Learning
 
 ---
 
 class: center, middle
 
-# Flashback Friday: L-Systems
+# Machine Learning
 
 ---
 
-# L-Systems
+# Machine Learning and Planning
 
-Remember L-Systems?
+- There are many ways Machine Learning and Planning can be used together
 
-<img src="/CI-2700/assets/img/lsystem.svg" width="50%"/>
+- Generally, planning is good when the domain is known, but the solution structure may not be
 
-You can play around with different rules <a href="http://lsystems.slothlab.info">here</a>
+- On the other hand, Machine Learning is good when the solution structure is known, but he domain may not be
+
+- We can use each one to complement the other
 
 ---
 
-# Next Week 
+# Reinforcement Learning
 
-[A Logical Approach to Building Dungeons: Answer Set Programming for Hierarchical Procedural Content Generationin Roguelike Games](https://pdfs.semanticscholar.org/f69b/f76b77da89bfd7135b9c60d2b9b10fc1ac20.pdf)
+A Reinforcement Learning Problem consists of:
+
+- A state of the world
+
+- Actions, the agent can take
+
+- A reward function for the agent
+
+--
+
+Sounds a lot like planning?
+
+---
+
+# Reinforcement Learning
+
+- In Reinforcement Learning, we tell the agent how many "points" it gets for reaching a final state
+
+- The idea is that the agent "explores" the environment using some sequence of actions until it reaches a final state
+
+- Then it uses the points it got to assign a value to each action it took to reach that state
+
+- By repeating this "often", the agent learns the value of "each" action in "each" state
+
+---
+
+# Learning a Domain
+
+- From observing how an agent interacts with a world, we may be able to learn domain actions
+
+- For example, if we observe the world before and after some actions we can construct a model of what these actions may have done
+
+- We may then use a planner to find a solution for some new problem
+
+---
+
+# Guiding the Agent
+
+- In order to learn the agent needs to explore the world
+
+- This exploration follows some exploration policy
+
+- We may use a plan as this exploration policy (with some random noise, perhaps)
+
+- Instead of exploring the environment completely randomly (initially), the agent uses this plan as a guide
+
+---
+
+class: small
+
+# Wumpus World
+
+- The Wumpus World domain is actually one of the standard textbook examples for Reinforcement Learning!
+
+- The agent visits the world thousands of times and walks about randomly to learn which moves are good and which are bad
+
+- Then it can visit a new world and knows not to run into the Wumpus (for example)
+
+- Instead of moving about randomly, we can use a planner to provide a "good" path
+
+- But maybe the world is too big? Our planner can operate on a simplified version, because it just needs to produce a guideline
+
+
+
+---
+
+class: center, middle
+
+# Conclusion
+
+---
+
+# Conclusion
+
+- Planning is very central to my research interests
+
+- I really enjoyed teaching this class
+
+- I hope I did not scare y'all away from this fascinating topic
+
+- If you want to know more about my research, and/or do a project with me, let me know
+
+---
+
+class: medium
+
+# Next Semester
+
+- Please participate in the class evaluation!
+
+- It helps me improve the course and my teaching in general
+
+- It also helps the adminstration to decide which courses to offer
+
+- There is also the Machine Learning and Statistical Learning class next semester, if you liked my teaching style and/or are interested in the topic!
+
+---
+
+class: center, middle
+
+# Planning Competition
+
+---
+
+class: medium
+
+# Planning Competition
+
+- For the planning competition, I selected several "hard" problems
+
+- My planner could still solve all of them in under 10 minutes
+
+- I ran each planner on each of these problems
+
+- The fastest planner for each problem got 5 points, the second fastest 3, the third fastest 1
+
+- If a planner crashed, timed out or produced an invalid solution, it got -1 points
+
+---
+
+# Planning Competition: Third Place
+
+
+---
+
+# Planning Competition: Second Place
+
+---
+
+# Planning Competition: First Place
+
+---
+
+# Planning Competition: All Results
 
 ---
 
@@ -539,19 +455,15 @@ class: small
 
 # References
 
-  * Chapter 8 of [Procedural Content Generation](http://pcgbook.com/) by Noor Shaker, Julian Togelius, and Mark J. Nelson (free PDF available)
-
-  * [Clingo and Gringo ASP solvers](https://potassco.org/clingo/)
+  * [ICAPS 2019 Proceedings](https://aaai.org/ojs/index.php/ICAPS)
   
-  * [Quantifying over play: Constraining undesirable solutions in puzzle design.](https://adamsmith.as/papers/fdg2013_shortcuts.pdf)
-  
-  * [CatSAT](https://github.com/ianhorswill/CatSAT)
+  * [Narrative Planning: Compilations to Classical Planning](https://arxiv.org/abs/1401.5856)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
     
     </script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML&delayStartupUntil=configured" type="text/javascript"></script>
-    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
     <script>
     
       var slideshow = remark.create();
