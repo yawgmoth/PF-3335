@@ -1,4 +1,6 @@
-
+---
+permalink: /slides/lecture13.html
+---
 <!DOCTYPE html>
 <html>
   <head>
@@ -114,15 +116,15 @@ class: center, middle
 
 ---
 
-class: center, middle
-
 # Goal-Oriented Action Planning
 
----
+* F.E.A.R. (and several other games) used a variant of planning for its enemy AI 
 
-# Goal-Oriented Action Planning
+* Instead of arbitrary goals and states, it greatly restricts what can be represented 
 
+* This restriction allowed it to be used in a real-time environment
 
+* The developers stated that using planning allowed them to easily add new action types
 
 ---
 
@@ -194,6 +196,34 @@ class: center, middle
 
 ---
 
+# Discourse Planning
+
+- Once we have a story (plot), we want to tell it 
+
+- There are several different media, such as film, text, comics, or combinations thereof
+
+- As we discussed during our lecture on Hierarchical Planning, we can use planning to generate this discourse
+
+---
+
+# Camera Planning 
+
+- Suppose we want to make a movie 
+
+- Each scene is supposed to convey some particular aspect of the story 
+
+- There are different camera shots, angles, lenses, etc. that we can use 
+
+- We can frame this as a planning problem by defining the different shots as operators
+
+---
+
+# The Battle for the Rune
+
+[Link](https://drive.google.com/open?id=1VweROPFFeFyPv4M1rf_FPnZR9NDIuD23)
+
+---
+
 class: center, middle
 
 # Compilation
@@ -223,6 +253,8 @@ class: center, middle
 - Then we add a new action for each such intention that has the additional precondition of that intention
 
 ---
+
+class: medium
 
 # Why Compilation?
 
@@ -434,20 +466,137 @@ class: medium
 
 ---
 
+class: medium
+
+# Planning Competition: The Problems 
+
+- Airport p04, p05, p06 
+
+- Airport ADL p01, p02
+
+- Elevator s2-2, s3-4, s4-3, s5-2, s6-1
+
+- Elevator ADL s2-4, s3-2, s4-1, s4-4, s5-3
+
+- Logistics p01, p03, p04 
+
+- movie prob03, prob10, prob13, prob17, prob24, prob29
+
+- psr-small p01, p03, p04, p05 
+
+- tpp p03, p04
+
+---
+
+class: small
+
+# My Planner 
+
+I selected these problems to represent several different domains, and a range of different difficulties. My planner solved each of them in less than 1 minute.
+
+- airport\p04-airport2-p1.pddl: 0.35 seconds
+- airport\p05-airport2-p1.pddl: 0.42 seconds
+- airport\p06-airport2-p2.pddl: 2.95 seconds
+- airport-adl\p01-airport1-p1.pddl: 33.08 seconds
+- airport-adl\p02-airport1-p1.pddl: 50.72 seconds
+- elevators-00-adl\s2-4.pddl: 0.14 seconds
+- elevators-00-adl\s3-2.pddl: 0.27 seconds
+- elevators-00-adl\s4-1.pddl: 0.73 seconds
+- elevators-00-adl\s4-4.pddl: 2.51 seconds
+- elevators-00-adl\s5-3.pddl: 6.72 seconds
+- elevators-00-strips\s2-2.pddl: 0.16 seconds
+- elevators-00-strips\s3-4.pddl: 0.88 seconds
+- elevators-00-strips\s4-3.pddl: 1.29 seconds
+- elevators-00-strips\s5-2.pddl: 3.38 seconds
+- elevators-00-strips\s6-1.pddl: 51.81 seconds
+
+---
+
+# My Planner
+
+- logistics\p01.pddl: 13.09 seconds
+- logistics\p03.pddl: 1.32 seconds
+- logistics\p04.pddl: 52.17 seconds
+- movie\prob03.pddl: 1.36 seconds
+- movie\prob10.pddl: 1.47 seconds
+- movie\prob13.pddl: 1.59 seconds
+- movie\prob17.pddl: 4.31  seconds
+- movie\prob24.pddl: 8.09 seconds
+- movie\prob29.pddl: 7.05 seconds
+- psr-small\p01-s2-n1-l2-f50.pddl: 0.13 seconds
+- psr-small\p03-s7-n1-l3-f70.pddl: 0.21 seconds
+- psr-small\p04-s8-n1-l4-f10.pddl: 0.22 seconds
+- psr-small\p05-s9-n1-l4-f30.pddl: 1.31 seconds
+- tpp\p03.pddl: 0.61 seconds
+- tpp\p04.pddl: 4.37 seconds
+
+---
+
 # Planning Competition: Third Place
 
+Mauricio!
+
+- 31 points: 2 first places, 6 second places, 3 third places
+
+- Very well rounded, never times out!
+
+- Strengths: Apparently does well on more complex domains, like the logistics one
+
+- Weaknesses: Slow on smaller domains, in particular movies 
 
 ---
 
 # Planning Competition: Second Place
 
+Daniel!
+
+- 69 points: 10 first places, 5 second places, 4 third places 
+
+- This is a very fast planner (for this class)!
+
+- Strengths: Completely destroyed the movies domain, but also did very well on logistics 
+
+- Weaknesses: Slight overhead on smaller domains like psr-small and tpp
+
 ---
 
 # Planning Competition: First Place
 
+Kenneth!
+
+- 95 points: 13 first places, 9 second places, 5 third places 
+
+- Actually timed out twice on the logistics domain 
+
+- The harder STRIPS elevator problems were also a struggle
+
+- Strengths: Almost everything else 
+
+---
+
+# Planning Competition: Graph
+
+<img src="/PF-3335/assets/img/competitionresults.png" width="80%"/>
+
+---
+
+# Planning Competition 
+
+Honorable Mention: Edgar 
+
+- Edgar's planner did amazingly well on the logistics domain 
+
+- Only three planners managed to solve the hardest logistics problem, the other two needed 91.4s and 218.1s (mine needs 92s)
+
+- Edgar's planner solved it in 23.4s!
+
+- Unfortunately this did not generalize to many other domains
+
 ---
 
 # Planning Competition: All Results
+
+[Link](https://docs.google.com/spreadsheets/d/1FZpEAYxbeWP5FBlJs5N9Ep9ENL5YNvk44qVKOKz-OoM/edit?usp=sharing)
 
 ---
 
@@ -457,7 +606,11 @@ class: small
 
   * [ICAPS 2019 Proceedings](https://aaai.org/ojs/index.php/ICAPS)
   
+  * [Goal-Oriented Action Planning](http://alumni.media.mit.edu/~jorkin/goap.html)
+  
   * [Narrative Planning: Compilations to Classical Planning](https://arxiv.org/abs/1401.5856)
+  
+  * [Bardic: Generating Multimedia Narrative Reports for Game Logs](https://www.semanticscholar.org/paper/Bardic-%3A-Generating-Multimedia-Narrative-Reports-Barot-Branon/3087daa75239c7990bfc993a5919d14e69373b42)
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
